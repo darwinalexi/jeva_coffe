@@ -1,0 +1,6 @@
+# Ignorar la carpeta node_modules
+node_modules/
+
+# Ignorar la carpeta env (puede ser .env o una carpeta llamada env)
+.env
+env/

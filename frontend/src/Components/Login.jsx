@@ -11,6 +11,10 @@ import {
   Link,
 }  from "@nextui-org/react"
 import React from "react";
+import { useState } from "react";
+import axiosClient from "../utils/axiosClient";
+import Swal from "sweetalert2";
+
 
 export const MailIcon = (props) => {
   return (
@@ -58,6 +62,42 @@ export const LockIcon = (props) => {
 
 export default function Login() {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
+  const [data, setdata]= useState({ correo:'',clave:''})
+
+
+    const handleinput=(event)=>{
+        const {name, value}=event.target;
+
+        setdata((prevData) => ({
+            ...prevData,
+            [name]: value
+            }));
+
+            console.log({ [name]: value });
+     }
+            
+     const login =async()=>{
+      try {
+         const logueo= await axiosClient.post("/login",data)
+         if(logueo.status===200){
+                const token = logueo.data.token;
+                const tipo= logueo.data.tipo;
+                const identificacion= logueo.data.identificacion;
+                console.log("tipo", tipo)
+                localStorage.setItem('token', token)
+                localStorage.setItem('tipo_usuario', tipo)
+                localStorage.setItem('identificacion', identificacion)
+                Swal.fire({
+                  title:'Sesion Iniciada',
+                  icon:'succes'
+                })
+                window.location.reload();
+        }
+      }catch(e){
+        console.log(e)
+      } 
+     }
+    
 
   return (
     <>
@@ -70,30 +110,38 @@ export default function Login() {
             <>
               <ModalHeader className="flex flex-col gap-1"> Iniciar Sesion </ModalHeader>
               <ModalBody>
-                <Input
-                  endContent={
-                    <MailIcon
-                     className="text-2xl text-default-400 pointer-events-none flex-shrink-0 " />
-                  }
-                  label="Correo"
-                  placeholder="Ingrese su usuario"
-                  
-                 classNames={{
-                    inputWrapper: "border-red-700",
-                  }}
+                <form onSubmit={login}>
+                      <Input
+                        endContent={
+                          <MailIcon
+                          className="text-2xl text-default-400 pointer-events-none flex-shrink-0 " />
+                        }
+                        label="Correo"
+                        onChange={handleinput}
+                        placeholder="Ingrese su usuario"
+                        name="correo"
+                      classNames={{
+                          inputWrapper: "border-red-700",
+                        }}
 
-                />
-                <Input
-                  endContent={
-                    <LockIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-                  }
-                  label="clave"
-                  placeholder="Ingrese su clave"
-                  type="password"
-                   classNames={{
-                    inputWrapper: "border-red-700",
-                  }}
-                />
+                      />
+                      <Input
+                          endContent={
+                            <LockIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                          }
+                          label="clave"
+                          name="clave"
+                          onChange={handleinput}
+                          placeholder="Ingrese su clave"
+                          type="password"
+                          classNames={{
+                            inputWrapper: "border-red-700",
+                          }}
+                        />
+        
+    
+                </form>
+          
                 <div className="flex py-2 px-1 justify-between">
                   <Checkbox
                     classNames={{
@@ -103,8 +151,8 @@ export default function Login() {
                     Remember me
                   </Checkbox>
                  <Link className="text-custom-teal"       href="#" size="sm">
-  Forgot password?
-</Link>
+                    Forgot password?
+                  </Link>
 
                 </div>
               </ModalBody>
@@ -112,7 +160,8 @@ export default function Login() {
                 <Button className="bg-custom-teal text-white"           variant="flat" onPress={onClose}>
                   Cerrar
                 </Button>
-                <Button className="bg-red-700 text-custom-teal text-white    " onPress={onClose}>
+                <Button 
+                className="bg-red-700 text-custom-teal text-white    " onPress={login}>
                   Iniciar Sesion 
                 </Button>
               </ModalFooter>
