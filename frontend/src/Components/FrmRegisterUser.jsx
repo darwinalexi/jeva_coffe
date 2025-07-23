@@ -16,6 +16,7 @@ import ImageUploadPreview from "./Inpuimage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAudioDescription, faEnvelope, faIdCard, faLock, faUser} from "@fortawesome/free-solid-svg-icons";
 import axiosClient from "../../../../sistema_de_registro/frontendWeb/src/utils/axiosClient";
+import Swal from "sweetalert2";
 export const MailIcon = (props) => {
   return (
     <svg
@@ -70,6 +71,7 @@ const claveRef= useRef();
 const correoRef= useRef();
 const descripcionRef= useRef();
 const edadRef= useRef();
+const tipoRef= useRef();
 const [image,setImage]= useState(null);
  const handleImageChange = (file) => {
     setImage(file);
@@ -85,13 +87,25 @@ const register_user=async(e)=>{
         formData.append('clave', claveRef.current.value); 
         formData.append('descripcion',descripcionRef.current.value);
         formData.append('edad', edadRef.current.value);
-        formData.append('tipo', 'Cliente');
+        formData.append('tipo', tipoRef.current.value);
            
          if (image) {
         formData.append("imagen", image);
       }
             console.log("datos", formData)
             const register = await axiosClient.post("/usuarios", formData)
+           if(register.status==200){
+              Swal.fire({
+                icon:'success',
+                text:register.data.mensaje
+              })
+              window.location.reload();
+           }else{
+              Swal.fire({
+                icon:'error',
+                text:"Algo paso"
+              })
+           }
             console.log(register.data)
 }
 
@@ -101,7 +115,7 @@ const register_user=async(e)=>{
         className="border-b border-b-red-700 border-t border-t-red-700 border-r border-r-red-700 border-l border-l-red-700 bg-transparent hover:bg-red-700 text-white"
         onPress={onOpen}
       >
-        Registrate Con Nosotros
+        Registrar Usuario Nuevo
       </Button>
       <Modal
         isOpen={isOpen}
@@ -132,7 +146,12 @@ const register_user=async(e)=>{
                       inputWrapper: "border-red-700",
                     }}
                   />
-                 
+                 <select classNames="border-1 border-red-700" ref={tipoRef} placeholder="Seleccione Un tipo  de Usuario">
+                  <option value="hidden" disabled>Seleccione un tipo de Usuario</option>
+                  <option value="Administrador">Administrador</option>
+                  <option value="Empresa_Envios">Empresa de Envios</option>
+
+                 </select>
                   <Input
                     endContent={
                       <FontAwesomeIcon icon={faUser} className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
@@ -160,6 +179,8 @@ const register_user=async(e)=>{
                       inputWrapper: "border-red-700",
                     }}
                   />
+
+                  
                   <Input
                    endContent={
                       <FontAwesomeIcon icon={faEnvelope} className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
@@ -201,7 +222,9 @@ const register_user=async(e)=>{
                   <div className="sm:col-span-2">
                     <ImageUploadPreview  onImageChange={handleImageChange}/>
                   </div>
-                <input className="bg-red-700 text-custom-teal text-white"  type="submit" value="Registrar"/>
+                 <Button  className="border-1 border-custom-teal hover:bg-custom-teal bg-white hover:text-white text-black"  type="submit">
+                  Registrar
+                </Button>
               </form>
            
               </ModalBody>
@@ -209,6 +232,8 @@ const register_user=async(e)=>{
                 <Button className="bg-custom-teal text-white" variant="flat" onPress={onClose}>
                   Cerrar
                 </Button>
+
+             
                
               </ModalFooter>
             </>

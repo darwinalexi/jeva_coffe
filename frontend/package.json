@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@heroui/image": "^2.2.12",
@@ -25,9 +26,11 @@
     "aos": "^2.3.4",
     "axios": "^1.9.0",
     "react": "^19.1.0",
+    "react-data-table-component": "^7.7.0",
     "react-dom": "^19.1.0",
     "react-multi-carousel": "^2.8.6",
     "react-router-dom": "^7.6.2",
+    "recharts": "^3.0.2",
     "sweetalert2": "^11.22.0"
   },
   "devDependencies": {

@@ -1,11 +1,18 @@
 import { body, validationResult } from 'express-validator';
 
 export const validatorproductcreate = [
-  body('id').notEmpty().withMessage('El ID es obligatorio'),
   body('nombre').notEmpty().withMessage('El nombre es obligatorio'),
-  body('unidades_disponibles').isInt({ min: 1 }).withMessage('Las unidades deben ser número entero positivo'),
-  body('precio').isFloat({ min:1000 }).withMessage('El precio debe ser un número válidoor mayor a 1000'),
+  body('unidades_disponibles').isInt({ min: 1 }).withMessage('Las unidades deben ser un número entero positivo'),
 
+    body('precio')
+    .custom(value => {
+      // Reemplazar el punto por un vacío para eliminar los separadores de miles
+      const numericValue = parseFloat(value.replace(/\./g, ''));
+      if (isNaN(numericValue) || numericValue < 1000) {
+        throw new Error('El precio debe ser un número válido o mayor a 1.000');
+      }
+      return true; // Si la validación pasa
+    }),
   // Middleware personalizado para validar imagen
   (req, res, next) => {
     if (!req.file) {
@@ -28,19 +35,18 @@ export const validatorproductcreate = [
 
 export const validatorproductupdate = [
   body('nombre').notEmpty().withMessage('El nombre es obligatorio'),
-  body('unidades_disponibles').isInt({ min: 1 }).withMessage('Las unidades deben ser número entero positivo'),
-  body('precio').isFloat({ min:1000 }).withMessage('El precio debe ser un número válidoor mayor a 1000'),
-
-  // Middleware personalizado para validar imagen
-  (req, res, next) => {
-    if (!req.file) {
-      return res.status(400).json({
-        errores: [{ msg: 'La imagen es obligatoria', param: 'imagen' }]
-      });
-    }
-    next();
-  },
-
+  body('unidades_disponibles').isInt({ min: 1 }).withMessage('Las unidades deben ser un número entero positivo'),
+  
+  // Validar y convertir el precio
+  body('precio')
+    .custom(value => {
+      // Reemplazar el punto por un vacío para eliminar los separadores de miles
+      const numericValue = parseFloat(value.replace(/\./g, ''));
+      if (isNaN(numericValue) || numericValue < 1000) {
+        throw new Error('El precio debe ser un número válido o mayor a 1.000');
+      }
+      return true; // Si la validación pasa
+    }),
   // Validar errores de campos
   (req, res, next) => {
     const errores = validationResult(req);

@@ -12,12 +12,12 @@ export default function ImageUploadPreview({onImageChange}) {
       alert("Por favor, selecciona un archivo de imagen válido.");
       return;
     }
-    // Muestra el archivo en la consola
+
     console.log("Archivo seleccionado:", file);
     const reader = new FileReader();
     reader.onloadend = () => {
       setImagePreview(reader.result);
-      onImageChange(file); // Llama a la función para pasar la imagen al componente padre
+      onImageChange(file); 
     };
     reader.readAsDataURL(file);
   };
@@ -35,7 +35,7 @@ export default function ImageUploadPreview({onImageChange}) {
       />
       {/* Boton para cargar imagen */}
       <label htmlFor="image-upload">
-        <Button shadow color="primary" auto as="span">
+        <Button shadow className ="bg-[#003333] text-white "  auto as="span">
           Cargar Imagen
         </Button>
       </label>

@@ -1,21 +1,73 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import NavBar from "../Components/NavBar"
 import { Contact } from "../Components/Contact"
 import AOS from 'aos';
-import 'aos/dist/aos.css'; // Importa la hoja de estilos para la animación
+import 'aos/dist/aos.css'; 
 import {Carrusel} from "../Components/Carrusel"
 import { About_buy } from "../Components/About_buy";
+import GraficaProductos from "../Components/Grafica_Productos"
+import Grafica_ventas from "../Components/Grafic";
+import GraficaCliente from "../Components/Grafica_Clientes";
+import GraficaVentas from "../Components/Grafica_ventas";
+import {Link} from "react-router-dom"
 export const Main=()=>{
-     useEffect(()=>{
-        AOS.init({
-            duration:1000,
-            once:true
-        })
-     },[])
+  const [type, setType] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const datalocal = JSON.parse(localStorage.getItem('usuario'));
+    if (datalocal && datalocal.tipo) {
+      setType(datalocal.tipo);
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+
+    AOS.init({
+      duration: 1000,
+      once: true
+    });
+  }, []);
      
     return(
         <>    
-        <div id="#inicio">
+            {isAuthenticated && type === "Administrador" ? (
+              <>
+              <NavBar/>
+              
+                    <div className="w-[100%] sm:grid grid-cols-1 md:grid grid-cols-2 mt-12 h-screen  sm:gap-2 md:gap-4">
+                        <div className="grid col-span-2 items-center">
+                            <p className="text-4xl flex justify-center text-orange-500">Datos Claves</p>
+                        </div>
+                        <Link to="/clientes" className="h-aut0 m-3 hover: cursor-pointer ">
+                            <GraficaCliente />
+                        </Link >
+     
+                        <Link to="/tienda" className="h-aut0 m-3">
+                            <GraficaProductos className=""/>
+                        </Link>
+                                    
+                        <div className="h-aut0 m-3">
+                            <GraficaVentas  className="p-4"/>
+                        </div>
+                                    
+                        <div className="h-aut0 m-3 flex justify-center items-center">
+                            <p className=" text-5xl text-[#3c2a21] font-black">Entre aroma y cifras, tu éxito se prepara aquí.</p>
+                        </div>
+                                    
+                        <div className="grid col-span-2">
+                            <div className="border-1 border-[#003333] rounded-lg  p-5 w-full h-auto">
+                                <Grafica_ventas/>     
+                            </div>
+                            
+                        </div>
+                        <div className="grid col-span-2 bg-[#003333] w-full">
+                        <Contact/>
+                    </div>
+                    </div>
+            </>          
+            ):(
+   <div id="#inicio">
             <div>
                 <NavBar/>
                 <div className="hidden sm:block">
@@ -87,7 +139,9 @@ export const Main=()=>{
             </div>
             <About_buy/>
             <Contact/>
-        </div>  
+        </div>
+            )}
+
         </>   
     )
 }

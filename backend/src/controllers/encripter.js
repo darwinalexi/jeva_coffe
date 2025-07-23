@@ -1,5 +1,4 @@
  import bcryptjs from "bcryptjs";
-
 export const encrypter = async (password) => {
   try {
     const hash = await bcryptjs.hash(password, 10);

@@ -72,12 +72,12 @@ export const show_productos_notavalible= async(req, res)=>{
 
 export const create_productos=async(req, res)=>{
     try {
-        const {id, nombre, unidades_disponibles,precio}= req.body;
+        const {nombre, unidades_disponibles,precio, estado, usuario_id, descripcion}= req.body;
         let imagen
         if (req.file) {
              imagen = req.file.originalname;
         }
-        const [create] = await connection.query("insert into productos(id, nombre, unidades_disponibles, precio, imagen) values(?,?,?,?,?)",[id, nombre, unidades_disponibles, precio, imagen])
+        const [create] = await connection.query("insert into productos(nombre, unidades_disponibles, precio, imagen, estado, usuario_id, descripcion) values(?,?,?,?,?,?,?)",[nombre, unidades_disponibles, precio, imagen, estado, usuario_id, descripcion])
         if (create.affectedRows>0) {
             res.status(200).json({
                 "mensaje":"El producto ya se creo con exito"
@@ -100,12 +100,22 @@ export const create_productos=async(req, res)=>{
 export const update_productos=async(req, res)=>{
     try {
         const {id}= req.params;
-        const {nombre, unidades_disponibles,precio}= req.body;
+        const {nombre, unidades_disponibles,precio, estado, descripcion}= req.body;
         let imagen
         if (req.file) {
              imagen = req.file.originalname;
         }
-        const [create] = await connection.query("update productos set  nombre=?, unidades_disponibles=?, precio=?, imagen=?  where id=?",[nombre, unidades_disponibles, precio, imagen, id])
+
+        const [searcher]= await connection.query("select*from productos where id=?",[id]);
+        const productexit=searcher[0];
+
+        const nuevonombre= nombre || productexit.nombre;
+        const nuevasunidades= unidades_disponibles || productexit.unidades_disponibles;
+        const nuevoprecio= precio || productexit.precio;
+        const nuevaimg= imagen || productexit.imagen;
+        const nuevoestado= estado || productexit.estado;
+        const nuevadescripcion=descripcion || productexit.descripcion
+        const [create] = await connection.query("update productos set  nombre=?, unidades_disponibles=?, precio=?, imagen=?, estado=?, descripcion=? where id=?",[nuevonombre, nuevasunidades, nuevoprecio, nuevaimg,nuevoestado, nuevadescripcion,id])
         if (create.affectedRows>0) {
             res.status(200).json({
                 "mensaje":"El producto ya se actualizo con exito"
@@ -144,3 +154,78 @@ export const delete_product= async(req, res)=>{
         })
     }
 } 
+
+
+export const all_product=async(req, res)=>{
+    try{
+        const [all]= await connection.query("select*from productos");
+        if(all.length>0){
+        res.status(200).json(all)
+        }else{
+            res.status(400).json({
+                "mensaje":"No hay nada"
+            })
+        }
+    }catch(e){
+        console.log(e)
+    }
+} 
+
+
+export const count_product_avalible=async(req,res)=>{
+    try {
+        const [count]=await connection.query("select count(*) AS Numero_productos from productos where estado='Disponible'")
+        if (count.length>0) {
+            res.status(200).json({
+                "productos":count[0].Numero_productos
+            })
+        } else {
+             res.status(404).json({
+                "mensaje":"No hay nada"
+            })
+        }
+
+    } catch (error) {
+         res.status(500).json({
+                "mensaje":error
+            })
+    }
+} 
+
+export const count_product_no_avalible=async(req,res)=>{
+    try {
+        const [count]=await connection.query("select count(*) AS Numero_productos from productos where estado='No Disponible'")
+        if (count.length>0) {
+            res.status(200).json({
+                "productos":count[0].Numero_productos
+            })
+        } else {
+             res.status(404).json({
+                "mensaje":"No hay nada"
+            })
+        }
+
+    } catch (error) {
+         res.status(500).json({
+                "mensaje":error
+            })
+    }
+} 
+
+export const see_a_product=async(req, res)=>{
+    try{
+        const {id}= req.params;
+        const [product]=await connection.query("select*from productos where id=?",[id]);
+        if(product.length>0){
+            res.status(200).json(product)
+        }else{
+            res.status(404).json({
+                "mensaje":"No Hay Producto"
+            })
+        }
+    }catch(e){
+        res.status(500).json({
+            "mensaje":e
+        })
+    }
+}

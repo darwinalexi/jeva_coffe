@@ -32,11 +32,13 @@ export const register_user=async(req, res)=>{
     try {
 
        const {identificacion, nombre, correo,  clave, descripcion, tipo, edad}=req.body;
-       let imagen
-       
-       if(req.file){
-         imagen=req.file.originalname
-       }
+      
+       let imagen = "profile_default.jpeg"; // Asignar imagen por defecto desde el principio
+
+        if (req.file && req.file.filename) {
+        imagen = req.file.filename;
+        }
+
 
       const [check]= await connection.query("select* from usuarios where identificacion=? or correo=?",[identificacion, correo])      
       if (check.length>0) {
@@ -66,48 +68,65 @@ export const register_user=async(req, res)=>{
 
 } 
 
-export const update_user=async(req, res)=>{
+export const update_user = async (req, res) => {
     try {
-       const {identificacion}=req.params;
-       let {nombre, correo,  clave, descripcion, tipo}=req.body;
-       let imagen
-       
-       if(req.file){
-         imagen=req.file.originalname
-       }
-       const [search]= await connection.query("select*from usuarios where identificacion=?",[identificacion])
-       const clavehash = await encrypter(clave)
-       if (search.length>0) {
-          const usertoday= search[0];
-          
-            nombre = nombre || usertoday.nombre;
-            correo = correo ||  usertoday.correo;
-            imagen= imagen || usertoday.imagen;
-            clave = clave || usertoday.clave;
-            descripcion = descripcion || usertoday.descripcion;
-            tipo = tipo || usertoday.tipo;
-
-           const [create]= await connection.query("update usuarios set nombre=?, correo=?, imagen=?, clave=?, descripcion=?, tipo=? where identificacion=?",[nombre, correo, imagen, clavehash, descripcion, tipo, identificacion])
-               
-                if (create.affectedRows>0) {
-                    res.status(200).json({
-                        message: "Usuario actualizo con exito",
-                    })
-                } else {
-                    res.status(404).json({
-                        message: "usuario no actualizado"
-                    })
-                } 
-       }
-            
+      const { identificacion } = req.params;
+      let { nombre, correo, clave, descripcion, tipo, edad } = req.body;
+  
+      let imagen = req.file ? req.file.originalname : null;
+  
+      const [search] = await connection.query(
+        "SELECT * FROM usuarios WHERE identificacion = ?",
+        [identificacion]
+      );
+  
+      if (search.length === 0) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
+  
+      const userToday = search[0];
+  
+      // Opcionales, conservar el valor anterior si no llega uno nuevo o está vacío
+      const nombreFinal = nombre || userToday.nombre;
+      const correoFinal = correo || userToday.correo;
+      const imagenFinal = imagen || userToday.imagen;
+      const descripcionFinal = descripcion || userToday.descripcion;
+      const tipoFinal = tipo || userToday.tipo;
+      const edadFinal = edad || userToday.edad;
+      const claveFinal = clave || userToday.clave;
+  
+      // Si necesitas encriptar la clave:
+      // const claveFinal = clave ? await bcrypt.hash(clave, 10) : userToday.clave;
+  
+      const [update] = await connection.query(
+        `UPDATE usuarios 
+         SET nombre = ?, correo = ?, imagen = ?, clave = ?, descripcion = ?, edad = ?, tipo = ?
+         WHERE identificacion = ?`,
+        [
+          nombreFinal,
+          correoFinal,
+          imagenFinal,
+          claveFinal,
+          descripcionFinal,
+          edadFinal,
+          tipoFinal,
+          identificacion,
+        ]
+      );
+  
+      if (update.affectedRows > 0) {
+        return res.status(200).json({ message: "Usuario actualizado con éxito" });
+      } else {
+        return res.status(400).json({ message: "No se realizaron cambios en el usuario" });
+      }
+  
     } catch (error) {
-      console.log(error)
-        res.status(500).json({
-            message: "Error al actualizar usuario",
-      })
+      console.error("Error al actualizar usuario:", error);
+      res.status(500).json({
+        message: "Error interno al actualizar usuario",
+      });
     }
-};
-
+  };
 export const show_user= async(req, res)=>{
     try{
         const [searchuser]= await connection.query("select*from usuarios where tipo='Cliente'")

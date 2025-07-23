@@ -1,0 +1,44 @@
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid,
+  Tooltip, Legend, ResponsiveContainer
+} from 'recharts';
+import axiosClient from '../utils/axiosClient';
+import { useEffect, useState } from 'react';
+
+export default function Grafica_ventas() {
+  const [data, setData] = useState([]);
+
+  const sales = async () => {
+    try {
+      const response = await axiosClient.get("/contar_ventas");
+      const datosTransformados = response.data.map(item => ({
+        mes: item.mes,
+        numero_ventas: item.numero_ventas
+      }));
+      setData(datosTransformados);
+      console.log("data",response.data)
+    } catch (error) {
+      console.error("Error al obtener las ventas:", error);
+    }
+  };
+
+  useEffect(() => {
+    sales();
+  }, []);
+
+  return (
+    <div style={{ width: '100%', height: 350 }} className='m-4'>
+      <h1 className="text-2xl flex justify-center">Estadisticas de Ventas de los Ultimos 4 Meses</h1>
+      <ResponsiveContainer>
+        <BarChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="mes" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="numero_ventas" fill="#003333"  />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
