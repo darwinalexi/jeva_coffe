@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PieChart, Pie, Sector, ResponsiveContainer, Cell } from 'recharts';
 import axiosClient from '../utils/axiosClient';
 
-// Función personalizada para resaltar el sector activo con salto de línea dentro y fuera
+// Función personalizada para resaltar el sector activo con salto de línea
 const renderActiveShape = (props) => {
   const RADIAN = Math.PI / 180;
   const {
@@ -20,16 +20,15 @@ const renderActiveShape = (props) => {
   const ey = my;
   const textAnchor = cos >= 0 ? 'start' : 'end';
 
-  // Dividir el name para simular <br />
   const nameParts = payload.name.split(' ');
 
   return (
     <g>
       {/* Texto dentro del centro */}
-      <text x={cx} y={cy - 10} textAnchor="middle" fill={fill} fontSize={14}>
+      <text x={cx} y={cy - 10} textAnchor="middle" fontSize={14} fill="currentColor" className="text-[#333] dark:text-white">
         {nameParts[0]}
       </text>
-      <text x={cx} y={cy + 10} textAnchor="middle" fill={fill} fontSize={14}>
+      <text x={cx} y={cy + 10} textAnchor="middle" fontSize={14} fill="currentColor" className="text-[#333] dark:text-white">
         {nameParts.slice(1).join(' ')}
       </text>
 
@@ -45,16 +44,17 @@ const renderActiveShape = (props) => {
         fill={fill}
       />
 
-      {/* Línea externa y texto con salto de línea */}
+      {/* Línea externa y texto */}
       <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
       <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
-      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey - 8} textAnchor={textAnchor} fill="#333">
+
+      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey - 8} textAnchor={textAnchor} fill="currentColor" className="text-[#333] dark:text-white">
         {nameParts[0]}
       </text>
-      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey + 8} textAnchor={textAnchor} fill="#333">
+      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey + 8} textAnchor={textAnchor} fill="currentColor" className="text-[#333] dark:text-white">
         {`${nameParts.slice(1).join(' ')}: ${value}`}
       </text>
-      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey + 26} textAnchor={textAnchor} fill="#999">
+      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey + 26} textAnchor={textAnchor} fill="currentColor" className="text-[#999] dark:text-white">
         {`(${(percent * 100).toFixed(2)}%)`}
       </text>
     </g>
@@ -86,8 +86,8 @@ const GraficaVentas = () => {
   return (
     <>
       {data.length > 0 ? (
-        <div style={{height: 400 }} className='border-1 border-[#003333] hover:bg-gray-200 rounded-xl sm::w-screen md:w-auto'>
-          <p className='flex justify-center text-2xl' >Ventas</p>
+        <div style={{ height: 400 }} className="border border-[#003333] rounded-xl w-full max-w-md mx-auto dark:border-white">
+          <p className="flex justify-center text-2xl dark:text-white mb-2">Ventas</p>
           <ResponsiveContainer>
             <PieChart>
               <Pie
@@ -110,7 +110,7 @@ const GraficaVentas = () => {
           </ResponsiveContainer>
         </div>
       ) : (
-        <p className='flex justify-center items-center'>No Hay Ventas en JEVACOFFE</p>
+        <p className="flex justify-center items-center dark:text-white">No Hay Ventas en JEVACOFFE</p>
       )}
     </>
   );

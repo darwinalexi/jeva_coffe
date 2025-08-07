@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../style/style.css">
+    <title>Documentación</title>
+</head>
+<body>
+    <h1>Documentación</h1>
+    <h2 style="color: #003333;">Login</h2>
+    
+    <table>
+        <tr>
+            <td>ENPOINT</td>
+            <td>Login </td>
+        </tr>
+        <tr>
+            <td>URL</td>
+            <td>/login</td>
+        </tr>
+        <tr>
+            <td>Método HTTP</td>
+            <td>POST</td>
+        </tr>
+        <tr>
+            <td>Body</td>
+            <td>{"correo": "user@example.com", "clave": "password"}</td>
+        </tr>
+        <tr>
+            <td>Header</td>
+            <td>Null</td>
+        </tr>
+        <tr>
+            <td>Respuesta</td>
+            <td>En caso de éxito, da un estado 200 return res.status(200).json({
+      usuario: user,
+      token: token
+    }); en caso de  error  da un estado 500 res.status(500).json({ mensaje: "Error interno del servidor" });
+        </td>
+        </tr>
+        <tr>
+            <td>DESARROLLADOR: </td>
+            <td>DARWIN GUERRERO</td>
+        </tr>
+        
+    </table>
+
+        <h2 style="color: #003333;">Crear Cliente</h2>
+     <table>
+        <tr>
+            <td>ENPOINT</td>
+            <td>Crear Cliente</td>
+        </tr>
+        <tr>
+            <td>URL</td>
+            <td>/cliente</td>
+        </tr>
+        <tr>
+            <td>Método HTTP</td>
+            <td>POST</td>
+        </tr>
+        <tr>
+            <td>Body</td>
+            <td>{"Identificacion": "user@example.com", 
+                "Nombre": "Juan Perez",
+                "correo": "user@example.com",
+                "celular": "3126788760",
+                "edad": 30,
+                "clave": "password",
+                "imagen": "./profile.jpg",
+            }</td>
+        </tr>
+        <tr>
+            <td>Header</td>
+            <td>Null</td>
+        </tr>
+        <tr>
+            <td>Respuesta</td>
+            <td>En caso de éxito, da un estado 200 res.status(200).json({
+                "mensaje":"se creo con exito"
+            }) en caso de salir algo mal, da un estado 404 res.status(404).json({
+                "mensaje":"No se Creo el usuario"
+            }) en caso de error da un estado 500 res.status(500).json({
+            "error":e
+        })</td>
+        </td>
+        </tr>
+        <tr>
+            <td>DESARROLLADOR: </td>
+            <td>DARWIN GUERRERO</td>
+        </tr>
+        
+    </table>
+
+
+
+          <h2 style="color: #003333;">Contar Clientes</h2>
+     <table>
+        <tr>
+            <td>ENPOINT</td>
+            <td>Contar Clientes</td>
+        </tr>
+        <tr>
+            <td>URL</td>
+            <td>/cliente</td>
+        </tr>
+        <tr>
+            <td>Método HTTP</td>
+            <td>GET</td>
+        </tr>
+        <tr>
+            <td>Body</td>
+            <td>Null</td>
+        </tr>
+        <tr>
+            <td>Header</td>
+            <td>Token</td>
+        </tr>
+        <tr>
+            <td>Respuesta</td>
+            <td>En caso de éxito, da un estado 200  res.status(200).json({
+                "Clientes":count[0].Numero_Clientes
+            })en caso de salir algo mal, da un estado 404 res.status(404).json({
+                "mensaje":"No hay nada"
+            })en caso de error da un estado 500 res.status(500).json({
+                "mensaje":error
+            })</td>
+        </td>
+        </tr>
+        <tr>
+            <td>DESARROLLADOR: </td>
+            <td>DARWIN GUERRERO</td>
+        </tr>
+        
+    </table>
+
+    <h2 style="color: #003333;">Listar Clientes</h2>
+     <table>
+        <tr>
+            <td>ENPOINT</td>
+            <td>Listar Clientes</td>
+        </tr>
+        <tr>
+            <td>URL</td>
+            <td>/ver_cliente</td>
+        </tr>
+        <tr>
+            <td>Método HTTP</td>
+            <td>GET</td>
+        </tr>
+        <tr>
+            <td>Body</td>
+            <td>Null</td>
+        </tr>
+        <tr>
+            <td>Header</td>
+            <td>Token</td>
+        </tr>
+        <tr>
+            <td>Respuesta</td>
+            <td>En caso de éxito, da un estado 200    res.status(200).json(show)
+                en caso de salir algo mal, da un estado 404   res.status(404).json({
+                "mensaje":"No hay nada"
+            }) en caso de error da un estado 500 res.status(500).json({
+                "mensaje":error
+            })</td>
+        </td>
+        </tr>
+        <tr>
+            <td>DESARROLLADOR: </td>
+            <td>DARWIN GUERRERO</td>
+        </tr>
+        
+    </table>
+
+
+     <h2 style="color: #003333;">Buscar Clientes</h2>
+     <table>
+        <tr>
+            <td>ENPOINT</td>
+            <td>Buscar Clientes</td>
+        </tr>
+        <tr>
+            <td>URL</td>
+            <td>/ver_cliente/1004266831</td>
+        </tr>
+        <tr>
+            <td>Método HTTP</td>
+            <td>GET</td>
+        </tr>
+        <tr>
+            <td>Body</td>
+            <td>Null</td>
+        </tr>
+        <tr>
+            <td>Header</td>
+            <td>Token</td>
+        </tr>
+        <tr>
+            <td>Respuesta</td>
+            <td>En caso de éxito, da un estado 200 res.status(200).json(search)
+                en caso de salir algo mal, da un estado 404  res.status(404).json({
+            "mensaje":"No se encontro el cliente"
+        })
+ en caso de error da un estado 500 res.status(500).json({
+                "mensaje":error
+            })</td>
+        </td>
+        </tr>
+        <tr>
+            <td>DESARROLLADOR: </td>
+            <td>DARWIN GUERRERO</td>
+        </tr>
+        
+    </table>
+
+</body>
+</html>

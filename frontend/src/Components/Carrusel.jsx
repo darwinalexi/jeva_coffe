@@ -52,23 +52,40 @@ export const Carrusel = () => {
       </Carousel>
 
 
-       <style>
-        {`
-          /* Tailwind CSS styling applied using @apply */
-          .custom-dot-list {
-            @apply bottom-6 flex justify-center space-x-6 !important;
-          }
-          .custom-dot-list .react-multi-carousel-dot {
-            @apply bg-gray-400 w-3 h-3 rounded-full transition-colors duration-300 ease-in-out border-0 cursor-pointer;
-          }
-          .custom-dot-list .react-multi-carousel-dot--active {
-            @apply bg-black w-4 h-4;
-          }
-          .custom-dot-list .react-multi-carousel-dot:hover {
-            @apply bg-gray-700;
-          }
-        `}
-      </style>
+      <style>
+{`
+  .custom-dot-list {
+    position: absolute;
+    bottom: 1.5rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+
+  .custom-dot-list .react-multi-carousel-dot button {
+  background-color: transparent;
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  border: 2px solid #b91c1c; /* rojo-700 */
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+
+  .custom-dot-list .react-multi-carousel-dot--active button {
+    background-color: #b91c1c !important;
+    width: 16px;
+    height: 16px;
+  }
+
+  .custom-dot-list .react-multi-carousel-dot:hover button {
+    background-color: #555;
+  }
+`}
+</style>
+
     </div>
   );
 };

@@ -15,7 +15,7 @@ import { useState, useRef } from "react";
 import ImageUploadPreview from "./Inpuimage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAudioDescription, faEnvelope, faIdCard, faLock, faUser} from "@fortawesome/free-solid-svg-icons";
-import axiosClient from "../../../../sistema_de_registro/frontendWeb/src/utils/axiosClient";
+import axiosClient from "../utils/axiosClient";
 import Swal from "sweetalert2";
 export const MailIcon = (props) => {
   return (
@@ -86,8 +86,10 @@ const register_user=async(e)=>{
         formData.append('correo', correoRef.current.value);
         formData.append('clave', claveRef.current.value); 
         formData.append('descripcion',descripcionRef.current.value);
-        formData.append('edad', edadRef.current.value);
-        formData.append('tipo', tipoRef.current.value);
+        if (tipoUsuario=="Administrador") {
+          formData.append('edad', edadRef.current.value); 
+        }
+        formData.append('tipo', tipoUsuario);
            
          if (image) {
         formData.append("imagen", image);
@@ -108,6 +110,9 @@ const register_user=async(e)=>{
            }
             console.log(register.data)
 }
+
+const [tipoUsuario, setTipoUsuario] = useState("");
+
 
   return (
     <>
@@ -146,8 +151,12 @@ const register_user=async(e)=>{
                       inputWrapper: "border-red-700",
                     }}
                   />
-                 <select classNames="border-1 border-red-700" ref={tipoRef} placeholder="Seleccione Un tipo  de Usuario">
-                  <option value="hidden" disabled>Seleccione un tipo de Usuario</option>
+                 <select 
+                 className="border-1 border-red-700 rounded-xl" 
+                value={tipoUsuario}
+                 onChange={(e)=>setTipoUsuario(e.target.value)} 
+                 placeholder="Seleccione Un tipo  de Usuario">
+                  <option value="">Seleccione un tipo de Usuario</option>
                   <option value="Administrador">Administrador</option>
                   <option value="Empresa_Envios">Empresa de Envios</option>
 
@@ -206,7 +215,8 @@ const register_user=async(e)=>{
                       inputWrapper: "border-red-700",
                     }}
                   />
-                  <Input
+                  {tipoUsuario==="Administrador"&&(
+                    <Input
                     endContent={
                       <FontAwesomeIcon icon={faUser} className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                     }
@@ -218,11 +228,12 @@ const register_user=async(e)=>{
                       inputWrapper: "border-red-700",
                     }}
                   />
+                  )}
 
                   <div className="sm:col-span-2">
                     <ImageUploadPreview  onImageChange={handleImageChange}/>
                   </div>
-                 <Button  className="border-1 border-custom-teal hover:bg-custom-teal bg-white hover:text-white text-black"  type="submit">
+                 <Button  className="border-1 border-custom-teal hover:bg-custom-teal bg-white hover:text-white text-black sm: relative left-2 md:relative md:left-52"  type="submit">
                   Registrar
                 </Button>
               </form>

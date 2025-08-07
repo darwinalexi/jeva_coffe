@@ -12,7 +12,7 @@ export const Edit_user = ({ data, onclose }) => {
   const [Correo, setCorreo] = useState(data.correo);
   const [Descripcion, setDescripcion] = useState(data.descripcion);
   const [Edad, setEdad] = useState(data.edad);
-  const [image, setimage] = useState(null); // Nuevo archivo seleccionado
+  const [image, setimage] = useState(null); 
   const [Clave, setClave] = useState("");
   const [Tipo, setTipo] = useState(data.tipo);
 
@@ -42,6 +42,7 @@ export const Edit_user = ({ data, onclose }) => {
           icon: "success",
           text: update.data.message,
         });
+        window.location.reload();
         onclose(); 
       } else {
         Swal.fire({
@@ -50,11 +51,19 @@ export const Edit_user = ({ data, onclose }) => {
         });
       }
     } catch (e) {
-      console.error(e);
-      Swal.fire({
-        icon: "error",
-        text: "Error al editar tu información",
-      });
+      if (e.response && e.response.status === 400) {
+        const errores = e.response.data.errores;
+        const mensaje = errores.map(err => err.msg).join(', ');
+        Swal.fire({
+          icon: 'error',
+          text: `Error ${mensaje}`,
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          text: 'Ocurrió un error al actualizar el producto.',
+        });
+      }
     }
   };
 

@@ -12,19 +12,25 @@ export const login = async (req, res) => {
       "SELECT * FROM usuarios WHERE correo = ?",
       [correo]
     );
+    const [result2]= await connection.query(
+      "SELECT * FROM clientes WHERE correo = ?",[correo]);
 
-    if (result.length === 0) {
-      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+
+    if (result.length === 0 && result2.length === 0) {
+      return res.status(404).json({ mensaje: "Lo sentimos pero este correo no esta registrado" });
     }
 
     const user = result[0];
-
-    const passwordValida = await comparepassword(clave, user.clave);
+    const client= result2[0];
+    
+    
+    if(user){
+        const passwordValida = await comparepassword(clave, user.clave);
     if (!passwordValida) {
       return res.status(401).json({ mensaje: "Credenciales incorrectas" });
     }
 
-    delete user.clave; // No enviar la clave al frontend
+    delete user.clave;
 
     const token = Jwt.sign(
       { id: user.identificacion },
@@ -36,6 +42,25 @@ export const login = async (req, res) => {
       usuario: user,
       token: token
     });
+    }else if(client){
+        const passwordValida = await comparepassword(clave, client.clave);
+    if (!passwordValida) {
+      return res.status(401).json({ mensaje: "Credenciales incorrectas" });
+    }
+
+    delete client.clave;
+
+    const token = Jwt.sign(
+      { id: client.identificacion },
+      process.env.AUTO_SECRET,
+      { expiresIn: process.env.AUTO_EXPIRE }
+    );
+
+    return res.status(200).json({
+      cliente: client,
+      token: token
+    });
+    }
 
   } catch (error) {
     console.log("Error login:", error);

@@ -119,3 +119,90 @@ export const count_sales_not_entregadas = async(req, res)=>{
         })
     }
 } 
+
+export const see_sales= async(req, res)=>{
+  try{
+    const [see]= await connection.query(`select ventas.id,
+    clientes.nombre as nombre_cliente, 
+     productos.nombre as nombre_producto, 
+     productos.imagen,
+     departamentos.departamento,
+     municipios.municipio,
+     ventas.fecha_venta,
+     ventas.direccion,
+     ventas.estado,
+     ventas.numero_de_unidades_compradas,
+     ventas.valor_venta 
+     from ventas
+     join municipios on ventas.municipio_id= municipios.id_municipio
+     join departamentos on ventas.departamento_id=departamentos.id_departamento
+     join clientes on ventas.id_cliente = clientes.identificacion 
+    join productos on ventas.id_producto= productos.id`)
+
+    if (see.length>0) {
+      res.status(200).json(see)
+    } else {
+      res.status(404).json({
+        "mensaje":"No Hay Ventas"
+      })
+    }
+  }catch(e){
+      console.log("error ",e)
+  }
+}
+
+
+export const see_buy_client=async(req, res)=>{
+  try {
+    const {id_cliente}= req.params;
+
+    const  [see]= await connection.query(`select ventas.id,
+    clientes.nombre as nombre_cliente, 
+     productos.nombre as nombre_producto, 
+     productos.imagen,
+     departamentos.departamento,
+     municipios.municipio,
+     ventas.fecha_venta,
+     ventas.direccion,
+     ventas.estado,
+     ventas.numero_de_unidades_compradas,
+     ventas.valor_venta 
+     from ventas
+     join municipios on ventas.municipio_id= municipios.id_municipio
+     join departamentos on ventas.departamento_id=departamentos.id_departamento
+     join clientes on ventas.id_cliente = clientes.identificacion 
+    join productos on ventas.id_producto= productos.id where ventas.id_cliente=${id_cliente}`)
+    if (see.length>0) {
+      res.status(200).json(see)
+    } else {
+      res.status(404).json({
+        "mensaje":"No Existe compras del cliente"
+      })
+    }
+  } catch (error) {
+     res.status(500).json({
+        "mensaje":error
+      })
+  }
+}
+
+export const update_sales=async(req, res)=>{
+  try {
+    const {id}= req.params;
+
+    const  [see]= await connection.query(`update ventas set estado='Entregado' where id=${id}`)
+    if (see.affectedRows>0) {
+      res.status(200).json({
+        "mensaje":"Se Entrego con eexito al Cliente, Felicicidades por este nuevo logro."
+      })
+    } else {
+      res.status(404).json({
+        "mensaje":"No Existe compras del cliente"
+      })
+    }
+  } catch (error) {
+     res.status(500).json({
+        "mensaje":error
+      })
+  }
+}

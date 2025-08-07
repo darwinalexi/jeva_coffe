@@ -8,12 +8,13 @@ import {
   useDisclosure,
   Input,
 } from "@nextui-org/react";
-import React, { useState } from "react";
+import{ useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { faEnvelope, faIdCard, faPhone, faWarning } from "@fortawesome/free-solid-svg-icons";
-import axiosClient from "../../../../sistema_de_registro/frontendWeb/src/utils/axiosClient";
 import Swal from "sweetalert2";
-
+import axiosClient from "../utils/axiosClient";
+import { loginWithGoogle } from "./SignGoogle";
 export const RegisterClient = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -88,68 +89,87 @@ export const RegisterClient = () => {
             <>
               <ModalHeader className="flex flex-col gap-1">Regístrate</ModalHeader>
               <ModalBody>
-                <form className="grid grid-cols-1 sm:grid-cols-2 gap-6" onSubmit={register_client}>
-                  <Input
-                    endContent={<FontAwesomeIcon icon={faIdCard} className="text-2xl text-default-400" />}
-                    label="Identificación"
-                    type="number"
-                    name="identificacion"
-                    placeholder="Ingrese identificación"
-                    value={data.identificacion}
-                    onChange={handleInputChange}
-                    classNames={{ inputWrapper: "border-red-700" }}
-                  />
-                  <Input
-                    label="Nombre"
-                    name="nombre"
-                    placeholder="Ingrese su nombre"
-                    value={data.nombre}
-                    onChange={handleInputChange}
-                    classNames={{ inputWrapper: "border-red-700" }}
-                  />
-                  <Input
-                    endContent={<FontAwesomeIcon icon={faEnvelope} className="text-2xl text-default-400" />}
-                    label="Correo"
-                    name="correo"
-                    type="email"
-                    placeholder="Ingrese su correo"
-                    value={data.correo}
-                    onChange={handleInputChange}
-                    classNames={{ inputWrapper: "border-red-700" }}
-                  />
-                  <Input
-                    endContent={<FontAwesomeIcon icon={faPhone} className="text-2xl text-default-400" />}
-                    label="Celular"
-                    name="celular"
-                    placeholder="Ingrese su celular"
-                    type="number"
-                    value={data.celular}
-                    onChange={handleInputChange}
-                    classNames={{ inputWrapper: "border-red-700" }}
-                  />
-              <div>
-             <div className="flex inline-block border-1 border-red-500 items-center p-3 rounded-xl">
-               <p className="p-1  text-red-500" style={{fontSize:"12px"}}>Debes tener la Mayoria de edad para poderte registrar</p>
-              <FontAwesomeIcon icon={faWarning} className="text-orange-400  size-5"/>
-             </div>
+              <form className="grid grid-cols-1 sm:grid-cols-2 gap-6" onSubmit={register_client}>
+  <Input
+    endContent={<FontAwesomeIcon icon={faIdCard} className="text-2xl text-default-400" />}
+    label="Identificación"
+    type="number"
+    name="identificacion"
+    placeholder="Ingrese identificación"
+    value={data.identificacion}
+    onChange={handleInputChange}
+    classNames={{ inputWrapper: "border-red-700" }}
+  />
+  <Input
+    label="Nombre"
+    name="nombre"
+    placeholder="Ingrese su nombre"
+    value={data.nombre}
+    onChange={handleInputChange}
+    classNames={{ inputWrapper: "border-red-700" }}
+  />
+  <Input
+    endContent={<FontAwesomeIcon icon={faEnvelope} className="text-2xl text-default-400" />}
+    label="Correo"
+    name="correo"
+    type="email"
+    placeholder="Ingrese su correo"
+    value={data.correo}
+    onChange={handleInputChange}
+    classNames={{ inputWrapper: "border-red-700" }}
+  />
+  <Input
+    endContent={<FontAwesomeIcon icon={faPhone} className="text-2xl text-default-400" />}
+    label="Celular"
+    name="celular"
+    placeholder="Ingrese su celular"
+    type="number"
+    value={data.celular}
+    onChange={handleInputChange}
+    classNames={{ inputWrapper: "border-red-700" }}
+  />
 
-                  <Input
-                    label="Edad"
-                    name="edad"
-                    type="number"
-                    placeholder="Ingrese su edad"
-                    value={data.edad}
-                    onChange={handleInputChange}
-                    classNames={{ inputWrapper: "border-red-700" }}
-                  />
-              </div>
-                  <Button
-                    type="submit"
-                    className="border border-red-700 bg-white text-black hover:bg-red-700 hover:text-white sm:col-span-2"
-                  >
-                    Registrarse
-                  </Button>
-                </form>
+  {/* Mensaje de advertencia y edad */}
+  <div className="sm:col-span-2">
+    <div className="flex items-center border-1 border-red-500 p-3 rounded-xl mb-2">
+      <p className="p-1 text-red-500 text-sm">
+        Debes tener la mayoría de edad para poderte registrar
+      </p>
+      <FontAwesomeIcon icon={faWarning} className="text-orange-400 size-5 ml-2" />
+    </div>
+    <Input
+      label="Edad"
+      name="edad"
+      type="number"
+      placeholder="Ingrese su edad"
+      value={data.edad}
+      onChange={handleInputChange}
+      classNames={{ inputWrapper: "border-red-700" }}
+    />
+  </div>
+
+  {/* Botón de registro con Google */}
+  <Button
+    className="border border-red-700 bg-white text-black hover:bg-red-700 hover:text-white sm:col-span-2"
+    onClick={(e) => {
+      e.preventDefault(); // evita submit accidental
+      loginWithGoogle();
+    }}
+  >
+    <FontAwesomeIcon icon={faGoogle} className="mr-2" />
+    Registrarse con Google
+  </Button>
+
+  {/* Botón de registro tradicional */}
+  <Button
+    type="submit"
+    className="border border-red-700 bg-white text-black hover:bg-red-700 hover:text-white sm:col-span-2"
+  >
+    Registrarse
+  </Button>
+</form>
+
+
               </ModalBody>
               <ModalFooter>
                 <Button className="bg-red-700 text-white" variant="flat" onPress={onClose}>

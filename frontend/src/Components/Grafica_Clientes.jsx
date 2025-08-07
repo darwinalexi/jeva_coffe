@@ -72,7 +72,7 @@ const GraficaCliente = () => {
   return (
     <>
     {data.length>0?(
-    <div style={{height:400 }} className='border-1 border-orange-500 rounded-xl hover:bg-gray-200 sm:w-screen md:w-full'>
+    <div style={{height:400 }} className='border-1 border-orange-500 rounded-xl hover:bg-gray-200 sm:w-screen md:w-full dark:bg-gray-800'>
       <h1 className='flex justify-center text-2xl '>No° de Clientes</h1>
       <ResponsiveContainer>
         <PieChart>

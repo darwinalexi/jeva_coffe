@@ -47,7 +47,7 @@ export const Carsmodal = ({ onClose, cartItems, setCartItems }) => {
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-        <div className="bg-white rounded-lg p-6 w-full sm:w-[50%] md:w-[30%] max-w-lg relative md:right-[35%] h-screen">
+        <div className="bg-white  dark:bg-gray-800  rounded-lg p-6 w-full sm:w-[50%] md:w-[30%] max-w-lg relative md:right-[35%] h-screen">
           <h2 className="text-xl font-bold mb-4">Carrito de compras</h2>
           {cartItems.length === 0 ? (
             <p>No has seleccionado nada aún para añadir al carrito.</p>

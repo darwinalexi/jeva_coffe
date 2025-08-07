@@ -2,14 +2,24 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Politices_private } from "./Politices_ans_private"
 import { 
   faFacebook, 
-  faInstagram 
+  faInstagram, 
+  faWhatsapp
 } from '@fortawesome/free-brands-svg-icons';
 import {Link} from "react-router-dom"
 import logo from "../assets/img/logo.jpg"
 export const Contact=()=>{
-    return(
+
+  const whattasap=()=>{
+    const numero="573138518000"
+    const mensaje="!Hola! Jeferson Gomez quiero mas información de los productos de la plataforma jevacoffe"
+    const url=`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`
+    window.open(url,"_blank")
+  }
+
+
+  return(
         <>
- <footer className="bg-[#003333] text-white py-10 mt-10">
+ <footer className="bg-[#003333] text-white py-10">
       <div className="container mx-auto px-6 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-6">
         
         <div>
@@ -29,7 +39,7 @@ export const Contact=()=>{
           <h3 className="text-lg font-semibold mb-3 text-orange-400">Contacto</h3>
           <ul className="text-sm space-y-2">
             <li>📍 Bogotá, Colombia</li>
-            <li>📞 +57 300 123 4567</li>
+            <li onClick={whattasap}>📞 +57 300 123 4567</li>
             <li>✉️ contacto@jevacoffee.com</li>
           </ul>
         </div>
@@ -52,6 +62,13 @@ export const Contact=()=>{
           </div>
         </div>
      </div>
+
+          <div className="">
+            <div className="flex justify-end relative top-20" onClick={whattasap}>
+              <p className="mr-6">Escribenos a nuestro Whatssap:</p>
+            <FontAwesomeIcon icon={faWhatsapp} className="size-8 hover:size-16 transition-all hover:cursor-pointer"/>
+            </div>
+          </div>
       </div>
       
 

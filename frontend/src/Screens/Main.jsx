@@ -10,10 +10,13 @@ import Grafica_ventas from "../Components/Grafic";
 import GraficaCliente from "../Components/Grafica_Clientes";
 import GraficaVentas from "../Components/Grafica_ventas";
 import {Link} from "react-router-dom"
+import axiosClient from "../utils/axiosClient";
+
 export const Main=()=>{
   const [type, setType] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
+  const [salesfull, setfull]= useState([]);
+  const [salesnoful, setnofull]= useState([]);
   useEffect(() => {
     const datalocal = JSON.parse(localStorage.getItem('usuario'));
     if (datalocal && datalocal.tipo) {
@@ -29,15 +32,65 @@ export const Main=()=>{
     });
   }, []);
      
+const show_client = async () => {
+      try {
+        const res = await axiosClient.get("/contar_ventas_entregadas");
+        const res2 = await axiosClient.get("/contar_ventas_no_entregadas");
+
+          setfull(res.data.Ventas_Entregadas),
+          setnofull(res2.data.Ventas_No_Entregadas);
+      } catch (error) {
+        console.error("Error al obtener productos:", error);
+      }
+    };
+
+
+    useEffect(()=>{
+         show_client();
+    },[])
+
     return(
-        <>    
-            {isAuthenticated && type === "Administrador" ? (
+        <> 
+
+        {isAuthenticated && type==="Empresa_Envios" && (
+           <>
+                <NavBar/>
+                <div>
+
+
+               <div>
+  <p className="flex justify-center text-2xl font-bold text-[#3c2a21] mb-2 dark:text-white">
+    Bienvenido a nuestro sistema de JEVACOFFE
+  </p>
+  <p className="flex justify-center text-xl m-6 text-orange-500">
+    Aquí puedes ver tus pedidos entregados y pendientes de entrega
+  </p>
+  <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-9 m-8">
+    <div className="border border-[#003333] rounded-xl p-8 bg-green-50 dark:bg-transparent shadow hover:scale-105 transition-transform">
+      <p className="flex justify-center items-center gap-2 text-lg font-semibold text-green-700">
+        <span role="img" aria-label="entregado">✅</span>
+        Ventas Entregadas: {salesfull}
+      </p>
+    </div>
+    <div className="border border-[#003333] rounded-xl p-8 bg-yellow-50 dark:bg-transparent shadow hover:scale-105 transition-transform">
+      <p className="flex justify-center items-center gap-2 text-lg font-semibold text-yellow-700">
+        <span role="img" aria-label="pendiente">⏳</span>
+        Ventas Pendientes: {salesnoful}
+      </p>
+    </div>
+  </div>
+</div>
+                <Contact/>
+                </div>
+            </>
+        )}    
+            {isAuthenticated && type === "Administrador" && (
               <>
               <NavBar/>
               
-                    <div className="w-[100%] sm:grid grid-cols-1 md:grid grid-cols-2 mt-12 h-screen  sm:gap-2 md:gap-4">
+                    <div className="w-[100%] sm:grid grid-cols-1 md:grid grid-cols-2 mt-12 min-h-screen  sm:gap-2 md:gap-4">
                         <div className="grid col-span-2 items-center">
-                            <p className="text-4xl flex justify-center text-orange-500">Datos Claves</p>
+                            <p className="text-4xl flex justify-center text-orange-500 dark:text-white">Datos Claves</p>
                         </div>
                         <Link to="/clientes" className="h-aut0 m-3 hover: cursor-pointer ">
                             <GraficaCliente />
@@ -52,7 +105,7 @@ export const Main=()=>{
                         </div>
                                     
                         <div className="h-aut0 m-3 flex justify-center items-center">
-                            <p className=" text-5xl text-[#3c2a21] font-black">Entre aroma y cifras, tu éxito se prepara aquí.</p>
+                            <p className=" text-5xl text-[#3c2a21] font-black dark:text-white">Entre aroma y cifras, tu éxito se prepara aquí.</p>
                         </div>
                                     
                         <div className="grid col-span-2">
@@ -62,17 +115,21 @@ export const Main=()=>{
                             
                         </div>
                         <div className="grid col-span-2 bg-[#003333] w-full">
-                        <Contact/>
+                        <div className="h-full">
+                          <Contact/>
+                        </div>
                     </div>
                     </div>
             </>          
-            ):(
-   <div id="#inicio">
-            <div>
-                <NavBar/>
-                <div className="hidden sm:block">
+            )}
+
+        {!isAuthenticated &&(
+              <div id="#inicio">
+                 <div>
+                   <NavBar/>
+                  <div className="hidden sm:block">
                           <Carrusel/>  
-                </div>
+                  </div>
 
                 <div className="block sm:hidden">
                   <p className="flex justify-center text-orange-500 text-2xl absolute top-[30%]  ml-10 text-5xl">SI NO SE HACE CON AMOR EL SENTIMIENTO NO DURA</p>

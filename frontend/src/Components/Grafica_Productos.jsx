@@ -26,10 +26,10 @@ const renderActiveShape = (props) => {
   return (
     <g>
       {/* Texto dentro del centro */}
-      <text x={cx} y={cy - 10} textAnchor="middle" fill={fill} fontSize={14}>
+      <text x={cx} y={cy - 10} textAnchor="middle" fill="currentColor" fontSize={14} className="text-[#333] dark:text-white">
         {nameParts[0]}
       </text>
-      <text x={cx} y={cy + 10} textAnchor="middle" fill={fill} fontSize={14}>
+      <text x={cx} y={cy + 10} textAnchor="middle" fill="currentColor" fontSize={14} className="text-[#333] dark:text-white">
         {nameParts.slice(1).join(' ')}
       </text>
 
@@ -48,13 +48,13 @@ const renderActiveShape = (props) => {
       {/* Línea externa y texto con salto de línea */}
       <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
       <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
-      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey - 8} textAnchor={textAnchor} fill="#333" fontSize={14}>
+      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey - 8} textAnchor={textAnchor} fill="currentColor" fontSize={14} className="text-[#333] dark:text-white">
         {nameParts[0]}
       </text>
-      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey + 8} textAnchor={textAnchor} fill="#333" fontSize={14}>
+      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey + 8} textAnchor={textAnchor} fill="currentColor" fontSize={14} className="text-[#333] dark:text-white">
         {`${nameParts.slice(1).join(' ')}: ${value}`}
       </text>
-      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey + 26} textAnchor={textAnchor} fill="#999" fontSize={14}>
+      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey + 26} textAnchor={textAnchor} fill="currentColor" fontSize={14} className="text-[#999] dark:text-white">
         {`(${(percent * 100).toFixed(2)}%)`}
       </text>
     </g>
@@ -86,7 +86,7 @@ const GraficaProductos = () => {
   return (
     <>
       {data.length > 0 ? (
-        <div style={{height: 400 }} className='border-1 border-[#3c2a21] hover:bg-gray-200 rounded-xl sm::w-screen md:w-[100%]'>
+        <div style={{height: 400 }} className='border-1 border-[#3c2a21] dark:bg-gray-800  rounded-xl sm::w-screen md:w-[100%]'>
           <p  className='flex justify-center text-2xl'>Productos</p>        
           <ResponsiveContainer>
             <PieChart>
@@ -102,7 +102,7 @@ const GraficaProductos = () => {
                 {data.map((_, index) => (
                   <Cell
                     key={`cell-${index}`}
-                    fill={index === 0 ? "#3c2a21" : "#b91c1c"}
+                    fill="#3c2a21"
                   />
                 ))}
               </Pie>

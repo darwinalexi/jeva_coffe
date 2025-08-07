@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { baseurl } from "../utils/data";
 import { Carsmodal } from "../Components/Carsmodal";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShoppingCart, faTrash, faEdit, faWarning}  from '@fortawesome/free-solid-svg-icons';
+import { faShoppingCart, faTrash, faEdit, faWarning, faPlus, faMinus}  from '@fortawesome/free-solid-svg-icons';
 import Swl from "sweetalert2";
 import SearchBar from "../Components/Searchar"
 import Swal from "sweetalert2";
@@ -29,24 +29,32 @@ export const Store = () => {
 
        useEffect(() => {
     const datalocal = JSON.parse(localStorage.getItem('usuario'));
- const products = async () => {
-        try {
-            const show = await axiosClient.get("/productos_disponibles");
-            setdata(show.data)
-            if(datalocal.tipo==="Administrador"){
-            const allproduct = await axiosClient.get("/todos_productos");
-            setdata(allproduct.data); 
-            console.log("data",allproduct.data)               
-            }
-         } catch(e){
-            console.log("error", e);
-        }
-    };
+    const dataclient=JSON.parse(localStorage.getItem('Cliente'));
+    
+
+        const products = async () => {
+                try {
+                    const show = await axiosClient.get("/productos_disponibles");
+                    setdata(show.data)
+                    if(datalocal.tipo==="Administrador"){
+                    const allproduct = await axiosClient.get("/todos_productos");
+                    setdata(allproduct.data);                
+                    }else if(dataclient.tipo==="Clientes"){
+                        const clientProducts = await axiosClient.get(`/productos_cliente/${dataclient.id}`);
+                        setdata(clientProducts.data);
+                    }
+                } catch(e){
+                    console.log("error", e);
+                }
+            };
 
     if (datalocal && datalocal.tipo) {
         settype(datalocal.tipo);        
         setAuth(true);
-    } else {
+    } else  if (dataclient && dataclient.tipo) {
+        settype(dataclient.tipo);
+        setAuth(true);
+    }else{
         settype("");
         setAuth(false);
     }
@@ -93,6 +101,8 @@ export const Store = () => {
     }
 
     const addToCart = (product) => {
+        console.log("Contenido actual del carrito:", carsitems);
+
         setcars((prev) => {
             const exist = prev.find((item) => item.id === product.id);
             if (exist) {
@@ -132,6 +142,42 @@ const closecreate=()=>{
     setcreate(false);
 } 
 
+const increment = (product) => {
+    setcars((prev) => {
+        const exist = prev.find((item) => item.id === product.id);
+        if (exist) {
+            if (exist.quantity < product.unidades_disponibles) {
+                return prev.map((item) =>
+                    item.id === product.id
+                        ? { ...item, quantity: item.quantity + 1 }
+                        : item
+                );
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Stock limitado',
+                    text: `Solo hay ${product.unidades_disponibles} unidades disponibles.`
+                });
+                return prev;
+            }
+        } else {
+            return [...prev, { ...product, quantity: 1 }];
+        }
+    });
+};
+
+
+const decrementt= (product)=>{
+    setcars((prev)=>
+      prev
+        .map((item)=>
+         item.id===product.id
+          ? { ...item, quantity: item.quantity - 1}
+          : item
+        )
+        .filter((item)=>item.quantity>0)
+    )
+}
 
     return (
         <div>
@@ -163,7 +209,7 @@ const closecreate=()=>{
                       <div className="flex flex-col items-center sm:flex-row sm:justify-center gap-3 mt-4">
                         <div className="grid grid-cols-2 gap-20  w-full">
                        <div className="ml-8" >
-                        <label className="text-[#003333] font-semibold">Filtrar por estado:</label>
+                        <label className="text-[#003333] font-semibold dark:text-white">Filtrar por estado:</label>
                         <br />
                         <select
                             className="appearance-none w-[250px] px-4 py-2 bg-[#003333] text-white font-semibold rounded-lg shadow-md hover:bg-[#004d4d] focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-200"
@@ -189,6 +235,13 @@ const closecreate=()=>{
                     )}
 
                 </div>
+                <button
+                    className="flex items-center gap-2 bg-[#003333] text-white px-4 py-2 rounded-xl shadow-md hover:bg-[#004d4d] transition"
+                    onClick={Cars_Product}
+                >
+                    <FontAwesomeIcon icon={faShoppingCart} />
+                    <span>Carrito de Compras</span>
+                </button>
                 {!isAuth &&(
                <div className="flex justify-end px-6 mt-4 gap-32">
                 <div className="flex inline-block border-1 border-red-500 items-center p-3 rounded-xl">
@@ -197,13 +250,7 @@ const closecreate=()=>{
                     </div>
 
                    
-                <button
-                    className="flex items-center gap-2 bg-[#003333] text-white px-4 py-2 rounded-xl shadow-md hover:bg-[#004d4d] transition"
-                    onClick={Cars_Product}
-                >
-                    <FontAwesomeIcon icon={faShoppingCart} />
-                    <span>Carrito de Compras</span>
-                </button>
+              
                 </div>
 
 
@@ -224,23 +271,40 @@ const closecreate=()=>{
                         <p className="flex justify-center">Unidades Disponibles: {item.unidades_disponibles}</p>
                         <p className="flex justify-center">Descripcion: {item.descripcion || "N/A"}</p>
                         <p className="flex justify-center">Estado: {item.estado}</p>
-                            
+                           <Link 
+                                           to={`/opiniones/${item.id}`}
+                                           className="text-blue-500 flex justify-center underline mb-2"
+                                        >Comentarios</Link>                               
                             {isAuth && typeuse==="Administrador" && (
                                 <div className="flex justify-center">
                                     <FontAwesomeIcon icon={faTrash} className="p-8 size-10 text-red-600 cursor-pointer" onClick={()=>Product_delete(item.id)}/>
                                     <FontAwesomeIcon icon={faEdit}  className="p-8 size-10 text-orange-500 cursor-pointer"  onClick={()=>openupdate_Product(item)}/> 
                                 </div>
-                            )};
-                            {!isAuth&&(
+                            )}
+                            
+                            {isAuth && typeuse==="Clientes" &&(
+                                
                                 <div className="grid grid-cols-1">
-                                     <Link to={`/opiniones/${item.id}`} className="text-blue-500 flex justify-center underline">Opiniones</Link>
-                                     <button className="bg-orange-500 text-white px-3 py-1 mt-2 rounded relative left-[8%] mr-16 mb-3 cursor-pointer"
-                                onClick={() => {
-                                    addToCart(item);
-                                }}
-                            >
-                                Agregar al carrito
-                            </button>
+                                    
+                                <div className="grid grid-cols-3 w-[96%] h-auto ml-1 mr-4 mb-3 border-1 border-[#003333] rounded-xl">
+                                      
+                                        <button className="bg-[#003333]  rounded-xl"   onClick={()=>increment(item)}>
+                                            <FontAwesomeIcon icon={faPlus} className="text-white rounded-xl"                                   
+                                            />
+                                        </button>
+                                        <p className="flex justify-center text-[#003333] font-bold dark:text-white p-3">
+                                            {carsitems.find(c=>c.id===item.id)?.quantity || 0}
+                                        </p>
+                                        <button  className="bg-[#003333] rounded-xl"  
+                                        onClick={()=>decrementt(item)}>
+                                            <FontAwesomeIcon icon={faMinus}
+                                            className="text-white"
+                                            />
+                                        </button>
+                                 </div>
+                              
+                        
+                                
                                 </div>
                                
                             )}

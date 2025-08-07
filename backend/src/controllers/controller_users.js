@@ -11,7 +11,6 @@ const storage = multer.diskStorage({
         console.log("nombre archivo", file.originalname)
         cb(null, file.originalname);
     }
-
 });
 
 const upload = multer({ storage: storage });
@@ -68,6 +67,7 @@ export const register_user=async(req, res)=>{
 
 } 
 
+
 export const update_user = async (req, res) => {
     try {
       const { identificacion } = req.params;
@@ -85,18 +85,29 @@ export const update_user = async (req, res) => {
       }
   
       const userToday = search[0];
+
+
+      const getvalue = (newValue, oldValue) => {
+            if (typeof newValue === 'undefined') return oldValue;
+            if (newValue === null) return oldValue;
+            if (newValue === "") return oldValue;
+            return newValue;
+        };
   
-      // Opcionales, conservar el valor anterior si no llega uno nuevo o está vacío
-      const nombreFinal = nombre || userToday.nombre;
-      const correoFinal = correo || userToday.correo;
-      const imagenFinal = imagen || userToday.imagen;
-      const descripcionFinal = descripcion || userToday.descripcion;
-      const tipoFinal = tipo || userToday.tipo;
-      const edadFinal = edad || userToday.edad;
-      const claveFinal = clave || userToday.clave;
+      const nombreFinal = getvalue(nombre, userToday.nombre)
+      const correoFinal = correo || userToday.correo
+      const imagenFinal = imagen || userToday.imagen
+      const descripcionFinal = getvalue(descripcion, userToday.descripcion)
+      const tipoFinal = getvalue(tipo, userToday.tipo)
+      const edadFinal = getvalue(edad, userToday.edad)
+      const claveFinal= getvalue(clave, userToday.clave)
   
-      // Si necesitas encriptar la clave:
-      // const claveFinal = clave ? await bcrypt.hash(clave, 10) : userToday.clave;
+      if (edadFinal <= 17 ) {
+       return res.status(400).json({
+          errores:[{msg:"Lo Sentimos pero si no tienes 18 años no puedes tener una cuenta en jeva y te aconsejamos informar a la persona encargada "}]
+        })
+      }
+      const claveencrypter=await encrypter(claveFinal);
   
       const [update] = await connection.query(
         `UPDATE usuarios 
@@ -106,7 +117,7 @@ export const update_user = async (req, res) => {
           nombreFinal,
           correoFinal,
           imagenFinal,
-          claveFinal,
+          claveencrypter,
           descripcionFinal,
           edadFinal,
           tipoFinal,

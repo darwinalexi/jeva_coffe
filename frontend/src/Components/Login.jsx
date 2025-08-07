@@ -9,13 +9,15 @@ import {
   Checkbox,
   Input,
   Link,
+  button,
 } from "@nextui-org/react";
 import React, { useState } from "react";
 import axiosClient from "../utils/axiosClient";
 import Swal from "sweetalert2";
 import { Change_password } from "./Change_Pawwsord";
- 
-export const MailIcon = (props) => (
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+ export const MailIcon = (props) => (
   <svg
     aria-hidden="true"
     fill="none"
@@ -59,7 +61,7 @@ export default function Login() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [data, setData] = useState({ correo: "", clave: "" });
   const [modalpassword, setpassword]= useState(false);
-
+  const [seepassword, setseepassword] = useState(false);  
   const openmodal =()=>{
     setpassword(true);
   }
@@ -83,9 +85,15 @@ export default function Login() {
     try {
       const logueo = await axiosClient.post("/login", data);
       if (logueo.status === 200) {
-        const token = logueo.data.token;
-        localStorage.setItem("token", token);
-        localStorage.setItem("usuario", JSON.stringify(logueo.data.usuario));
+        if (logueo.data.usuario) {
+             const token = logueo.data.token;
+             localStorage.setItem("token", token);
+             localStorage.setItem("usuario", JSON.stringify(logueo.data.usuario));  
+        }else if (logueo.data.cliente) {
+          const token = logueo.data.token;
+          localStorage.setItem("token", token);
+          localStorage.setItem("Cliente", JSON.stringify(logueo.data.cliente));
+        }
 
         Swal.fire({ title: "Sesión iniciada", icon: "success" });
         window.location.reload();
@@ -95,7 +103,7 @@ export default function Login() {
       Swal.fire({ title: "Error al iniciar sesión", text: "Credenciales incorrectas", icon: "error" });
     }
   };
-
+  
   return (
     <>
       <Button
@@ -121,10 +129,18 @@ export default function Login() {
                     classNames={{ inputWrapper: "border-red-700" }}
                   />
                   <Input
-                    endContent={<LockIcon className="text-2xl text-default-400 pointer-events-none" />}
+                    endContent={
+                      <button
+                        type="button"
+                        onClick={() => setseepassword((prev)=> !prev)}
+                        className="focus: outline-none"
+                      >
+                        <FontAwesomeIcon icon={seepassword ? faEye : faEyeSlash} />
+                      </button>
+                    }
                     label="Clave"
                     name="clave"
-                    type="password"
+                    type={seepassword ? "text":"password"}
                     onChange={handleInput}
                     placeholder="Ingrese su clave"
                     classNames={{ inputWrapper: "border-red-700" }}
@@ -132,9 +148,18 @@ export default function Login() {
                   <div className="flex py-2 px-1 justify-between">
                     <Checkbox classNames={{ label: "text-small" }}>Recordarme</Checkbox>
                     
-                    <Link className="text-custom-teal" href="#" size="sm" onPress={openmodal}>
-                      ¿Olvidaste tu contraseña?
-                    </Link>
+                   <Link
+  className="text-custom-teal dark:text-white"
+  href="#"
+  size="sm"
+  onClick={() => {
+    onOpenChange(); 
+    openmodal();    
+  }}
+>
+  ¿Olvidaste tu contraseña?
+</Link>
+
                   </div>
                 </ModalBody>
                 <ModalFooter>
@@ -149,8 +174,10 @@ export default function Login() {
             </>
           )}
         </ModalContent>
-    {modalpassword && <Change_password onClose={closemodal}/>}
       </Modal>
+      <div>
+          {modalpassword && <Change_password onclose={closemodal}/>}
+      </div>
     </>
   );
 }
