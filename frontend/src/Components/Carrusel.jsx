@@ -40,6 +40,10 @@ export const Carrusel = () => {
         dotListClass="custom-dot-list"
         itemClass="carousel-item"
         arrows={true}
+        autoPlay={true}
+        autoPlaySpeed={3000}        
+        keyBoardControl={true}     
+        transitionDuration={1000}  
       >
         {[Img, Img2, Img3, Img4, Img5].map((image, index) => (
           <img

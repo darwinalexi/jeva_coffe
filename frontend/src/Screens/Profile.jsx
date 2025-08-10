@@ -133,7 +133,7 @@ export const Profile = () => {
                 )}
                 <DarkMode />
                 <button
-                  className="bg-[#FF6600] hover:bg-orange-600 transition-colors text-white px-6 py-3 rounded-lg mt-4"
+                  className="bg-[#FF6600] hover:bg-[#FF6600] transition-colors text-white px-6 py-3 rounded-lg mt-4"
                   onClick={() => openmodal(data)}
                 >
                   Editar información
@@ -197,8 +197,8 @@ export const Profile = () => {
                   <br />
                   <span className="text-sm text-gray-500">Fecha: {date}</span>
                 </p>
-                <div className="mt-4 bg-white border-l-4 border-orange-400 p-4 rounded-lg shadow dark:bg-gray-800">
-                  <FontAwesomeIcon icon={faWarning} className="text-orange-500 mr-2" />
+                <div className="mt-4 bg-white border-l-4 border-[#Ff6600] p-4 rounded-lg shadow dark:bg-gray-800">
+                  <FontAwesomeIcon icon={faWarning} className="text-[#Ff6600] mr-2" />
                   <span className="text-red-600 font-bold">IMPORTANTE:</span> Este precio se basa en la página oficial de la Federación Nacional de Cafeteros de Colombia.
                 </div>
               </div>

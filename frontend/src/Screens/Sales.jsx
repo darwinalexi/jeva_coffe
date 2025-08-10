@@ -71,7 +71,7 @@ const entregar=async(id)=>{
                     <p className="text-2xl font-bold ">Con Cada Entrega que hacemos se va una pizca de Nuestra escencia cafétera</p>
                 </div>
             </div>
-            <h1 className="flex justify-center text-2xl text-orange-500">Datos Importantes de Nuestras Ventas</h1>
+            <h1 className="flex justify-center text-2xl text-[#Ff6600]">Datos Importantes de Nuestras Ventas</h1>
               <SearchBar
                 value={searcher}
                 onChange={(e)=>setsearcher(e.target.value)}
@@ -107,7 +107,7 @@ const entregar=async(id)=>{
                         {item.estado==="Por Entregar" &&(
                             <button 
                             onClick={()=>entregar(item.id)}
-                            className="border-1 border-orange-500 w-[53%] p-2 m-3 rounded-xl hover:bg-orange-500 hover:text-white sm: relative left-[20%]  ">
+                            className="border-1 border-[#Ff6600] w-[53%] p-2 m-3 rounded-xl hover:bg-[#Ff6600] hover:text-white sm: relative left-[20%]  ">
                                 Cambiar A Estado Entregado
                             </button>
                         )}                                 

@@ -1,9 +1,9 @@
 import Jwt from "jsonwebtoken"
 import { connection } from "../database/conexion.js";
-import { comparepassword } from "./encripter.js";
+import { comparepassword, encrypter } from "./encripter.js";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
-import bcrypt from "bcryptjs";
+import bcrypt, { compare } from "bcryptjs";
 
 export const login = async (req, res) => {
   try {
@@ -97,7 +97,7 @@ export const validarToken = async (req, res, next) => {
 }
 
 
-export const change_password = async (req, res) => {
+export const send_email = async (req, res) => {
   try {
     const { correo } = req.body;
 
@@ -150,3 +150,39 @@ export const change_password = async (req, res) => {
     return res.status(500).json({ mensaje: "Error interno del servidor" });
   }
 };
+
+export const change_password = async (req, res) => {
+  try {
+    const { correo, codigo_verificacion, clave } = req.body;
+    const [see]= await connection.query("select*from usuarios where correo=?",[correo])
+    if(see.length==0){
+    return  res.status(404).json({ mensaje: "Usuario no encontrado" });
+    }
+    const users = see[0]; 
+    if (!users.codigo_reset) {
+      return res.status(400).json({ mensaje: "No se ha solicitado un cambio de contraseña" });  
+    }
+
+    const now= new Date(); 
+    const expira= new Date(users.codigo_expira);
+      if (now > expira) {
+        return res.status(400).json({ mensaje: "El código de verificación ha expirado" });  
+      }
+        if (!codigo_verificacion || !users.codigo_reset) {
+          return res.status(400).json({ mensaje: "Código de verificación requerido" });
+        }
+
+      const compara= await compare(codigo_verificacion, users.codigo_reset);  
+      console.log("compara", compara);
+      if (!compara) {
+        return res.status(400).json({ mensaje: "Código de verificación incorrecto" });
+      }
+
+      const clavehash= await encrypter(clave);
+      await connection.query("UPDATE usuarios SET clave = ? WHERE correo = ?", [clavehash, correo]);
+      return res.status(200).json({ mensaje: "Contraseña cambiada con éxito" });
+  } catch (e) {
+    console.error("Error en change_password:", e);
+    return res.status(500).json({ mensaje: "Error interno del servidor" });
+  }
+}

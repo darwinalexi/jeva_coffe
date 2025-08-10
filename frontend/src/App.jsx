@@ -9,11 +9,12 @@ import { Client } from "./Screens/Client";
 import { Buys_Client } from "./Screens/Buys_Client";
 import { Opinions } from "./Screens/Opinios";
 import { Sales } from "./Screens/Sales";
+import {Sesion }from "./Components/SesionTemporate/Sesion";
 
 function AppContent() {
   const location = useLocation();
   const isProfile = location.pathname === "/perfil";
-  const [type, settype]= useState("cool")
+  const [type, settype]= useState("")
   useEffect(()=>{
     try {
         const datalocal= JSON.parse(localStorage.getItem('Clientes'));
@@ -28,22 +29,23 @@ function AppContent() {
     } catch (error) {
         console.log("error", error)     
     }
-    console.log("tipo",type)
+    
   },[type]);
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white transition-colors duration-300">
       <Routes>
         <Route path="/" element={<Main />} />
         
         <Route element={<PrivateRouter />}>
-          <Route path="/administrar_productos" element={<Store />} />
-          <Route path="/perfil" element={<Profile />} />
-          <Route path="/clientes" element={<Client />} />
-          <Route path="/compras_cliente" element={<Buys_Client />} />
-          <Route path="/ventas" element={<Sales />} />
+          <Route path="/administrar_productos" element={<Sesion><Store /></Sesion>} />
+          <Route path="/perfil" element={<Sesion><Profile /></Sesion>} />
+          <Route path="/clientes" element={<Sesion><Client /></Sesion>} />
+          <Route path="/compras_cliente" element={<Sesion><Buys_Client /></Sesion>} />
+          <Route path="/ventas" element={<Sesion><Sales /></Sesion>} />
         </Route>
 
-        <Route path="/tienda" element={<Store />} />
+        <Route path="/tienda" element={<Sesion><Store /></Sesion>} />
         <Route path="/politicas_datos" element={<Politices_private />} />
         <Route path="/opiniones/:id" element={<Opinions />} />
       </Routes>

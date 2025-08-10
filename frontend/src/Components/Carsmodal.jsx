@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Buys } from "./ModalSales";
+import { useCart } from "./Context/CartContext";
 
-export const Carsmodal = ({ onClose, cartItems, setCartItems }) => {
+export const Carsmodal = ({ onClose}) => {
   const [modalbuy, setBuy] = useState(false);
  const [databuy,setbuy]= useState([]);
+ const {cartItems, setCartItems} = useCart();
+
   const total = cartItems.reduce((sum, item) => sum + item.precio * item.quantity, 0);
 
   const removeFromCart = (id) => {

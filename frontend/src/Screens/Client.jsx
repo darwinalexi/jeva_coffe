@@ -101,7 +101,7 @@ export const Client = () => {
             name:'Accion',
             cell:row=>(
                 <div>
-                    <Link state={{ cliente: row }}  to="/compras_cliente" className="border-2 border-orange-500 rounded-lg p-2 hover:bg-orange-500 hover:text-white">
+                    <Link state={{ cliente: row }}  to="/compras_cliente" className="border-2 border-[#Ff6600] rounded-lg p-2 hover:bg-[#Ff6600] hover:text-white">
                         Ver Compras 
                     </Link>
                 </div>

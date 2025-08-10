@@ -11,6 +11,7 @@ import GraficaCliente from "../Components/Grafica_Clientes";
 import GraficaVentas from "../Components/Grafica_ventas";
 import {Link} from "react-router-dom"
 import axiosClient from "../utils/axiosClient";
+import MapaColombia from "../Components/Maps/Map";
 
 export const Main=()=>{
   const [type, setType] = useState(null);
@@ -62,7 +63,7 @@ const show_client = async () => {
   <p className="flex justify-center text-2xl font-bold text-[#3c2a21] mb-2 dark:text-white">
     Bienvenido a nuestro sistema de JEVACOFFE
   </p>
-  <p className="flex justify-center text-xl m-6 text-orange-500">
+  <p className="flex justify-center text-xl m-6 text-[#Ff6600">
     Aquí puedes ver tus pedidos entregados y pendientes de entrega
   </p>
   <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-9 m-8">
@@ -90,7 +91,7 @@ const show_client = async () => {
               
                     <div className="w-[100%] sm:grid grid-cols-1 md:grid grid-cols-2 mt-12 min-h-screen  sm:gap-2 md:gap-4">
                         <div className="grid col-span-2 items-center">
-                            <p className="text-4xl flex justify-center text-orange-500 dark:text-white">Datos Claves</p>
+                            <p className="text-4xl flex justify-center text-[#Ff6600] dark:text-white">Datos Claves</p>
                         </div>
                         <Link to="/clientes" className="h-aut0 m-3 hover: cursor-pointer ">
                             <GraficaCliente />
@@ -132,7 +133,7 @@ const show_client = async () => {
                   </div>
 
                 <div className="block sm:hidden">
-                  <p className="flex justify-center text-orange-500 text-2xl absolute top-[30%]  ml-10 text-5xl">SI NO SE HACE CON AMOR EL SENTIMIENTO NO DURA</p>
+                  <p className="flex justify-center text-[#Ff6600] text-2xl absolute top-[30%]  ml-10 text-5xl">SI NO SE HACE CON AMOR EL SENTIMIENTO NO DURA</p>
                     <img
                         src="../src/assets/img/imgs.jpeg"
                         alt="imagen alternativa"
@@ -140,7 +141,7 @@ const show_client = async () => {
                     />
                     </div>
             </div>
-            <h1 className="flex justify-center text-orange-500 text-2xl">Sobre Nosotros</h1>
+            <h1 className="flex justify-center text-[#Ff6600] text-2xl">Sobre Nosotros</h1>
                 <h1 className="text-center text-4xl font-bold font-libre text-[#3c2a21] tracking-wide mt-4 mb-2">
                 El ORIGEN
                 </h1>
@@ -194,6 +195,7 @@ const show_client = async () => {
                 </div>
 
             </div>
+            <MapaColombia/>
             <About_buy/>
             <Contact/>
         </div>

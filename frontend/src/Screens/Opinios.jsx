@@ -95,11 +95,21 @@ export const Opinions = () => {
         <h1 className="col-span-2 flex justify-center font-poppins text-2xl m-2">En Jeva Coffee tu opinión nos importa</h1>
 
         <div className="border-1 border-[#003333] m-6 w-[90%] rounded-2xl h-full bg-[#e0d8d6] dark:bg-gray-800">
-          {data.map((item, index) => (
-            <>
-            <div key={index}>
+          {data.map((item, index) => {
+            let imagenes=[]
+              try {
+                if (item.imagen && item.imagen.trim().startsWith('[')) {
+                  imagenes = JSON.parse(item.imagen);
+                } else if (item.imagen) {
+                  imagenes = [item.imagen]; 
+                }
+              } catch (error) {
+                console.log("error", error);
+              }            
+            return (
+              <div key={index}>
               <div className="p-3 w-full h-[50%]">
-                <img src={`${baseurl}/img/${item.imagen}`} className="w-[100%] h-[100%] rounded-lg" />
+                <img src={`${baseurl}/img/${imagenes[1]}`} className="w-[100%] h-[100%] rounded-lg" />
               </div>
               <div className="flex flex-col p-2">
                 <p><strong>Acerca del producto: </strong></p>
@@ -108,10 +118,9 @@ export const Opinions = () => {
                 <p><strong>Descripción:</strong> {item.descripcion || "No Aplica"}</p>
               </div>
             </div>
+            )
 
-          
-          </>
-          ))}
+        })}
         </div>
 
         <div className="overflow-y-auto max-h-[600px]" style={scroll}>
@@ -169,8 +178,8 @@ export const Opinions = () => {
             ))}
 
             <ImageUploadPreview onImageChange={handleImageChange} />
-            <div className="border-3 border-l-orange-500 p-5  bg-gray-300  dark:bg-gray-800 m-6 w-[90%] md:ml-24 flex inline-block rounded-xl">
-                    <FontAwesomeIcon icon={faWarning} className="text-orange-400"/>
+            <div className="border-3 border-l-[#Ff6600] p-5  bg-gray-300  dark:bg-gray-800 m-6 w-[90%] md:ml-24 flex inline-block rounded-xl">
+                    <FontAwesomeIcon icon={faWarning} className="text-[#Ff6600]"/>
                     <p className="dark:text-[#1BB3A1]"><strong className="text-red-500">Nota: </strong> La Imagen es opcional</p>
             </div>
             <input type="submit" value="Comentar" className="mt-4 p-2  w-[45%] bg-[#003333] md:relative left-[30%] text-white rounded-xl cursor-pointer hover:bg-[#005555]" />

@@ -17,7 +17,7 @@ const upload = multer({ storage: storage });
 
 export const SubirImg = (req, res, next) => {
     console.log("Procesando la imagen...");
-    upload.single('imagen')(req, res, (err) => {
+    upload.array('imagen',5)(req, res, (err) => {
         if (err) {
             console.error("Error al cargar la imagen:", err);
             return res.status(500).json({ mensaje: "Error al procesar la imagen" });
@@ -73,11 +73,14 @@ export const show_productos_notavalible= async(req, res)=>{
 export const create_productos=async(req, res)=>{
     try {
         const {nombre, unidades_disponibles,precio, estado, usuario_id, descripcion}= req.body;
-        let imagen
-        if (req.file) {
-             imagen = req.file.originalname;
+        let imagen=[]
+        if (req.files   &&req.files.length>0) {
+             imagen = req.files.map(file => file.originalname);
         }
-        const [create] = await connection.query("insert into productos(nombre, unidades_disponibles, precio, imagen, estado, usuario_id, descripcion) values(?,?,?,?,?,?,?)",[nombre, unidades_disponibles, precio, imagen, estado, usuario_id, descripcion])
+
+        const imgsave=JSON.stringify(imagen);
+        console.log("Imagen guardada:", imgsave);
+        const [create] = await connection.query("insert into productos(nombre, unidades_disponibles, precio, imagen, estado, usuario_id, descripcion) values(?,?,?,?,?,?,?)",[nombre, unidades_disponibles, precio, imgsave, estado, usuario_id, descripcion])
         if (create.affectedRows>0) {
             res.status(200).json({
                 "mensaje":"El producto ya se creo con exito"

@@ -135,7 +135,7 @@ export const RegisterClient = () => {
       <p className="p-1 text-red-500 text-sm">
         Debes tener la mayoría de edad para poderte registrar
       </p>
-      <FontAwesomeIcon icon={faWarning} className="text-orange-400 size-5 ml-2" />
+      <FontAwesomeIcon icon={faWarning} className="text-[#Ff6600] size-5 ml-2" />
     </div>
     <Input
       label="Edad"

@@ -15,7 +15,7 @@ export const validatorproductcreate = [
     }),
   // Middleware personalizado para validar imagen
   (req, res, next) => {
-    if (!req.file) {
+    if (!req.files) {
       return res.status(400).json({
         errores: [{ msg: 'La imagen es obligatoria', param: 'imagen' }]
       });

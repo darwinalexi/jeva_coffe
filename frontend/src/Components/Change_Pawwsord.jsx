@@ -31,7 +31,7 @@ export const Change_password = ({ onclose }) => {
           icon: "success",
           confirmButtonText: "Aceptar",
         });
-        setStep("codigo"); // Cambia a la vista de código
+        setStep("codigo");
       } else {
         Swal.fire({
           title: "Error",
@@ -52,9 +52,7 @@ export const Change_password = ({ onclose }) => {
   };
 
   const verifyCode = async () => {
-    // Aquí podrías hacer una petición para verificar el código
     console.log("Código ingresado:", data.codigo);
-    // Aquí iría la lógica para verificar el código con el backend
   };
 
   return (
@@ -66,7 +64,7 @@ export const Change_password = ({ onclose }) => {
             transform: step === "correo" ? "translateX(0%)" : "translateX(-50%)",
           }}
         >
-          {/* Vista 1: formulario de correo */}
+          
           <div className="w-full p-8">
             <div className="flex items-center justify-between border-b-2 border-[#003333] mb-6">
               <h1 className="text-[#003333] text-2xl font-bold">
