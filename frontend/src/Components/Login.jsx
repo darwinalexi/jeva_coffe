@@ -107,7 +107,7 @@ export default function Login() {
   return (
     <>
       <Button
-        className="border border-red-700 bg-transparent hover:bg-red-700 text-white"
+        className="border border-red-700 bg-transparent hover:bg-red-700 text-white dark:hover:bg-[#ff6600] dark:border-[#ff6600]"
         onPress={onOpen}
       >
         Iniciar Sesión

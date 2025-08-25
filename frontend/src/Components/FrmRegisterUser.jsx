@@ -1,20 +1,8 @@
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  useDisclosure,
-  Checkbox,
-  Input,
-  Link,
-} from "@nextui-org/react";
-import React from "react";
+import {Modal,ModalContent,ModalHeader,ModalBody,ModalFooter,Button,useDisclosure,Input,} from "@nextui-org/react";
 import { useState, useRef } from "react";
 import ImageUploadPreview from "./Inpuimage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAudioDescription, faEnvelope, faIdCard, faLock, faUser} from "@fortawesome/free-solid-svg-icons";
+import { faAudioDescription, faEnvelope, faEye, faEyeSlash, faIdCard, faLock, faUser} from "@fortawesome/free-solid-svg-icons";
 import axiosClient from "../utils/axiosClient";
 import Swal from "sweetalert2";
 export const MailIcon = (props) => {
@@ -64,6 +52,11 @@ export const LockIcon = (props) => {
 
 export const RegisterUser = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [shoopassword, setshopping]= useState(false);
+
+  const seepassword= ()=>{
+    setshopping(true)
+  }
 
 const identificacionRef=useRef();  
 const nombreRef= useRef();
@@ -79,8 +72,18 @@ const [image,setImage]= useState(null);
 
 const register_user=async(e)=>{
     e.preventDefault();
+    const edad = edadRef.current.value;
+    if (edad< 18) {
+      Swal.fire({
+        icon:'warning',
+        text:"La edad debe ser mayor a 18 años",
+        confirmButtonText: "Aceptar"
+      })
+      return;
+    }   
+    try {
         const formData= new FormData();
-
+        
         formData.append('identificacion', identificacionRef.current.value);
         formData.append('nombre', nombreRef.current.value);
         formData.append('correo', correoRef.current.value);
@@ -101,15 +104,29 @@ const register_user=async(e)=>{
                 icon:'success',
                 text:register.data.mensaje
               })
-              window.location.reload();
-           }else{
+          
+           }else {
               Swal.fire({
                 icon:'error',
-                text:"Algo paso"
+                text:register.data.mensaje
               })
            }
-            console.log(register.data)
-}
+       } catch (error) {
+         if (error.response && error.response.status === 400) {
+            const errores = error.response.data.errores;
+            const mensaje = errores.map(err => err.msg).join(', ');
+            Swal.fire({
+                icon: 'error',
+                text: `Error ${mensaje}`,
+              });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                text: 'Ocurrió un error al crear el usuario',
+            });
+        }   
+      }
+  }
 
 const [tipoUsuario, setTipoUsuario] = useState("");
 
@@ -117,7 +134,7 @@ const [tipoUsuario, setTipoUsuario] = useState("");
   return (
     <>
       <Button
-        className="border-b border-b-red-700 border-t border-t-red-700 border-r border-r-red-700 border-l border-l-red-700 bg-transparent hover:bg-red-700 text-white"
+        className="border-b border-b-red-700 border-t border-t-red-700 border-r border-r-red-700 border-l border-l-red-700 bg-transparent hover:bg-red-700 text-white dark:hover:bg-[#ff6600]"
         onPress={onOpen}
       >
         Registrar Usuario Nuevo
@@ -152,7 +169,7 @@ const [tipoUsuario, setTipoUsuario] = useState("");
                     }}
                   />
                  <select 
-                 className="border-1 border-red-700 rounded-xl" 
+                 className="border-1 border-red-700 dark:border-white rounded-xl p-4" 
                 value={tipoUsuario}
                  onChange={(e)=>setTipoUsuario(e.target.value)} 
                  placeholder="Seleccione Un tipo  de Usuario">
@@ -177,13 +194,18 @@ const [tipoUsuario, setTipoUsuario] = useState("");
 
                    <Input
                     endContent={
-                      <FontAwesomeIcon icon={faLock} className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                       <button
+                      type="button"
+                      onClick={(e)=>setshopping((prev)=> !prev)}
+                      >
+                            <FontAwesomeIcon icon={shoopassword ? faEye : faEyeSlash} className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                      </button>
                     }
                     label="Clave"
                     name="clave"
                     ref={claveRef}
                     placeholder="Ingrese su clave"
-                    type="password"
+                    type={shoopassword ? 'text' : 'password'}
                     classNames={{
                       inputWrapper: "border-red-700",
                     }}
@@ -233,7 +255,7 @@ const [tipoUsuario, setTipoUsuario] = useState("");
                   <div className="sm:col-span-2">
                     <ImageUploadPreview  onImageChange={handleImageChange}/>
                   </div>
-                 <Button  className="border-1 border-custom-teal hover:bg-custom-teal bg-white hover:text-white text-black sm: relative left-2 md:relative md:left-52"  type="submit">
+                 <Button  className="dark:bg-[#5E2419] dark:text-white border-1 border-custom-teal hover:bg-custom-teal bg-white hover:text-white text-black sm: relative left-2 md:relative md:left-52"  type="submit">
                   Registrar
                 </Button>
               </form>

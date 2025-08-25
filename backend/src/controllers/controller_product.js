@@ -72,15 +72,15 @@ export const show_productos_notavalible= async(req, res)=>{
 
 export const create_productos=async(req, res)=>{
     try {
-        const {nombre, unidades_disponibles,precio, estado, usuario_id, descripcion}= req.body;
+        const {nombre, unidades_disponibles,precio, estado, usuario_id, descripcion, cantidad, tueste, variedad, aroma, sabor, cuerpo }= req.body;
         let imagen=[]
-        if (req.files   &&req.files.length>0) {
+        if (req.files   && req.files.length>0) {
              imagen = req.files.map(file => file.originalname);
         }
 
         const imgsave=JSON.stringify(imagen);
         console.log("Imagen guardada:", imgsave);
-        const [create] = await connection.query("insert into productos(nombre, unidades_disponibles, precio, imagen, estado, usuario_id, descripcion) values(?,?,?,?,?,?,?)",[nombre, unidades_disponibles, precio, imgsave, estado, usuario_id, descripcion])
+        const [create] = await connection.query("insert into productos(nombre, unidades_disponibles, precio, imagen, estado, usuario_id, descripcion, cantidad, tipo_tueste, variedad, aroma, sabor, cuerpo) values(?,?,?,?,?,?,?,?,?,?,?,?,?)",[nombre, unidades_disponibles, precio, imgsave, estado, usuario_id, descripcion, cantidad, tueste, variedad, aroma, sabor, cuerpo])
         if (create.affectedRows>0) {
             res.status(200).json({
                 "mensaje":"El producto ya se creo con exito"
@@ -103,11 +103,14 @@ export const create_productos=async(req, res)=>{
 export const update_productos=async(req, res)=>{
     try {
         const {id}= req.params;
-        const {nombre, unidades_disponibles,precio, estado, descripcion}= req.body;
-        let imagen
-        if (req.file) {
-             imagen = req.file.originalname;
+         const {nombre, unidades_disponibles,precio, estado, usuario_id, descripcion, cantidad, tueste, variedad, aroma, sabor, cuerpo }= req.body;
+         let imagen=[]
+        if (req.files   &&req.files.length>0) {
+             imagen = req.files.map(file => file.originalname);
         }
+
+        const imgsave=JSON.stringify(imagen);
+        console.log("Imagen guardada:", imgsave);
 
         const [searcher]= await connection.query("select*from productos where id=?",[id]);
         const productexit=searcher[0];
@@ -115,10 +118,17 @@ export const update_productos=async(req, res)=>{
         const nuevonombre= nombre || productexit.nombre;
         const nuevasunidades= unidades_disponibles || productexit.unidades_disponibles;
         const nuevoprecio= precio || productexit.precio;
-        const nuevaimg= imagen || productexit.imagen;
+        const nuevaimg = (imagen.length > 0) ? imgsave : productexit.imagen;
         const nuevoestado= estado || productexit.estado;
         const nuevadescripcion=descripcion || productexit.descripcion
-        const [create] = await connection.query("update productos set  nombre=?, unidades_disponibles=?, precio=?, imagen=?, estado=?, descripcion=? where id=?",[nuevonombre, nuevasunidades, nuevoprecio, nuevaimg,nuevoestado, nuevadescripcion,id])
+        const nuevacantidad=cantidad || productexit.cantidad
+        const nuevotueste=tueste || productexit.tipo_tueste
+        const nuevavariedad=variedad || productexit.variedad
+        const nuevoaroma=aroma || productexit.aroma
+        const nuevosabor=sabor || productexit.sabor
+        const nuevocuerpo=cuerpo || productexit.cuerpo
+        const nuevouser= usuario_id || productexit.usuario_id;
+        const [create] = await connection.query("update productos set  nombre=?, unidades_disponibles=?, precio=?, imagen=?, estado=?, descripcion=?, cantidad=?, tipo_tueste=?, variedad=?, aroma=?, sabor=?, cuerpo=?, usuario_id=? where id=?",[nuevonombre, nuevasunidades, nuevoprecio, nuevaimg,nuevoestado, nuevadescripcion,nuevacantidad,nuevotueste,nuevavariedad,nuevoaroma,nuevosabor,nuevocuerpo,nuevouser,id])
         if (create.affectedRows>0) {
             res.status(200).json({
                 "mensaje":"El producto ya se actualizo con exito"
@@ -130,6 +140,7 @@ export const update_productos=async(req, res)=>{
         }
 
     } catch (error) {
+        console.error("Error al actualizar el producto:", error);  
          res.status(500).json({
                 "error":error
             })

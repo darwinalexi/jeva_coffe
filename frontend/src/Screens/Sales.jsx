@@ -12,8 +12,9 @@ import Swal from "sweetalert2";
 export const Sales=()=>{
     const [sales, setsale]=useState([]);
     const [searcher, setsearcher]= useState("");
-const [estadoFiltro, setEstadoFiltro] = useState("Todos");
-
+    const [estadoFiltro, setEstadoFiltro] = useState("Todos");
+    const [index, setIndex]= useState(0);
+    const [type, settype]= useState("");
     const seesales=async()=>{
         try {
             const See= await axiosClient.get("/listar_ventas");
@@ -45,6 +46,9 @@ const entregar=async(id)=>{
 }
 
     useEffect(()=>{
+        const datalocal= JSON.parse(localStorage.getItem("usuario"));
+        const type= datalocal.tipo;
+        settype(type);
         seesales();
     },[])
 
@@ -60,7 +64,7 @@ const entregar=async(id)=>{
         })
     }
     return(
-        <div>
+        <div className="dark:bg-black">
             <NavBar/>
             <div className="sm:grid grid-cols-1 md:grid grid-cols-2">
                 <div className="col-span-2">
@@ -68,7 +72,7 @@ const entregar=async(id)=>{
                 </div>
                 <div><GraficaVentas/></div>
                 <div className="flex justify-center items-center p-24">
-                    <p className="text-2xl font-bold ">Con Cada Entrega que hacemos se va una pizca de Nuestra escencia cafétera</p>
+                    <p className="text-2xl font-bold ">Con Cada Entrega que hacemos se va una pizca de Nuestra escencia </p>
                 </div>
             </div>
             <h1 className="flex justify-center text-2xl text-[#Ff6600]">Datos Importantes de Nuestras Ventas</h1>
@@ -92,29 +96,51 @@ const entregar=async(id)=>{
 
             <div className="sm:grid grid-cols-1 lg:grid grid-cols-2  md:grid grid-cols-3 m-9">
                {filterdata().length>0?(
-                 filterdata().map(item=>(
-                  <div className="border-1 border-[#003333] rounded-xl m-4">
+                 filterdata().map(item=>{
+                    const imagenes=JSON.parse(item.imagen || "[]"); 
+
+                    
+
+                 return(
+                     <div className="border-1  border-[#003333] rounded-xl m-4">
                       <p className="flex justify-center"><strong>Nombre del Producto: </strong>{item.nombre_producto}</p>
-                      <img className="ml-16 rounded-lg" src={`${baseurl}/img/${item.imagen}`} alt={item.imagen} />
+                      <img className=" rounded-lg sm: p-8 h-[43%] md:pl-28 w-auto" src={`${baseurl}/img/${imagenes[index]}`} alt={imagenes[index]} />
                        <p className="flex justify-center"><strong>Nombre Del Cliente:</strong>{item.nombre_cliente}</p>
-                        <p className="flex justify-center"><strong>Fecha Venta: </strong>{formatDate(item.fecha_venta)}</p>                  
-                        <p className="flex justify-center"><strong>Departamento: </strong>{item.departamento}</p>   
-                        <p className="flex justify-center"><strong>Municipio: </strong>{item.municipio}</p>                                 
+                       
+                       {item.apellidos.length>0 &&(
+                         <p className="flex justify-center"><strong>Apellido Del Cliente:</strong>{item.apellidos}</p>
+                       )}
+                       
+                       <p className="flex justify-center"><strong>Correo: </strong>{item.correo}</p>
+                          <p className="flex justify-center"><strong>Telefono: </strong>{item.celular}</p>
+                        <p className="flex justify-center"><strong>Fecha Venta: </strong>{formatDate(item.fecha_venta)}</p>    
+                        <p className="flex justify-center"><strong>Pais: </strong>{item.nombre_pais}</p>              
+                        <p className="flex justify-center"><strong>Departamento o Region: </strong>{item.departamento}</p>   
+                        <p className="flex justify-center"><strong>Ciudad o Municipio: </strong>{item.municipio}</p>                                 
                         <p className="flex justify-center"><strong>Direccion : </strong>{item.direccion}</p>   
-                        <p className="flex justify-center"><strong>Unidades Encargadas: </strong>{item.numero_de_unidades_compradas}</p> 
+                        {item.estado==="Por Entregar" ? (
+                            <p className="flex justify-center"><strong>Unidades Encargadas: </strong>{item.numero_de_unidades_compradas}</p> 
+                        ):(
+                            <p className="flex justify-center"><strong>Unidades Compradas: </strong>{item.numero_de_unidades_compradas}</p> 
+                        )}
                         <p className="flex justify-center"><strong>Estado : </strong>{item.estado}</p> 
                         <p className="flex justify-center"><strong>Valor Total de Venta: </strong> ${item.valor_venta}</p>
                         {item.estado==="Por Entregar" &&(
-                            <button 
-                            onClick={()=>entregar(item.id)}
-                            className="border-1 border-[#Ff6600] w-[53%] p-2 m-3 rounded-xl hover:bg-[#Ff6600] hover:text-white sm: relative left-[20%]  ">
-                                Cambiar A Estado Entregado
-                            </button>
+                          <>
+                           {type==="Empresa_Envios" && (
+                               <button 
+                               onClick={()=>entregar(item.id)}
+                               className="border-1 border-[#Ff6600] w-[53%] p-2 m-3 rounded-xl hover:bg-[#Ff6600] hover:text-white sm: relative left-[20%]  ">
+                                   Cambiar A Estado Entregado
+                               </button>
+                           )}
+                          </>
                         )}                                 
                   </div>
-                ))
+                 )
+                })
                ):(
-                    <p  className="flex justify-center text-2xl text-red-600">No Tenemos ventas en estado:  {estadoFiltro}</p>
+                    <p  className="flex justify-center text-2xl text-red-600">No Tenemos ventas de clientes con nombre:  {searcher}</p>
                )}
             </div>
                 <Contact/>

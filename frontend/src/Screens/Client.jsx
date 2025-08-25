@@ -27,13 +27,13 @@ function getCustomStyles(isDark) {
     },
     cells: {
       style: {
-        backgroundColor: isDark ? "#1a202c" : "white",
+        backgroundColor: isDark ? "black" : "white",
         color: isDark ? "#fff" : "#222",
       },
     },
     pagination: {
   style: {
-    backgroundColor: isDark ? "#1a202c" : "white",
+    backgroundColor: isDark ? "black" : "white",
     color: isDark ? "#fff" : "#222",
   },
   pageButtonsStyle: {

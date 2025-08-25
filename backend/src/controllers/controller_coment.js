@@ -63,7 +63,7 @@ export const promedi=async(req, res)=>{
 
 export const create_comment = async (req, res) => {
   try {
-    const { comentario, estrellas, id_producto } = req.body;
+    const { comentario, estrellas, id_producto, id_cliente } = req.body;
     let imagen = req.file?.filename;
 
     if (!comentario || !estrellas) {
@@ -73,8 +73,8 @@ export const create_comment = async (req, res) => {
     }
 
     const [create] = await connection.query(
-      "INSERT INTO comentarios (comentario, estrellas, foto,id_producto) VALUES (?, ?, ?,?)",
-      [comentario, estrellas, imagen,id_producto]
+      "INSERT INTO comentarios (comentario, estrellas, foto,id_producto,id_cliente) VALUES (?, ?, ?,?,?)",
+      [comentario, estrellas, imagen,id_producto,id_cliente]
     );
 
     if (create.affectedRows > 0) {

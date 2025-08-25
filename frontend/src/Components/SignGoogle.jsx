@@ -12,10 +12,10 @@ export const loginWithGoogle = async () => {
     const { value: formValues } = await Swal.fire({
       title: "Completa tu información",
       html:
-        '<input id="swal-input0" class="swal2-input" placeholder="Identificacion">' +
-        '<input id="swal-input1" class="swal2-input" placeholder="Celular">' +
-        '<input id="swal-input2" class="swal2-input" placeholder="Edad" type="number">' +
-        '<input id="swal-input3" class="swal2-input" placeholder="Ingres tu Clave">',
+        '<input i-input1" class="swal2-input" placeholder="Celular" class="w-full border-2 border-[#003333] rounded-lg px-3 py-2 mb-2">' +
+        '<input id="swal-inpd="swal-input0" class="swal2-input" placeholder="Identificacion" class="w-full border-2 border-[#003333] rounded-lg px-3 py-2 mb-2">' +
+        '<input id="swalut2" class="swal2-input" placeholder="Edad" type="number" class="w-full border-2 border-[#003333] rounded-lg px-3 py-2 mb-2">' +
+        '<input id="swal-input3" class="swal2-input" placeholder="Ingres tu Clave" class="w-full border-2 border-[#003333] rounded-lg px-3 py-2 mb-2">',
       focusConfirm: false,
       preConfirm: () => {
         const identificacion = document.getElementById("swal-input0").value.trim();

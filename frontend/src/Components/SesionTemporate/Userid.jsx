@@ -4,7 +4,6 @@ export const useUserIdTimer = (onTimeout, timeout = 1 * 60 * 1000) => {
   const time = useRef(null);
 
   const resetTimer = () => {
-    console.log("⏲️ Timer reiniciado por actividad del usuario");
     clearTimeout(time.current);
     time.current = setTimeout(() => {
       console.log("💤 Tiempo de inactividad alcanzado");

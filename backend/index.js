@@ -10,6 +10,7 @@ import { router_client } from "./src/routers/router_client.js";
 import { router_departament } from "./src/routers/router_departament.js";
 import {coffe_price} from "./src/routers/router_price_coffe.js"
 import { router_comment } from "./src/routers/router_comment.js";
+import { router } from "./src/routers/router_countries.js";
 
 const server =express();
 
@@ -29,6 +30,7 @@ server.use(router_client);
 server.use(coffe_price)
 server.use(router_comment)
 server.use(router_departament);
+server.use(router)
 
 server.use(cors({
     origin: "http://localhost:5173",
@@ -36,9 +38,7 @@ server.use(cors({
     credentials: true,
 }))
 
-server.get('/',(req,res)=>{
-    res.send("Hola, este es el servidor de la aplicacion jevacoffee");
-})  
+
 
 server.listen(port,()=>{
     console.log(`servidor corriendo en el puerto ${port}`)

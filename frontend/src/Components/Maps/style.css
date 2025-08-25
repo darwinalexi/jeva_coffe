@@ -1,4 +1,18 @@
 .mapa-colombia {
   width: 100%;
   height: 200px;
+  z-index: 0;
+}
+
+/* Forzar z-index bajo en los elementos de Leaflet para que no sobrepasen modals */
+.leaflet-container,
+.leaflet-pane,
+.leaflet-map-pane,
+.leaflet-tile-pane,
+.leaflet-marker-pane,
+.leaflet-shadow-pane,
+.leaflet-overlay-pane,
+.leaflet-popup-pane,
+.leaflet-tooltip-pane {
+  z-index: 0 !important;
 }

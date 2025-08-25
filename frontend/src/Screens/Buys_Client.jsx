@@ -16,7 +16,7 @@ export const Buys_Client=()=>{
     const [searcher, setsearcher]= useState("");
     const [estadofiltrado, setfiltrado]=useState("todos");
     const see_buy=async()=>{
-        const see= await axiosClient.get(`/listar_compras_clientes/${id}`)
+        const see= await axiosClient.get(`/listar_compras_cliente/${id}`)
         setbuy(see.data)
         console.log(see.data)
     }
@@ -45,22 +45,38 @@ export const Buys_Client=()=>{
     return(
         <>
             <NavBar/>
-            <h1 className="text-3xl font-bold text-center">Compras de {cliente?.nombre}</h1>
+            <h1 className="text-3xl font-bold text-center mt-20">Compras de {cliente?.nombre}</h1>
             <SearchBar
                 value={searcher}
                 placeholder="Buscar Por Producto"
                 onChange={(e)=>setsearcher(e.target.value)}
             />
-            <select onChange={(e)=>setfiltrado(e.target.value)} value={estadofiltrado}>
+            <select 
+            className="border-2 border-[#003333] rounded-lg p-2 m-2"
+            onChange={(e)=>setfiltrado(e.target.value)} 
+            value={estadofiltrado} >
                 <option value="todos">Todos</option>
                 <option value="Por Entregar">Por Entregar</option>
                 <option value="Entregado">Entregado</option>
             </select>
-           <div className="m-4 sm:grid grid-cols-1 md:grid grid-cols-3 gap-4 m-7">
-             {filterdata().map(item=>(
-                <div className="border-1 border-[#003333] rounded-xl flex justify-center grid grid-cols-1">
+           <div className="m-4 sm:grid grid-cols-1 md:grid grid-cols-3 gap-y-4 m-8">
+             {filterdata().length>0 ?(
+                filterdata().map(item=> {
+                     let imagenes=[]
+                        try {
+                            if (item.imagen && item.imagen.trim().startsWith('[')) {
+                                imagenes = JSON.parse(item.imagen);
+                            } else if (item.imagen) {
+                                imagenes = [item.imagen];      
+                            }
+                        } catch (error) {
+                            console.log("error",error)
+                            imagenes=[];
+                        }
+              return(
+                  <div className="border-1 border-[#003333] rounded-xl flex justify-center grid grid-cols-1 m-7">
                      <p className="flex justify-center"><strong>Nombre del producto: </strong>{item.nombre_producto}</p>
-                     <img src={`${baseurl}/img/${item.imagen}`} className="relative left-16 rounded-xl" />
+                     <img src={`${baseurl}/img/${imagenes[0]}`} className="relative p-5 rounded-xl" />
                      <p className="flex justify-center"><strong>Departamento: </strong>{item.departamento}</p>
                      <p className="flex justify-center"><strong>Municipio: </strong>{item.municipio}</p>
                      <p className="flex justify-center"><strong>Direccion: </strong>{item.direccion}</p>
@@ -73,9 +89,13 @@ export const Buys_Client=()=>{
                         <p className="flex justify-center"><strong>Unidades Encargadas: </strong>{item.numero_de_unidades_compradas}</p>
                      )}
                      <p className="flex justify-center"><strong>Valor Venta: </strong>{item.valor_venta}</p>
-                 
                 </div>
-            ))}
+              )
+                })):(
+                    <div>
+                            <p className="flex justify-center text-2xl">No hay Compras Registradas Para Este Cliente.</p>
+                    </div>                
+                )}
            </div>
         <Contact/>
         </>

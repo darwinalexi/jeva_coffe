@@ -1,4 +1,4 @@
-import { faClose } from "@fortawesome/free-solid-svg-icons";
+import { faClose, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import Swal from "sweetalert2";
@@ -8,9 +8,14 @@ export const Change_password = ({ onclose }) => {
   const [data, setData] = useState({ 
     correo: "", 
     codigo: "" ,
-    newPassword: ""
+    clave: ""
     });
   const [step, setStep] = useState("correo");
+  const [opensee, setopen]= useState(false);
+
+  const seepassword=()=>{
+    setopen(false);
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -52,12 +57,22 @@ export const Change_password = ({ onclose }) => {
   };
 
   const verifyCode = async () => {
-    console.log("Código ingresado:", data.codigo);
-  };
+    const change= await axiosClient.post("/cambiar_clave", data);
+    if (change.status === 200) {
+      Swal.fire({
+        title: "Contraseña Cambiada",
+        text: change.data.mensaje,
+        icon: "success",
+        confirmButtonText: "Aceptar",
+      });
+      onclose();
+    }
+      
+    }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30">
-      <div className="bg-white rounded-2xl p-8 w-full max-w-2xl relative top-64 shadow-lg overflow-hidden h-auto">
+    <div className="fixed inset-0 bg-red-800 bg-opacity-50 flex justify-center items-center z-30">
+      <div className="dark:bg-gray-800 bg-white rounded-2xl p-8 w-full max-w-2xl relative top-72 shadow-lg overflow-hidden h-auto mt-4">
         <div
           className="flex w-[200%] transition-transform duration-500 ease-in-out"
           style={{
@@ -67,7 +82,7 @@ export const Change_password = ({ onclose }) => {
           
           <div className="w-full p-8">
             <div className="flex items-center justify-between border-b-2 border-[#003333] mb-6">
-              <h1 className="text-[#003333] text-2xl font-bold">
+              <h1 className="text-[#003333] text-2xl font-bold  dark:text-white">
                 ¿Has Olvidado tu clave de Acceso a JEVACOFFEE?
               </h1>
               <FontAwesomeIcon
@@ -89,36 +104,67 @@ export const Change_password = ({ onclose }) => {
                 name="correo"
                 value={data.correo}
                 onChange={handleInputChange}
-                className="w-full p-3 border-2 border-[#003333] rounded-xl focus:outline-none mb-6"
+                className="w-full p-3 border-2 border-[#003333] rounded-xl focus:outline-none mb-6 dark:border-white"
                 placeholder="Ingresa tu correo"
                 required
               />
               <input
                 type="submit"
                 value="Enviar"
-                className="border-2 border-[#003333] w-full rounded-xl hover:bg-[#003333] hover:text-white p-4 cursor-pointer"
+                className="mt-6 border-2 dark:border-white dark:text-[#003333] border-[#003333] w-full rounded-xl dark:bg-white  hover:bg-[#003333] hover:text-white p-4 cursor-pointer"
               />
             </form>
           </div>
 
           
           <div className="w-full p-8">
-            <h2 className="text-[#003333] text-2xl font-bold mb-4">Verificación de código</h2>
-            <FontAwesomeIcon icon={faClose} onClick={onclose} className="text-xl cursor-pointer hover:text-red-500 mb-4" />
-            <p className="mb-4">Ingresa el código que te enviamos por correo.</p>
-            <input
-              type="text"
-              name="codigo"
-              value={data.codigo}
-              onChange={handleInputChange}
-              className="w-full p-3 border-2 border-[#003333] rounded-xl focus:outline-none"
-              placeholder="Código de verificación"
-            />
+            <h2 className="text-[#003333] text-2xl font-bold mb-4 dark:text-white">Estas a Un paso de Recuperar tu cuenta</h2>
+            <FontAwesomeIcon icon={faClose} onClick={onclose} className="size-7 cursor-pointer hover:text-red-500 mb-4 relative left-[94%] bottom-6" />
+           <form onSubmit={verifyCode}>
+                <div>
+                       <p className="m-4">Ingresa tu correo.</p>
+                          <input
+                            type="email"
+                            name="correo"
+                            value={data.correo}
+                            onChange={handleInputChange}
+                            className="w-full p-3 border-2 border-[#003333] dark:border-white rounded-xl focus:outline-none"
+                            placeholder="Código de verificación"
+                          />
+                </div>
+
+                  <div>
+                      <p className="m-4">Ingresa tu codigo de verificación.</p>
+                          
+                        <input
+                          type="text"
+                          name="codigo"
+                          onChange={handleInputChange}
+                          className="w-full p-3 border-2 border-[#003333] dark:border-white rounded-xl focus:outline-none"
+                          placeholder="Código de verificación"
+                        />
+
+                  </div>
+                  <div>
+                    <p className="m-4">Ingresa tu Nueva Contraseña.</p>
+                          <input
+                            type={opensee ? "text":"password"}
+                            name="clave"
+                            onChange={handleInputChange}
+                            className="w-full p-3 border-2 border-[#003333] rounded-xl focus:outline-none dark:border-white"
+                            placeholder="Ingrese Nueva contraseña"
+                          />
+                          <button type="button"
+                          onClick={()=>setopen((prev)=>!prev)}>
+                             <FontAwesomeIcon icon={opensee ? faEye : faEyeSlash} className="text-2xl text-default-400 pointer-events-none flex-shrink-0 relative left-[92%] bottom-10 cursor-pointer" />
+                          </button>
+                  </div>
+           </form>
             <button
               onClick={verifyCode}
-              className="mt-6 border-2 border-[#003333] w-full rounded-xl hover:bg-[#003333] hover:text-white p-4 cursor-pointer"
+              className="mt-6 border-2 dark:border-white dark:text-[#003333] border-[#003333] w-full rounded-xl dark:bg-white  hover:bg-[#003333] hover:text-white p-4 cursor-pointer"
             >
-              Verificar
+              Cambiar Contraseña
             </button>
           </div>
         </div>

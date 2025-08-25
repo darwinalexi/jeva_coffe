@@ -86,7 +86,7 @@ const GraficaVentas = () => {
   return (
     <>
       {data.length > 0 ? (
-        <div style={{ height: 400 }} className="border border-[#003333] rounded-xl w-full max-w-md mx-auto dark:border-white">
+        <div style={{ height: 400 }} className="border border-[#003333] rounded-xl w-full mx-auto dark:border-white">
           <p className="flex justify-center text-2xl dark:text-white mb-2">Ventas</p>
           <ResponsiveContainer>
             <PieChart>

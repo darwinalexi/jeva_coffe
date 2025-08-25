@@ -41,19 +41,19 @@ export const register_user=async(req, res)=>{
 
       const [check]= await connection.query("select* from usuarios where identificacion=? or correo=?",[identificacion, correo])      
       if (check.length>0) {
-        res.status(404).json({
-            "message":"No Se puede crear el usuario poorque la identificacion o correo ya estan en nuestra base de datos"
+        return res.status(400).json({
+          errores:[{msg:"No se puede completar la acción porque la identificación o correo ya están en nuestra base de datos"}]
         })
       } else {
-               const password= await encrypter(clave)     
+        const password= await encrypter(clave)     
          const [create]= await connection.query("insert into usuarios(identificacion, nombre, correo,clave,descripcion,tipo, imagen, edad)values(?,?,?,?,?,?,?,?)",[identificacion,nombre,correo,password,descripcion,tipo,imagen, edad])
          if (create.affectedRows>0) {
             res.status(200).json({
                 "mensaje":"Se  Creo el usuario con exito"
             })
          } else {
-             res.status(40).json({
-                "mensaje":"Se  Creo el usuario con exito"
+             res.status(404).json({
+                "mensaje":"No se  Creo el usuario con exito"
             })
          }
       }
@@ -100,44 +100,50 @@ export const update_user = async (req, res) => {
       const descripcionFinal = getvalue(descripcion, userToday.descripcion)
       const tipoFinal = getvalue(tipo, userToday.tipo)
       const edadFinal = getvalue(edad, userToday.edad)
-      const claveFinal= getvalue(clave, userToday.clave)
-  
+    
+      
+      let claveFinal = userToday.clave;
+      if (typeof clave !== 'undefined' && clave !== null && clave !== "") {
+        claveFinal = await encrypter(clave);
+      }
+
       if (edadFinal <= 17 ) {
-       return res.status(400).json({
+        return res.status(400).json({
           errores:[{msg:"Lo Sentimos pero si no tienes 18 años no puedes tener una cuenta en jeva y te aconsejamos informar a la persona encargada "}]
         })
       }
-      const claveencrypter=await encrypter(claveFinal);
-  
+
       const [update] = await connection.query(
         `UPDATE usuarios 
-         SET nombre = ?, correo = ?, imagen = ?, clave = ?, descripcion = ?, edad = ?, tipo = ?
-         WHERE identificacion = ?`,
+        SET nombre = ?, correo = ?, imagen = ?, clave = ?, descripcion = ?, edad = ?, tipo = ?
+        WHERE identificacion = ?`,
         [
           nombreFinal,
           correoFinal,
           imagenFinal,
-          claveencrypter,
+          claveFinal,
           descripcionFinal,
           edadFinal,
           tipoFinal,
           identificacion,
         ]
       );
-  
+
       if (update.affectedRows > 0) {
         return res.status(200).json({ message: "Usuario actualizado con éxito" });
       } else {
         return res.status(400).json({ message: "No se realizaron cambios en el usuario" });
       }
-  
-    } catch (error) {
+
+  } catch (error) {
       console.error("Error al actualizar usuario:", error);
       res.status(500).json({
         message: "Error interno al actualizar usuario",
       });
     }
   };
+
+
 export const show_user= async(req, res)=>{
     try{
         const [searchuser]= await connection.query("select*from usuarios where tipo='Cliente'")

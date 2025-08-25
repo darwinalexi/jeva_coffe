@@ -83,10 +83,12 @@ const GraficaProductos = () => {
     show_client();
   }, []);
 
+  const COLORS = ["#5E2419", "#003333",]; 
+
   return (
     <>
       {data.length > 0 ? (
-        <div style={{height: 400 }} className='border-1 border-[#3c2a21] dark:bg-gray-800  rounded-xl sm::w-screen md:w-[100%]'>
+        <div style={{height: 400 }} className='border-1 border-[#3c2a21]  rounded-xl sm::w-screen md:w-[100%]'>
           <p  className='flex justify-center text-2xl'>Productos</p>        
           <ResponsiveContainer>
             <PieChart>
@@ -102,7 +104,7 @@ const GraficaProductos = () => {
                 {data.map((_, index) => (
                   <Cell
                     key={`cell-${index}`}
-                    fill="#3c2a21"
+                        fill={COLORS[index % COLORS.length]}
                   />
                 ))}
               </Pie>

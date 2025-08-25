@@ -17,6 +17,7 @@ export const Opinions = () => {
   const [promedio, setPromedio] = useState(null);
   const [image, setImage] = useState("");
   const [type, setttype]= useState("")
+  const [Cliente, setcliente]= useState("");
   const [datacoment, setComent] = useState({
     comentario: "",
     estrellas: 0,
@@ -33,8 +34,20 @@ export const Opinions = () => {
     setImage(foto);
     setComent({ ...datacoment, foto: foto });
   };
+  useEffect(() => {
+      const  datalocal= JSON.parse(localStorage.getItem('Cliente')|| 'null');
+        if (datalocal) {
+            setttype(datalocal && datalocal.tipo ? datalocal.tipo : "");
+          console.log("datacoompare", datalocal.identificacion?datalocal.identificacion: "")
+        }
+    see_comment(id);
+    see_product();
+    promedi();
+    console.log("datacliient",Cliente)
+  }, [id]);
 
   const create_comment = async (e) => {
+    
     e.preventDefault();
     try {
       if (!datacoment.comentario || !datacoment.estrellas || !datacoment.id_producto) {
@@ -46,10 +59,15 @@ export const Opinions = () => {
       }
 
         const newData= new FormData();
+        const user= JSON.parse(localStorage.getItem('Cliente') || 'null')
+        const id_cliente= user.identificacion
         newData.append('comentario',datacoment.comentario);
         newData.append('estrellas',datacoment.estrellas);
         newData.append('imagen',datacoment.foto);
         newData.append('id_producto',datacoment.id_producto);
+        newData.append('id_cliente', id_cliente)
+
+        console.log("datasend", datacoment)
 
       const response = await axiosClient.post("/crear_comentario", newData);
       if (response.status === 200) {
@@ -75,14 +93,9 @@ export const Opinions = () => {
     setPromedio(parseFloat(value));
   };
 
-  useEffect(() => {
-      const  datalocal= JSON.parse(localStorage.getItem('Cliente')|| 'null');
-        setttype(datalocal && datalocal.tipo ? datalocal.tipo : ""); 
-    
-    see_comment(id);
-    see_product();
-    promedi();
-  }, [id]);
+   
+
+
 
   const scroll = {
     scrollbarWidth: "none"
@@ -103,13 +116,13 @@ export const Opinions = () => {
                 } else if (item.imagen) {
                   imagenes = [item.imagen]; 
                 }
-              } catch (error) {
+              } catch (error) { 
                 console.log("error", error);
               }            
             return (
               <div key={index}>
               <div className="p-3 w-full h-[50%]">
-                <img src={`${baseurl}/img/${imagenes[1]}`} className="w-[100%] h-[100%] rounded-lg" />
+                <img src={`${baseurl}/img/${imagenes[0]}`} className="w-[100%] h-[100%] rounded-lg" />
               </div>
               <div className="flex flex-col p-2">
                 <p><strong>Acerca del producto: </strong></p>

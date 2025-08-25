@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import  { useEffect, useState } from "react"
 import NavBar from "../Components/NavBar"
 import { Contact } from "../Components/Contact"
 import AOS from 'aos';
@@ -11,7 +11,6 @@ import GraficaCliente from "../Components/Grafica_Clientes";
 import GraficaVentas from "../Components/Grafica_ventas";
 import {Link} from "react-router-dom"
 import axiosClient from "../utils/axiosClient";
-import MapaColombia from "../Components/Maps/Map";
 
 export const Main=()=>{
   const [type, setType] = useState(null);
@@ -195,7 +194,6 @@ const show_client = async () => {
                 </div>
 
             </div>
-            <MapaColombia/>
             <About_buy/>
             <Contact/>
         </div>

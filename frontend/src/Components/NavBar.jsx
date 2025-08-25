@@ -78,9 +78,8 @@ useEffect(() => {
       console.error("Error al cargar cliente:", error); 
     }
   }
-
   return (
-    <Navbar className="bg-[#003333] dark:bg-[#1BB3A1]">
+    <Navbar className="bg-[#003333] dark:bg-[#5E2419] transition-colors duration-300 fixed">
   
       {!Aut && (
         <>
@@ -95,13 +94,13 @@ useEffect(() => {
 
             <NavbarContent className="hidden sm:flex gap-4" justify="center">
               <NavbarItem>
-                <Link to="/" className="text-white hover:text-red-700">
+                <Link to="/" className="text-white hover:text-red-700 dark:hover:text-[#ff6600]">
                   <FontAwesomeIcon icon={faHome} className="mr-2" />
                   Inicio
                 </Link>
               </NavbarItem>
               <NavbarItem isActive>
-                <Link to="/tienda" className="text-white hover:text-red-700">
+                <Link to="/tienda" className="text-white hover:text-red-700 dark:hover:text-[#ff6600]">
                   <FontAwesomeIcon icon={faStore} className="mr-2" />
                   productos
                 </Link>
@@ -136,19 +135,19 @@ useEffect(() => {
 
        <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarItem>
-          <Link to="/" className="text-white hover:text-red-700">
+          <Link to="/" class="text-white hover:text-red-700 dark:hover:text-[#ff6600]">
             <FontAwesomeIcon icon={faHome} className="mr-2" />
             Inicio
           </Link>
         </NavbarItem>
         <NavbarItem isActive>
-          <Link to="/tienda" className="text-white hover:text-red-700">
+          <Link to="/tienda" className="text-white hover:text-red-700 dark:hover:text-[#ff6600]">
             <FontAwesomeIcon icon={faBox} className="mr-2" />
             Mis  productos
           </Link>
         </NavbarItem>
          <NavbarItem isActive>
-          <Link to="/clientes" className="text-white hover:text-red-700">
+          <Link to="/clientes" className="text-white hover:text-red-700 dark:hover:text-[#ff6600]">
             <FontAwesomeIcon icon={faUsers} className="mr-2" />
             Mis  Clientes
           </Link>
@@ -171,13 +170,13 @@ useEffect(() => {
 
        <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarItem>
-          <Link to="/" className="text-white hover:text-red-700">
+          <Link to="/" className="text-white hover:text-red-700 dark:hover:text-[#ff6600]">
             <FontAwesomeIcon icon={faHome} className="mr-2" />
             Inicio
           </Link>
         </NavbarItem>
         <NavbarItem isActive>
-          <Link to="/ventas" className="text-white hover:text-red-700">
+          <Link to="/ventas" className="text-white hover:text-red-700 dark:hover:text-[#ff6600]">
             <FontAwesomeIcon icon={faShoppingCart} className="mr-2" />
             Ver Ventas
           </Link>
@@ -201,13 +200,13 @@ useEffect(() => {
 
     <NavbarContent className="hidden sm:flex gap-4" justify="center">
       <NavbarItem>
-        <Link to="/" className="text-white hover:text-red-700">
+        <Link to="/" className="text-white hover:text-red-700 dark:hover:text-[#ff6600]">
           <FontAwesomeIcon icon={faHome} className="mr-2" />
           Inicio
         </Link>
       </NavbarItem>
       <NavbarItem>
-        <Link to="/tienda" className="text-white hover:text-red-700">
+        <Link to="/tienda" className="text-white hover:text-red-700 dark:hover:text-[#ff6600]">
           <FontAwesomeIcon icon={faStore} className="mr-2" />
           Comprar productos
         </Link>
@@ -258,12 +257,12 @@ useEffect(() => {
       )}
 
       {menuOpen && !Aut && (
-        <div className="flex flex-col sm:hidden bg-[#003333] dark:bg-[#1BB3A1] absolute top-full left-0 w-full z-10 p-4 gap-4">
-          <Link to="/" className="text-white hover:text-red-700" onClick={() => setMenuOpen(false)}>
+        <div className="flex flex-col sm:hidden bg-[#003333] dark:bg-[#5E2419] absolute top-full left-0 w-full z-10 p-4 gap-4">
+          <Link to="/" className="text-white hover:text-red-700  dark:hover:text-[#ff6600]" onClick={() => setMenuOpen(false)}>
             <FontAwesomeIcon icon={faHome} className="mr-2" />
             Inicio
           </Link>
-          <Link to="/tienda" className="text-white hover:text-red-700" onClick={() => setMenuOpen(false)}>
+          <Link to="/tienda" className="text-white hover:text-red-700 dark:hover:text-[#ff6600]" onClick={() => setMenuOpen(false)}>
             <FontAwesomeIcon icon={faStore} className="mr-2" />
             Tienda
           </Link>
@@ -272,16 +271,16 @@ useEffect(() => {
 
 
   {menuOpen && type_user=="Administrador" && (
-        <div className="flex flex-col sm:hidden bg-[#003333] dark:bg-[#1BB3A1] absolute top-full left-0 w-full z-10 p-4 gap-4">
-          <Link to="/" className="text-white hover:text-red-700" onClick={() => setMenuOpen(false)}>
+        <div className="flex flex-col sm:hidden bg-[#003333] dark:bg-[#5E2419] absolute top-full left-0 w-full z-10 p-4 gap-4">
+          <Link to="/" className="text-white hover:text-red-700 dark:hover:text-[#ff6600]" onClick={() => setMenuOpen(false)}>
             <FontAwesomeIcon icon={faHome} className="mr-2" />
             Inicio
           </Link>
-          <Link to="/tienda" className="text-white hover:text-red-700" onClick={() => setMenuOpen(false)}>
+          <Link to="/tienda" className="text-white hover:text-red-700 dark:hover:text-[#ff6600]" onClick={() => setMenuOpen(false)}>
             <FontAwesomeIcon icon={faBox} className="mr-2" />
             Mis Productos
           </Link>
-          <Link to="/tienda" className="text-white hover:text-red-700" onClick={() => setMenuOpen(false)}>
+          <Link to="/clientes" className="text-white hover:text-red-700 dark:hover:text-[#ff6600]" onClick={() => setMenuOpen(false)}>
             <FontAwesomeIcon icon={faUsers} className="mr-2" />
             Clientes
           </Link>
@@ -289,7 +288,7 @@ useEffect(() => {
       )}
 
       {menuOpen && type_user=="Clientes" && (
-        <div className="flex flex-col sm:hidden bg-[#003333] dark:bg-[#1BB3A1] absolute top-full left-0 w-full z-10 p-4 gap-4">
+        <div className="flex flex-col sm:hidden bg-[#003333] dark:bg-[#5E2419] absolute top-full left-0 w-full z-10 p-4 gap-4">
           <Link to="/" className="text-white hover:text-red-700" onClick={() => setMenuOpen(false)}>
             <FontAwesomeIcon icon={faHome} className="mr-2" />
             Inicio
@@ -302,12 +301,12 @@ useEffect(() => {
       )}
 
     {menuOpen && type_user === "Empresa_Envios" && (
-      <div className="flex flex-col sm:hidden bg-[#003333] dark:bg-[#1BB3A1] absolute top-full left-0 w-full z-10 p-4 gap-4">
-        <Link to="/" className="text-white hover:text-red-700" onClick={() => setMenuOpen(false)}>
+      <div className="flex flex-col sm:hidden bg-[#003333] dark:bg-[#5E2419] absolute top-full left-0 w-full z-10 p-4 gap-4">
+        <Link to="/" className="text-white hover:text-red-700 dark:hover:text-[#ff6600]" onClick={() => setMenuOpen(false)}>
           <FontAwesomeIcon icon={faHome} className="mr-2" />
           Inicio
         </Link>
-        <Link to="/ventas" className="text-white hover:text-red-700" onClick={() => setMenuOpen(false)}>
+        <Link to="/ventas" className="text-white hover:text-red-700 dark:hover:text-[#ff6600]" onClick={() => setMenuOpen(false)}>
           <FontAwesomeIcon icon={faShoppingCart} className="mr-2" />
           Ver Ventas
         </Link>

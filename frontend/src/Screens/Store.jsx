@@ -1,11 +1,10 @@
-import Imagen from "../Components/Image";
 import NavBar from "../Components/NavBar";
 import Cafeimg from "../../src/assets/img/cafe1.png";
 import axiosClient from "../utils/axiosClient";
 import { useState, useEffect } from "react";
 import { baseurl } from "../utils/data";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faTrash, faEdit, faWarning, faPlus, faMinus}  from '@fortawesome/free-solid-svg-icons';
+import {faTrash, faEdit}  from '@fortawesome/free-solid-svg-icons';
 import SearchBar from "../Components/Searchar"
 import { Update_Product } from "../Components/Update_Product";
 import { Contact } from "../Components/Contact";
@@ -13,7 +12,7 @@ import { Create_Product } from "../Components/CreateProduct";
 import { Link } from "react-router-dom";
 import { DetailsProduct } from "../Components/DetailsProduct";
 import { Carsmodal } from "../Components/Carsmodal";
-
+import Swal from "sweetalert2";
 export const Store = () => {
     const [date, setdata] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
@@ -49,31 +48,37 @@ export const Store = () => {
     const dataclient=JSON.parse(localStorage.getItem('Cliente'));
     
     
-        const products = async () => {
-                try {
-                    const show = await axiosClient.get("/productos_disponibles");
-                    setdata(show.data)
-                    if(datalocal.tipo==="Administrador"){
-                    const allproduct = await axiosClient.get("/todos_productos");
-                    setdata(allproduct.data);                
-                    }else if(dataclient.tipo==="Clientes"){
-                        const clientProducts = await axiosClient.get(`/productos_cliente/${dataclient.id}`);
+        const products = async () =>{
+                    if(datalocal &&datalocal.tipo==="Administrador"){
+                        const allproduct = await axiosClient.get("/todos_productos");
+                        setdata(allproduct.data);
+                        settype("Administrador");
+                        setAuth(true);
+                    }else if (datalocal&&dataclient.tipo === "Clientes") {
+                        const clientProducts = await axiosClient.get(`/productos_disponibles`);
                         setdata(clientProducts.data);
+                        setAuth(true)
+                        settype("Clientes");
+                    }else {
+                        const show = await axiosClient.get("/productos_disponibles");
+                        setdata(show.data) ;
+                        setAuth(false);
+                        settype("")
                     }
-                } catch(e){
-                    console.log("error", e);
-                }
             };
 
     if (datalocal && datalocal.tipo) {
         settype(datalocal.tipo);        
         setAuth(true);
+    console.log("user", datalocal.tipo);
     } else  if (dataclient && dataclient.tipo) {
         settype(dataclient.tipo);
         setAuth(true);
+        console.log("Cliente", dataclient.tipo); 
     }else{
         settype("");
         setAuth(false);
+        
     }
 
     products();
@@ -86,18 +91,12 @@ export const Store = () => {
     const Product_delete=async(id)=>{
         try{
             const dele= await axiosClient.delete( `/productos/${id}`);
-            if (dele.status===200) {
-                Swal.fire({
-                    icon:'success',
-                    text:dele.data.mensaje
-                })
+            Swal.fire({
+                icon:'success',
+                text:dele.data.mensaje
+            }).then(() => {
                 window.location.reload();
-            } else {
-                 Swal.fire({
-                    icon:'error',
-                    text:"Algo paso"
-                })
-            }
+            });
         }catch(e){
             console.log("error", e)
         }
@@ -116,12 +115,6 @@ export const Store = () => {
         setupdate(false);
     }
 
-
-     
-    
-
-    
-
 const createproductmodal=()=>{
     setcreate(true);
 }
@@ -131,7 +124,7 @@ const closecreate=()=>{
 } 
 
     return (
-        <div>
+        <div className="dark:bg-black">
             <NavBar />
                 <div className="relative top-0 w-full h-[35vh] sm:h-full md:h-full lg:h-full xl:h-full overflow-hidden">
                 <img
@@ -163,11 +156,11 @@ const closecreate=()=>{
                         <label className="text-[#003333] font-semibold dark:text-white">Filtrar por estado:</label>
                         <br />
                         <select
-                            className="appearance-none w-[250px] px-4 py-2 bg-[#003333] text-white font-semibold rounded-lg shadow-md hover:bg-[#004d4d] focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-200"
+                            className="appearance-none w-[250px] px-4 py-2 bg-[#003333] dark:bg-[#5E2419] text-white font-semibold rounded-lg shadow-md hover:bg-[#004d4d] focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-200"
                             value={filter}
                             onChange={(e) => setfilter(e.target.value)}
                         >
-                            <option value="Todos">Todos</option>
+                            <option value="Todos ">Todos</option>
                             <option value="Disponible">Disponibles</option>
                             <option value="No Disponible">No Disponibles</option>
                         </select>
@@ -184,26 +177,29 @@ const closecreate=()=>{
                         </>
 
                     )}
-                    
-                            {!isAuth &&(
 
+                            {!isAuth && (
                                 <div className="">
-                                    <button  onClick={opencar}  className="bg-[#003333] p-3 dark:bg-[#1BB3A1] rounded-xl text-white m-3">
+                                    <button  onClick={opencar}  className="bg-[#003333] p-3 dark:bg-[#5E2419] rounded-xl text-white m-3">
                                         Carrito de Compras
                                     </button>
-                        
-                                
                                 </div>
-                               
+                            )}
+                            {typeuse === "Clientes" && (
+                                <div className="">
+                                    <button  onClick={opencar}  className="bg-[#003333] p-3 dark:bg-[#5E2419] rounded-xl text-white m-3">
+                                        Carrito de Compras
+                                    </button>
+                                </div>
                             )}
 
                 </div> 
 
-                <div className="sm:grid grid-cols-1 p-7 gap-4 md:grid grid-cols-3 p-3">
+                <div className="sm:grid grid-cols-1 p-7 gap-4  md:grid grid-cols-3 p-3">
                 
                  {date.filter(item => 
                         item.nombre.toLowerCase().includes(searchTerm.toLowerCase()) && 
-                        (filter === "Todos" || item.estado === filter) // Filtra por estado
+                        (filter.trim() === "Todos" || item.estado === filter) // Filtra por estado
                     ).map((item) => {
                         let imagenes=[]
                         try {
@@ -220,16 +216,13 @@ const closecreate=()=>{
                         <div 
                         onClick={()=>opendeta(item)}
                         key={item.id} 
-                        className="hover:cursor-pointer border-2 border-[#003333] shadow-lg mb-12 hover:shadow-green-900 rounded-xl w-[80%]">
+                        className="hover:cursor-pointer border-2 border-[#003333] shadow-lg mb-12 hover:shadow-green-900 rounded-xl w-[80%]  sm: ml-12">
                         <h1 className="flex justify-center font-bold">{item.nombre}</h1>
-                        <div className="p-5 rounded-xl">
+                        <div className="p-5 rounded-xl ">
                             <img src={`${baseurl}/img/${imagenes[0]}`} alt="" />
                         </div>
+                        <p className="flex justify-center p-2 w-[90%]">Descripcion: {item.descripcion || "N/A"}</p>
                         
-                        <p className="flex justify-center">Precio: ${item.precio}</p>
-                        <p className="flex justify-center">Unidades Disponibles: {item.unidades_disponibles}</p>
-                        <p className="flex justify-center">Descripcion: {item.descripcion || "N/A"}</p>
-                        <p className="flex justify-center">Estado: {item.estado}</p>
                            <Link 
                                            to={`/opiniones/${item.id}`}
                                            className="text-blue-500 flex justify-center underline mb-2"

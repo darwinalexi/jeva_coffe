@@ -106,20 +106,26 @@ export const send_email = async (req, res) => {
       [correo]
     );
 
-    if (result.length === 0) {
+    const [sendclient]= await connection.query("select*from clientes where correo=?",[correo])
+
+    if (result.length === 0 && sendclient.length === 0) {
       return res.status(404).json({ mensaje: "Correo no registrado" });
     }
 
-    const user= result[0];
+    const user= result[0] || sendclient[0];
     const code = crypto.randomBytes(3).toString("hex");
 
     const codigoHash = await bcrypt.hash(code, 10);
 
-    await connection.query(
+await connection.query(
       "UPDATE usuarios SET codigo_reset = ?, codigo_expira = DATE_ADD(NOW(), INTERVAL 10 MINUTE) WHERE correo = ?",
       [codigoHash, correo]
     );
-
+await connection.query(
+      "UPDATE clientes SET codigo_reset = ?, codigo_expira = DATE_ADD(NOW(), INTERVAL 10 MINUTE) WHERE correo = ?",
+      [codigoHash, correo]
+    );
+      
     const transporter = nodemailer.createTransport({
       host: "smtp-relay.brevo.com",
       port: 587,
@@ -145,6 +151,7 @@ export const send_email = async (req, res) => {
     });
 
     return res.status(200).json({ mensaje: "Código enviado al correo" });
+    
   } catch (error) {
     console.error("Error en change_password:", error);
     return res.status(500).json({ mensaje: "Error interno del servidor" });
@@ -153,34 +160,80 @@ export const send_email = async (req, res) => {
 
 export const change_password = async (req, res) => {
   try {
-    const { correo, codigo_verificacion, clave } = req.body;
-    const [see]= await connection.query("select*from usuarios where correo=?",[correo])
-    if(see.length==0){
-    return  res.status(404).json({ mensaje: "Usuario no encontrado" });
-    }
-    const users = see[0]; 
-    if (!users.codigo_reset) {
-      return res.status(400).json({ mensaje: "No se ha solicitado un cambio de contraseña" });  
+    const { correo, codigo, clave } = req.body;
+
+    if(!correo ||!codigo || !clave) {
+      return res.status(400).json({ mensaje: "Correo, Código y nueva contraseña son requeridos" });
     }
 
-    const now= new Date(); 
-    const expira= new Date(users.codigo_expira);
+    const [see]= await connection.query("select*from usuarios where correo=?",[correo])
+    const [seeclient]= await connection.query("select*from clientes where correo=?",[correo])
+      if(see.length==0 && seeclient.length==0){
+        return  res.status(404).json({ mensaje: "Usuario no encontrado" });
+      }
+    if(see.length>0){
+      console.log("entro a usuarios", codigo);
+      const users = see[0]
+          if (!users.codigo_reset) {
+          return res.status(400).json({ mensaje: "No se ha solicitado un cambio de contraseña" });  
+        }
+
+         const now= new Date(); 
+        const expira= new Date(users.codigo_expira);
       if (now > expira) {
         return res.status(400).json({ mensaje: "El código de verificación ha expirado" });  
       }
-        if (!codigo_verificacion || !users.codigo_reset) {
+        if (!users.codigo_reset) {
           return res.status(400).json({ mensaje: "Código de verificación requerido" });
         }
 
-      const compara= await compare(codigo_verificacion, users.codigo_reset);  
-      console.log("compara", compara);
+      const compara= await compare(codigo, users.codigo_reset);  
+      
       if (!compara) {
         return res.status(400).json({ mensaje: "Código de verificación incorrecto" });
       }
 
       const clavehash= await encrypter(clave);
-      await connection.query("UPDATE usuarios SET clave = ? WHERE correo = ?", [clavehash, correo]);
-      return res.status(200).json({ mensaje: "Contraseña cambiada con éxito" });
+      const [passwiordsre] =await connection.query("UPDATE usuarios SET clave = ? WHERE correo = ?", [clavehash, correo]);
+
+      if (passwiordsre ) {
+        return res.status(200).json({ mensaje: "Contraseña cambiada con éxito" }); 
+      } 
+
+
+    }else if(seeclient.length>0){
+      console.log("entro a clientes", codigo);
+      const client = seeclient[0];
+          if (!client.codigo_reset) {
+          return res.status(400).json({ mensaje: "No se ha solicitado un cambio de contraseña" });  
+        }
+
+
+          const now= new Date(); 
+        const expira= new Date(client.codigo_expira);
+        console.log("codigo",codigo);
+      if (now > expira) {
+        return res.status(400).json({ mensaje: "El código de verificación ha expirado" });  
+      }
+        if (!client.codigo_reset) {
+          return res.status(400).json({ mensaje: "Código de verificación requerido" });
+        }
+
+      const compara= await compare(codigo, client.codigo_reset);
+
+      if (!compara) {
+        return res.status(400).json({ mensaje: "Código de verificación incorrecto" });
+      }
+
+      const clavehash= await encrypter(clave);
+      const [passwordClient] = await connection.query("UPDATE clientes SET clave = ? WHERE correo = ?", [clavehash, correo]);
+      if ( passwordClient) {
+        return res.status(200).json({ mensaje: "Contraseña cambiada con éxito" }); 
+      } 
+    }
+    
+   
+      
   } catch (e) {
     console.error("Error en change_password:", e);
     return res.status(500).json({ mensaje: "Error interno del servidor" });

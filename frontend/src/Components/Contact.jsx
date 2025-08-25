@@ -1,12 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { Politices_private } from "./Politices_ans_private"
-import { 
-  faFacebook, 
-  faInstagram, 
-  faWhatsapp
-} from '@fortawesome/free-brands-svg-icons';
-import {Link} from "react-router-dom"
-import logo from "../assets/img/logo.jpg"
+import { faWhatsapp} from '@fortawesome/free-brands-svg-icons';
+import {Link} from "react-router-dom";
+import logo from "../assets/img/logo-removebg.png";
 import MapaColombia from "./Maps/Map";
 export const Contact=()=>{
 
@@ -20,25 +15,21 @@ export const Contact=()=>{
 
   return(
         <>
- <footer className="bg-[#003333] text-white py-10">
-      <div className="container mx-auto px-6 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 gap-6">
-        
-
-    
-        <div className="w-full">
-         <MapaColombia />
-          </div>
-
-    
-        <div>
-          <h3 className="text-lg font-semibold mb-3 text-[#Ff6600]">Contacto</h3>
-          <ul className="text-sm space-y-2">
-            <li>📍 Bogotá, Colombia</li>
-            <li onClick={whattasap}>📞 +57 300 123 4567</li>
-            <li>✉️ contacto@jevacoffee.com</li>
-          </ul>
+ <footer className="bg-[#003333] text-white py-10 dark:bg-[#5E2419] ">
+      <div className="container mx-auto px-6 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6">
+      
+        <div className="sm: relative left-[50%] md:left-0 ">
+          <img src={logo} alt="Logo" />
+          <p className="flex justify-center">Facebook</p>
+          <p className="flex justify-center">Instagram</p>
         </div>
 
+<div className="col-span-2 ">
+            <h1 className="p-5">Donde Estamos</h1>
+         <div className="-z-50">
+          <MapaColombia />
+         </div>
+          </div>
 
            <div>
           <h3 className="text-lg font-semibold mb-3 text-[#Ff6600]">Politicas de Datos</h3>
@@ -48,16 +39,14 @@ export const Contact=()=>{
         </div>
      </div>
 
-          <div className="">
-            <div className="flex justify-end relative top-20" onClick={whattasap}>
-              <p className="mr-6">Escribenos a nuestro Whatssap:</p>
-            <FontAwesomeIcon icon={faWhatsapp} className="size-8 hover:size-16 transition-all hover:cursor-pointer"/>
+      <div className="relative left-[72%] sm:relative sm:left-[83%]  w-12">
+            <div className="flex justify-end relative top-[80%] w-20 hover:cursor-pointer  hover:w-[18%]  group transition-all" onClick={whattasap}>
+              <p className="hidden group-hover:block">Escribenos a nuestro Whatssap:</p>
+            <FontAwesomeIcon icon={faWhatsapp} className="size-16 hover:size-16 transition-all hover:cursor-pointer"/>
             </div>
           </div>
-      
-      
 
-      <div className="text-center text-sm mt-10 text-gray-400 p-16">
+      <div className="text-center text-sm mt-10 text-gray-400">
         © {new Date().getFullYear()} JEVA Coffee. Todos los derechos reservados.
       </div>
     </footer>

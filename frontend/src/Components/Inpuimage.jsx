@@ -29,13 +29,14 @@ export default function ImageUploadPreview({onImageChange}) {
       <input
         style={{ display: "none" }}
         type="file"
+        multiple
         accept="image/*"
         id="image-upload"
         onChange={handleImageChange}
       />
       {/* Boton para cargar imagen */}
       <label htmlFor="image-upload">
-        <Button shadow className ="bg-[#003333] text-white "  auto as="span">
+        <Button shadow className ="bg-[#003333] dark:bg-[#5E2419] text-white "  auto as="span"> 
           Cargar Imagen
         </Button>
       </label>

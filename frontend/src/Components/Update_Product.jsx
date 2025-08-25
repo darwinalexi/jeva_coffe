@@ -10,26 +10,28 @@ export const Update_Product = ({ onclose, data }) => {
   const [unidades_disponibles, setdisponibles] = useState(data.unidades_disponibles);
   const [precio, setprecio] = useState(data.precio);
   const [estado, setestado] = useState(data.estado);
-  const [image, setImage] = useState(data.imagen);
+  const [image, setImage] = useState([]);
   const [descripcion, setdescripcion] = useState(data.descripcion || "N/A");
+  const [cantidad, setcantidad] = useState(data.cantidad || 0);
+  const [tueste, settueste] = useState(data.tipo_tueste || "N/A");
+  const [variedad, setvariedad] = useState(data.variedad || "N/A");
+  const [aroma, setaroma] = useState(data.aroma || "N/A");
+  const [sabor, setsabor] = useState(data.sabor || "N/A");
+  const [cuerpo, setcuerpo] = useState(data.cuerpo || "N/A");
 
-  const handleImageChange = (file) => {
-    setImage(file);
-  };
+  
 
 
 
     const formatPrice = (value) => {
-    // Eliminar cualquier carácter que no sea un número
+    
     const numberValue = value.replace(/[^0-9]/g, '');
-    // Formatear el número con comas
     return new Intl.NumberFormat().format(numberValue);
   };
 
   const update_products = async (e) => {
     e.preventDefault();
 
-    // Convertir unidades disponibles a número
     const unidades = Number(unidades_disponibles);
     if (unidades < 1) {
       Swal.fire({
@@ -41,15 +43,30 @@ export const Update_Product = ({ onclose, data }) => {
 
     try {
       const formData = new FormData();
+
       formData.append('nombre', nombre);
       formData.append('unidades_disponibles', unidades);
       formData.append('precio', precio);
       formData.append('estado', estado);
       formData.append('descripcion', descripcion);
-      if (image) {
-        formData.append("imagen", image);
+      if (Array.isArray(image) && image.length > 0) {
+        image.forEach(imagen => {
+          formData.append('imagen', imagen);
+        });
       }
+      formData.append('cantidad', cantidad);
+      formData.append('tueste', tueste);
+      formData.append('variedad', variedad);
+      formData.append('aroma', aroma);
+      formData.append('sabor', sabor);
+      formData.append('cuerpo', cuerpo);
 
+      if (formData) {
+        console.log("FormData:", Array.from(formData.entries())); 
+      }else{
+        console.log("FormData is empty"); 
+      }
+  
       const update = await axiosClient.put(`/productos/${data.id}`, formData);
       if (update.status === 200) {
         Swal.fire({
@@ -59,6 +76,7 @@ export const Update_Product = ({ onclose, data }) => {
         window.location.reload();
       }
     } catch (e) {
+      console.error("Error al actualizar el producto:", e);
       if (e.response && e.response.status === 400) {
         const errores = e.response.data.errores;
         const mensajes = errores.map(err => err.msg).join(', ');
@@ -83,19 +101,19 @@ export const Update_Product = ({ onclose, data }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-2xl p-8 w-full max-w-2xl relative shadow-lg overflow-scroll h-[80%]" style={scrollStyle}>
+      <div className="bg-white rounded-2xl p-8 w-full max-w-2xl relative shadow-lg overflow-scroll h-[80%] dark:bg-gray-800" style={scrollStyle}>
         <div className="flex justify-between items-center mb-6 border-b pb-2 border-[#003333]">
-          <h1 className="text-3xl font-bold text-[#003333]">Actualizar Producto</h1>
+          <h1 className="text-3xl font-bold text-[#003333] dark:text-white">Actualizar Producto</h1>
           <FontAwesomeIcon
             icon={faClose}
             onClick={onclose}
-            className="text-[#003333] hover:text-red-600 cursor-pointer text-xl"
+            className="text-[#003333] hover:text-red-600 cursor-pointer text-xl dark:text-white"
           />
         </div>
 
-        <form className="flex flex-col gap-4 text-[#003333]" onSubmit={update_products}>
+        <form className="flex flex-col gap-4 text-[#003333] dark:text-white" onSubmit={update_products}>
           <div>
-            <label className="block font-semibold mb-1">Nombre</label>
+            <label className="block font-semibold mb-1 ">Nombre</label>
             <input
               type="text"
               placeholder="Ingrese el nombre"
@@ -140,6 +158,72 @@ export const Update_Product = ({ onclose, data }) => {
             />
           </div>
 
+          
+           <div>
+              <label className="block font-semibold mb-1">Estado de Tostión</label>
+              
+              <select
+                value={tueste}
+                onChange={(e) => settueste(e.target.value)}
+                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
+              >
+                  <option value="hidden" >Seleccione un tipo de tostion</option>
+                  <option value="Tueste_claro">Tueste Claro</option>
+                  <option value="Tueste_medio">Tueste Medio</option>
+                  <option value="Tueste_oscuro">Tueste Oscuro</option>
+              </select>
+            </div>
+            <div>
+            <label className="block font-semibold mb-1">Variedad</label>
+            <input
+              type="text"
+              placeholder="Ingrese Variedad"
+              value={variedad}
+              onChange={(e) => setvariedad(e.target.value)}
+              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
+            />
+          </div>
+
+          <div>
+            <label className="block font-semibold mb-1">Aroma</label>
+            <input
+              type="text"
+              placeholder="Ingrese Aroma"
+              value={aroma}
+              onChange={(e) => setaroma(e.target.value)}
+              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
+            />
+          </div>
+
+          <div>
+            <label className="block font-semibold mb-1">Sabor</label>
+            <input
+              type="text"
+              placeholder="Ingrese Sabor"
+              value={sabor}
+              onChange={(e) => setsabor(e.target.value)}
+              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
+            />
+          </div>
+
+          
+
+          <div>
+              <label className="block font-semibold mb-1">cuerpo</label>
+                <select
+                  value={cuerpo}
+                  onChange={(e) => setcuerpo(e.target.value)}
+                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
+                >
+                  <option value="hidden" >Seleccione un tipo de cuerpo</option>
+                  <option value="cuerpo_ligero">Cuerpo Ligero</option>
+                  <option value="cuerpo_medio">Cuerpo Medio</option>
+                  <option value="cuerpo_oscuro">Cuerpo Intenso o Completo</option>
+                </select>
+          </div>
+
+         
+
           <div>
             <label className="block font-semibold mb-1">Estado</label>
             <select
@@ -155,7 +239,8 @@ export const Update_Product = ({ onclose, data }) => {
 
           <div>
             <label className="block font-semibold mb-1">Imagen</label>
-            <ImageUploadPreview onImageChange={handleImageChange} />
+            <input  type="file" multiple accept="image/*" onChange={(e) => setImage(Array.from(e.target.files))} 
+            className="border-1 border-[#003333] dark:border-white w-full p-5 rounded-xl"/>
           </div>
 
           <button

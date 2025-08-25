@@ -1,4 +1,4 @@
-import { faClose } from "@fortawesome/free-solid-svg-icons"
+import { faClose, faEyeSlash, faEye } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useState } from "react"
 import ImageUploadPreview from "./Inpuimage"
@@ -15,9 +15,14 @@ export const Edit_user = ({ data, onclose }) => {
   const [image, setimage] = useState(null); 
   const [Clave, setClave] = useState("");
   const [Tipo, setTipo] = useState(data.tipo);
+  const [open, setopen]= useState(false);
 
   const handleimage = (file) => {
     setimage(file);
+  };
+
+  const openpas= () => {
+    setopen(true);
   };
 
   const updateuser = async (e) => {
@@ -70,16 +75,16 @@ export const Edit_user = ({ data, onclose }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div
-        className="bg-white rounded-2xl p-8 w-full max-w-2xl relative shadow-lg overflow-scroll h-[80%]"
+        className="bg-white rounded-2xl p-8 w-full max-w-2xl relative shadow-lg overflow-scroll h-[80%] dark:bg-gray-800"
         style={scrollStyle}
       >
         <div className="grid grid-cols-2 gap-12">
           <div>
-            <h1 className="text-[#003333] font-bold text-4xl">Editar Usuario</h1>
+            <h1 className="text-[#003333] font-bold text-4xl dark:text-white">Editar Usuario</h1>
           </div>
           <div className="relative left-[23%]">
             <FontAwesomeIcon
-              className="size-8 text-red-800 relative left-[62%] cursor-pointer"
+              className="size-8 text-red-800 relative left-[62%] cursor-pointer dark:text-white"
               onClick={onclose}
               icon={faClose}
             />
@@ -94,7 +99,7 @@ export const Edit_user = ({ data, onclose }) => {
                 type="text"
                 onChange={(e) => setNombre(e.target.value)}
                 value={Nombre}
-                className="focus:outline-none border-2 border-[#003333] p-1 rounded-xl"
+                className="focus:outline-none border-2 border-[#003333] p-2 rounded-xl"
               />
             </div>
 
@@ -104,7 +109,7 @@ export const Edit_user = ({ data, onclose }) => {
                 type="email"
                 onChange={(e) => setCorreo(e.target.value)}
                 value={Correo}
-                className="focus:outline-none border-2 border-[#003333] p-1 rounded-xl"
+                className="focus:outline-none border-2 border-[#003333] p-2 rounded-xl"
               />
             </div>
 
@@ -114,7 +119,7 @@ export const Edit_user = ({ data, onclose }) => {
                 type="text"
                 onChange={(e) => setDescripcion(e.target.value)}
                 value={Descripcion}
-                className="focus:outline-none border-2 border-[#003333] p-1 rounded-xl"
+                className="focus:outline-none border-2 border-[#003333] p-2 rounded-xl"
               />
             </div>
 
@@ -124,18 +129,24 @@ export const Edit_user = ({ data, onclose }) => {
                 type="number"
                 onChange={(e) => setEdad(e.target.value)}
                 value={Edad}
-                className="focus:outline-none border-2 border-[#003333] p-1 rounded-xl"
+                className="focus:outline-none border-2 border-[#003333] p-2 rounded-xl"
               />
             </div>
 
             <div className="w-full flex flex-col mb-4">
               <label>Clave (opcional):</label>
               <input
-                type="password"
+                type={open ? "text" : "password"}
                 onChange={(e) => setClave(e.target.value)}
                 placeholder="(opcional) Solo si deseas cambiar tu clave"
-                className="focus:outline-none border-2 border-[#003333] p-1 rounded-xl"
+                className="focus:outline-none border-2 border-[#003333] p-2 rounded-xl"
               />
+              <button
+                type="button"
+                onClick={() => setopen((prev) => !prev)}
+              >
+              <FontAwesomeIcon icon={open ? faEye : faEyeSlash} />
+              </button>
             </div>
 
             <div className="mb-6">

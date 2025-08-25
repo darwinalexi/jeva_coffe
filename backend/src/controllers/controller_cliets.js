@@ -32,6 +32,15 @@ export const create_client=async(req, res)=>{
         
         let imagen = "profile_default.jpeg";
 
+        const [check]= await connection.query("select* from clientes where identificacion=? or correo=?",[identificacion, correo])  
+
+        if (check.length>0) {
+            return res.status(400).json({
+                errores:[{msg:"No se puede completar la acción porque la identificación o correo ya están en nuestra base de datos"}]
+            })
+            
+        }
+
         const clavehash= await encrypter(clave);
         const [create]= await connection.query("insert into clientes (identificacion, nombre, correo, celular, edad, clave, imagen)values(?,?,?,?,?,?,?)",[identificacion, nombre, correo, celular, edad, clavehash, imagen]);
         if (create.affectedRows>0) {

@@ -4,18 +4,24 @@ import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Swal from "sweetalert2";
 import axiosClient from "../utils/axiosClient";
+
+
 export const Create_Product=({onclose})=>{
+ 
   const [nombre, setnombre] = useState("");
   const [unidades_disponibles, setdisponibles] = useState();
   const [precio, setprecio] = useState();
   const [estado, setestado] = useState();
   const [image, setImage] = useState();
   const [descripcion, setdescripcion] = useState("");
+  const [cantidad, setcantidad] = useState("");
+  const [tueste, settueste] = useState("");
+  const [variedad, setvariedad] = useState("");
+  const [aroma, setaroma] = useState("");
+  const [sabor, setsabor] = useState("");
   const [identificacion, setidentificacion]= useState("");
+  const [cuerpo, setcuerpo] = useState("");
   
-  const handleImageChange = (file) => {
-    setImage(file);
-  };
 
   useEffect(()=>{
         const data= JSON.parse(localStorage.getItem('usuario'));
@@ -39,12 +45,26 @@ export const Create_Product=({onclose})=>{
      const create_products = async (e) => {
         e.preventDefault();
     
-        // Convertir unidades disponibles a número
         const unidades = Number(unidades_disponibles);
         if (unidades < 1) {
           Swal.fire({
             icon: 'warning',
             text: 'Lo sentimos, pero las unidades deben ser un mínimo de uno, no puede ser 0 o menos.'
+          });
+          return;
+        }
+
+        if (!image ) {
+          Swal.fire({
+            icon: 'warning',
+            text: 'Por favor, sube al menos una imagen.'
+          });
+          return;
+        }
+        if (image.length > 5) {
+          Swal.fire({
+            icon: 'warning',
+            text: 'Por favor, sube un máximo de 5 imágenes.'
           });
           return;
         }
@@ -56,10 +76,21 @@ export const Create_Product=({onclose})=>{
           formData.append('precio', precio);
           formData.append('estado', estado);
           formData.append('descripcion', descripcion);
-          if (image) {
-            formData.append("imagen", image);
+          if (Array.isArray(image) && image.length > 0) {
+            image.forEach(imagen => {
+              formData.append('imagen', imagen);
+            });
           }
+          
           formData.append('usuario_id', identificacion);
+          formData.append('cantidad', cantidad);
+          formData.append('tueste', tueste);
+          formData.append('variedad', variedad);
+          formData.append('aroma', aroma);
+          formData.append('sabor', sabor);
+          formData.append('cuerpo', cuerpo);
+          
+        
     
           const update = await axiosClient.post(`/productos`, formData);
           if (update.status === 200) {
@@ -70,6 +101,7 @@ export const Create_Product=({onclose})=>{
             window.location.reload();
           }
         } catch (e) {
+          console.error("Error al crear el producto:", e);
           if (e.response && e.response.status === 400) {
             const errores = e.response.data.errores;
             const mensajes = errores.map(err => err.msg).join(', ');
@@ -87,23 +119,22 @@ export const Create_Product=({onclose})=>{
       };
     return(
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white rounded-2xl p-8 w-full max-w-2xl relative shadow-lg overflow-scroll h-[80%]" style={scrollStyle}>
+            <div className="bg-white rounded-2xl p-8 w-full max-w-2xl relative shadow-lg overflow-scroll h-[80%] dark:bg-gray-800" style={scrollStyle}>
                  <div className="flex justify-between items-center mb-6 border-b pb-2 border-[#003333]">
-                          <h1 className="text-3xl font-bold text-[#003333]">Crear Producto</h1>
+                          <h1 className="text-3xl font-bold text-[#003333] dark:text-white">Crear Producto</h1>
                           <FontAwesomeIcon
                             icon={faClose}
                             onClick={onclose}
-                            className="text-[#003333] hover:text-red-600 cursor-pointer text-xl"
+                            className="text-[#003333] hover:text-red-600 cursor-pointer text-xl  dark:text-white"
                           />
                         </div>
                 
-                        <form className="flex flex-col gap-4 text-[#003333]" onSubmit={create_products} >
+                        <form className="flex flex-col gap-4 text-[#003333] dark:text-white" onSubmit={create_products} >
                           <div>
-                            <label className="block font-semibold mb-1">Nombre</label>
+                            <label className="block font-semibold mb-1 ">Nombre</label>
                             <input
                               type="text"
                               placeholder="Ingrese el nombre"
-                              value={nombre}
                               onChange={(e) => setnombre(e.target.value)}
                               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
                             />
@@ -115,7 +146,6 @@ export const Create_Product=({onclose})=>{
                             
                               type="number"
                               placeholder="Ingrese unidades disponibles"
-                              value={unidades_disponibles}
                               onChange={(e) => setdisponibles(e.target.value)}
                               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
                             />
@@ -143,11 +173,50 @@ export const Create_Product=({onclose})=>{
                               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
                             />
                           </div>
+                          <div>
+                            <label className="block font-semibold mb-1">Aroma</label>
+                            <input
+                              type="text"
+                              placeholder="Ingrese el aroma"
+                              onChange={(e) => setaroma(e.target.value)}
+                              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
+                            />
+                          </div>
+
+                           <div>
+                            <label className="block font-semibold mb-1">Cantidad</label>
+                            <input
+                              type="text"
+                              placeholder="Ingrese la cantidad Ej. 250 kg"
+                              onChange={(e) => setcantidad(e.target.value)}
+                              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
+                            />
+                          </div>
+
+                           <div>
+                            <label className="block font-semibold mb-1">Sabor</label>
+                            <input
+                              type="text"
+                              placeholder="Ingrese el sabor esperado por nuestros clientes"
+                              onChange={(e) => setsabor(e.target.value)}
+                              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
+                            />
+                          </div>
+                
+                         <div>
+                            <label className="block font-semibold mb-1">Variedad</label>
+                            <input
+                              type="text"
+                              placeholder="Ingrese la variedad Ej. Castilla"
+                              onChange={(e) => setvariedad(e.target.value)}
+                              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
+                            />
+                          </div>
                 
                           <div>
                             <label className="block font-semibold mb-1">Estado</label>
                             <select
-                              value={estado}
+                            
                               onChange={(e) => setestado(e.target.value)}
                               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
                             >
@@ -156,10 +225,38 @@ export const Create_Product=({onclose})=>{
                               <option value="No Disponible">No Disponible</option>
                             </select>
                           </div>
+
+                          <div>
+                            <label className="block font-semibold mb-1">Estado de Tostión</label>
+                            <select
+                              onChange={(e) => settueste(e.target.value)}
+                              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
+                            >
+                              <option value="hidden" >Seleccione un tipo de tostion</option>
+                              <option value="Tueste_claro">Tueste Claro</option>
+                              <option value="Tueste_medio">Tueste Medio</option>
+                              <option value="Tueste_oscuro">Tueste Oscuro</option>
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block font-semibold mb-1">cuerpo</label>
+                            <select
+                              onChange={(e) => setcuerpo(e.target.value)}
+                              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
+                            >
+                              <option value="hidden" >Seleccione un tipo de cuerpo</option>
+                              <option value="Cuerpo_ligero">Cuerpo Ligero</option>
+                              <option value="Cuerpo_medio">Cuerpo Medio</option>
+                              <option value="Cuerpo_oscuro">Cuerpo Intenso o Completo</option>
+                            </select>
+                          </div>
                 
                           <div>
                             <label className="block font-semibold mb-1">Imagen</label>
-                            <ImageUploadPreview onImageChange={handleImageChange} />
+                            <input type="file" accept="image/*" multiple 
+                            className="border-1 border-[#003333] dark:border-white w-full p-5 rounded-xl"
+                            onChange={(e) => setImage(Array.from(e.target.files))} />
                           </div>
                 
                           <button
