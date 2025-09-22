@@ -6,7 +6,6 @@ import { router_aut } from "./src/routers/router_autentication.js";
 import {router_sales} from "./src/routers/router_sales.js"
 import cors from "cors"
 import { router_municipality } from "./src/routers/router_municipaly.js";
-import { router_client } from "./src/routers/router_client.js";
 import { router_departament } from "./src/routers/router_departament.js";
 import {coffe_price} from "./src/routers/router_price_coffe.js"
 import { router_comment } from "./src/routers/router_comment.js";
@@ -26,7 +25,6 @@ server.use(Router_product)
 server.use(router_user)
 server.use(router_municipality)
 server.use(router_sales);
-server.use(router_client);
 server.use(coffe_price)
 server.use(router_comment)
 server.use(router_departament);

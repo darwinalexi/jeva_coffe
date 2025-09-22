@@ -35,7 +35,12 @@ export default function Grafica_ventas() {
           <CartesianGrid strokeDasharray="3 3"  />
           <XAxis dataKey="mes"/>
           <YAxis />
-          <Tooltip />
+          <Tooltip 
+  contentStyle={{ backgroundColor: "#f0f0f0", border: "1px solid #003333" }}
+  itemStyle={{ color: "#003333" }}
+  labelStyle={{ color: "#003333", fontSize: 14 }}
+/>
+
           <Legend />
           <Bar dataKey="numero_ventas" fill="#003333" />
         </BarChart>

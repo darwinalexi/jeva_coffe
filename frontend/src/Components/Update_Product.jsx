@@ -1,7 +1,6 @@
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
-import ImageUploadPreview from "./Inpuimage";
 import axiosClient from "../utils/axiosClient";
 import Swal from "sweetalert2";
 
@@ -41,13 +40,32 @@ export const Update_Product = ({ onclose, data }) => {
       return;
     }
 
+    if (image.length >5) {
+      Swal.fire({
+        title:"Advertencia",
+        icon:'warning',
+        text:'No puedes cargar mas de 5 img y al menos debes cargar 1',
+        closeButtonHtml:'cerrar'
+      })
+      return;
+    }
     try {
+
+    const userlocal= JSON.parse(localStorage.getItem('usuario' || '{}'));
+    const id= userlocal.identificacion;
+    console.log("identificacion",id)
+
       const formData = new FormData();
 
       formData.append('nombre', nombre);
       formData.append('unidades_disponibles', unidades);
       formData.append('precio', precio);
       formData.append('estado', estado);
+     if (id) {
+       formData.append('usuario_id', id);
+     }else{
+        console.log("identificacion",id)
+     }
       formData.append('descripcion', descripcion);
       if (Array.isArray(image) && image.length > 0) {
         image.forEach(imagen => {

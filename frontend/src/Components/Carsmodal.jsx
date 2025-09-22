@@ -85,7 +85,7 @@ export const Carsmodal = ({ onClose}) => {
          
             <button
               onClick={onClose}
-              className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-[#003333] m-4"
+              className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-[#003333] m-4 dark:bg-[#5E2419]"
             >
               Cerrar
             </button>

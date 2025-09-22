@@ -6,8 +6,8 @@ import MapaColombia from "./Maps/Map";
 export const Contact=()=>{
 
   const whattasap=()=>{
-    const numero="573138518000"
-    const mensaje="!Hola! Jeferson Gomez quiero mas información de los productos de la plataforma jevacoffe"
+    const numero="573001210554"
+    const mensaje="!Hola! quiero mas información de los productos de jevacoffee.com"
     const url=`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`
     window.open(url,"_blank")
   }

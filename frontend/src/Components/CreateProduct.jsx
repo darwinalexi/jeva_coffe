@@ -53,7 +53,15 @@ export const Create_Product=({onclose})=>{
           });
           return;
         }
-
+        
+        if (!nombre || !unidades_disponibles || !precio || !estado || !descripcion || !cantidad || !tueste || !variedad || !aroma || !sabor || !identificacion || !cuerpo) {
+          Swal.fire({
+            icon:'warning',
+            title:'Advertencia',
+            text:'No has completado los campos requeridos'
+          })
+          return;
+        }
         if (!image ) {
           Swal.fire({
             icon: 'warning',
@@ -120,7 +128,7 @@ export const Create_Product=({onclose})=>{
     return(
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
             <div className="bg-white rounded-2xl p-8 w-full max-w-2xl relative shadow-lg overflow-scroll h-[80%] dark:bg-gray-800" style={scrollStyle}>
-                 <div className="flex justify-between items-center mb-6 border-b pb-2 border-[#003333]">
+              <div className="flex justify-between items-center mb-6 border-b pb-2 border-[#003333]">
                           <h1 className="text-3xl font-bold text-[#003333] dark:text-white">Crear Producto</h1>
                           <FontAwesomeIcon
                             icon={faClose}
@@ -134,6 +142,7 @@ export const Create_Product=({onclose})=>{
                             <label className="block font-semibold mb-1 ">Nombre</label>
                             <input
                               type="text"
+                              required
                               placeholder="Ingrese el nombre"
                               onChange={(e) => setnombre(e.target.value)}
                               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
@@ -145,6 +154,7 @@ export const Create_Product=({onclose})=>{
                             <input
                             
                               type="number"
+                              required
                               placeholder="Ingrese unidades disponibles"
                               onChange={(e) => setdisponibles(e.target.value)}
                               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
@@ -158,6 +168,7 @@ export const Create_Product=({onclose})=>{
                             
                               placeholder="Ingrese el precio"
                               value={precio}
+                              required
                               onChange={(e) => setprecio(formatPrice(e.target.value))}
                               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
                             />
@@ -167,6 +178,7 @@ export const Create_Product=({onclose})=>{
                             <label className="block font-semibold mb-1">Descripción</label>
                             <input
                               type="text"
+                              required
                               placeholder="Ingrese una Descripción"
                               value={descripcion}
                               onChange={(e) => setdescripcion(e.target.value)}
@@ -177,6 +189,7 @@ export const Create_Product=({onclose})=>{
                             <label className="block font-semibold mb-1">Aroma</label>
                             <input
                               type="text"
+                              required
                               placeholder="Ingrese el aroma"
                               onChange={(e) => setaroma(e.target.value)}
                               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
@@ -187,6 +200,7 @@ export const Create_Product=({onclose})=>{
                             <label className="block font-semibold mb-1">Cantidad</label>
                             <input
                               type="text"
+                              required
                               placeholder="Ingrese la cantidad Ej. 250 kg"
                               onChange={(e) => setcantidad(e.target.value)}
                               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
@@ -197,6 +211,7 @@ export const Create_Product=({onclose})=>{
                             <label className="block font-semibold mb-1">Sabor</label>
                             <input
                               type="text"
+                              required
                               placeholder="Ingrese el sabor esperado por nuestros clientes"
                               onChange={(e) => setsabor(e.target.value)}
                               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
@@ -207,6 +222,7 @@ export const Create_Product=({onclose})=>{
                             <label className="block font-semibold mb-1">Variedad</label>
                             <input
                               type="text"
+                              required
                               placeholder="Ingrese la variedad Ej. Castilla"
                               onChange={(e) => setvariedad(e.target.value)}
                               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
@@ -216,7 +232,7 @@ export const Create_Product=({onclose})=>{
                           <div>
                             <label className="block font-semibold mb-1">Estado</label>
                             <select
-                            
+                              required
                               onChange={(e) => setestado(e.target.value)}
                               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
                             >
@@ -229,6 +245,7 @@ export const Create_Product=({onclose})=>{
                           <div>
                             <label className="block font-semibold mb-1">Estado de Tostión</label>
                             <select
+                            required
                               onChange={(e) => settueste(e.target.value)}
                               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
                             >
@@ -242,6 +259,7 @@ export const Create_Product=({onclose})=>{
                           <div>
                             <label className="block font-semibold mb-1">cuerpo</label>
                             <select
+                            required
                               onChange={(e) => setcuerpo(e.target.value)}
                               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
                             >
@@ -254,7 +272,8 @@ export const Create_Product=({onclose})=>{
                 
                           <div>
                             <label className="block font-semibold mb-1">Imagen</label>
-                            <input type="file" accept="image/*" multiple 
+                            <input type="file" accept="image/*" multiple
+                            required 
                             className="border-1 border-[#003333] dark:border-white w-full p-5 rounded-xl"
                             onChange={(e) => setImage(Array.from(e.target.files))} />
                           </div>
@@ -266,8 +285,8 @@ export const Create_Product=({onclose})=>{
                             Crear Producto
                           </button>
                         </form>
-            </div>    
-        </div>
+              </div>    
+            </div>
         
     )
 }

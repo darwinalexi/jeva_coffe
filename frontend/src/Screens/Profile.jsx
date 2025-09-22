@@ -3,12 +3,12 @@ import NavBar from "../Components/NavBar";
 import axiosClient from "../utils/axiosClient";
 import Imagen from "../Components/Image";
 import { Edit_user } from "../Components/Edit_User";
-import federacion from "../assets/img/federacion.png"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faWarning } from "@fortawesome/free-solid-svg-icons";
+import {faWarning } from "@fortawesome/free-solid-svg-icons";
 import { baseurl } from "../utils/data";
 import SearchBar from "../Components/Searchar";
 import { Contact } from "../Components/Contact";
+
 
 export const Profile = () => {
     const [usuario, setuser] = useState([]);
@@ -20,18 +20,37 @@ export const Profile = () => {
     const [searcher, setsearcher]= useState("");    
     const [estadoFiltro, setEstadoFiltro] = useState("todos");
     const [numbersales, setsales]= useState([]);
+    const [userid, setuserid]= useState("")
     const [isDark, setisDark] = useState(() => {
   return Boolean(JSON.parse(localStorage.getItem("darkMode") || "false"));
 });
 
 
+    useEffect(() => {
+      client();
+        const datalocal = JSON.parse(localStorage.getItem('usuario')||'{}');
+        const identificacion= datalocal.identificacion;
+        setuserid(identificacion)
+
+        price_coffe();
+        
+        (async () => {
+            try {
+                const response = await axiosClient.get(`/usuario/${userid}`);
+                setuser(response.data);
+            } catch (err) {
+                console.log(err)
+            }
+        })();
+      
+    }, [userid]);
 
     const count_sales_client=async()=>{
         try {
-            const user= JSON.parse(localStorage.getItem('Cliente') || '{}');
+            const user= JSON.parse(localStorage.getItem('usuario') || '{}');
             const id_cliente = user.identificacion
             const see= await axiosClient.get(`/contar_ventas_cliente/${id_cliente}`);
-            setsales(see.data);
+            setsales(see.data.ventas);
             console.log("Mis Ventas",see.data);
         } catch (error) {
             console.log(error);
@@ -50,10 +69,8 @@ export const Profile = () => {
 
     const client= async(i)=>{
         try {
-            const identificacion=  JSON.parse(localStorage.getItem('Cliente'));
-            const ide= identificacion.identificacion;
-            const response = await axiosClient.get(`/ver_cliente/${ide}`);
-            if (identificacion && ide) {
+            const response = await axiosClient.get(`/ver_cliente/${userid}`);
+            if (userid) {
               buys_client();
               count_sales_client();
             }
@@ -62,24 +79,6 @@ export const Profile = () => {
             console.log(err)
         }
     }
-    useEffect(() => {
-        client();
-        const datalocal = JSON.parse(localStorage.getItem('usuario')||'{}');
-        const identificacion= datalocal.identificacion;
-        
-
-        price_coffe();
-        
-        (async () => {
-            try {
-                const response = await axiosClient.get(`/usuario/${identificacion}`);
-                setuser(response.data);
-            } catch (err) {
-                console.log(err)
-            }
-        })();
-      
-    }, []);
 
     useEffect(() => {
   if (isDark) {
@@ -95,9 +94,8 @@ export const Profile = () => {
 
     const buys_client=async()=>{
         try {
-            const user= JSON.parse(localStorage.getItem('Cliente') || '{}');
-            const id_cliente = user.identificacion
-            const see= await axiosClient.get(`/listar_compras_cliente/${id_cliente}`);
+            const see= await axiosClient.get(`/listar_compras_cliente/${userid}`);
+            console.log("data", see.data)
             setbuys(see.data);
              console.log("Mis Compras",see.data);
         } catch (error) {
@@ -148,26 +146,27 @@ export const Profile = () => {
                 <div className="h-auto">
                   <h1 className="text-2xl font-bold text-center mb-6">Perfil de Usuario</h1>
                   {data.imagen && data.imagen.length > 0 ? (
-                    <Imagen
+                  <div className="relative sm: left-[9%] md:left-24">
+                      <Imagen
                       name={data.imagen}
-                      className="w-64 h-64 object-cover rounded-lg shadow-md"
+                      className="w-64 h-64 object-cover rounded- shadow-md ml-14"
                     />
+                  </div>
                   ) : (
                     <p>No Hay Imagen De Perfil</p>
                   )}
-                  <div className="space-y-2 relative bottom-[52%] left-16 text-lg ">
-                    <p><strong>Identificación:</strong> {data.identificacion}</p>
-                    <p><strong>Nombre:</strong> {data.nombre}</p>
-                    <p><strong>Correo:</strong> {data.correo}</p>
-                    <p><strong>Tipo de Usuario:</strong> {data.tipo}</p>
-                    {data.tipo === "Administrador" && (
-                      <>
-                        <p><strong>Descripción:</strong> {data.descripcion}</p>
-                        <p><strong>Edad:</strong> {data.edad} años</p>
-                      </>
-                    )}
+                  <div className="space-y-2 relative left-16 text-lg mt-3">
+                    <p className="relative sm: left-[13%] md:left-[25%]"><strong>Identificación:</strong> {data.identificacion}</p>
+                    <p className="relative sm: left-[13%]  md:left-[25%]"><strong>Nombre:</strong> {data.nombre}</p>
+                    <p className="relative sm: left-[13%]  md:left-[25%]"><strong>Correo:</strong> {data.correo}</p>
+                    <p className="relative sm: left-[13%] md:left-[25%]"><strong>Tipo de Usuario:</strong> {data.tipo}</p>
+                        <p className="relative sm: left-[13%] md:left-[25%]"><strong>Descripción:</strong> {data.descripcion}</p>
+                        <p className="relative sm: left-[13%] md:left-[25%]"><strong>Edad:</strong> {data.edad} años</p>
+                        <p className="relative sm: left-[13%] md:left-[25%]"><strong>Celular:</strong> {data.celular}</p>
+                              
+                       
                     <button
-                      className="bg-[#FF6600] hover:bg-[#FF6600] transition-colors text-white px-6 py-3 rounded-lg mt-4 "
+                      className="bg-[#FF6600] hover:bg-[#FF6600] transition-colors text-white px-6 py-3 rounded-lg mt-4 relative sm: left-[12%] md:left-[25%]"
                       onClick={() => openmodal(data)}
                     >
                       Editar información
@@ -178,7 +177,7 @@ export const Profile = () => {
                   {data.tipo === "Administrador" && (
                     <>
                      <div className="bg-gray-300 dark:bg-black rounded-xl p-6 shadow-lg mb-12 w-full">
-                      <img src={federacion} className="w-full max-w-md mx-auto" alt="Federación" />
+                      <img src="../../public/img/federacion.png" className="w-full max-w-md mx-auto" alt="Federación" />
                       <p className="text-center text-xl font-semibold mt-4">
                         Precio del Café Pergamino seco por carga de 125 kg: <br />
                         <span className="text-green-700 dark:text-white text-3xl font-bold">
@@ -196,20 +195,14 @@ export const Profile = () => {
                     </>
                   )}
 
-                  {data.tipo=="Empresa_Envios" &&(
-                    <div className="flex justify-center items-center shadow-2xl  border-1 border-gray-300  rounded-2xl h-[56%] mt-16">
-                          <p className="flex justify-center items-center text-[#Ff6600]  text-2xl font-bold drop-shadow ">En jeva Coffe lo mas importante es nuestros Clientes</p>
-                    </div>
-                  )}
-                  {data.tipo=="Clientes" &&(
-                    <div className="flex justify-center items-center shadow-2xl  border-1 border-gray-300  rounded-2xl h-[56%] mt-16">
+                  {data.tipo=="Cliente" &&(
+                    <div className="flex justify-center items-center shadow-2xl p-9 border-1 border-gray-300  rounded-2xl h-auto mt-16 hidden sm:block md:mr-16">
                          {numbersales > 0 ?(
-                          <p className="flex justify-center items-center text-[#Ff6600]  text-2xl font-bold drop-shadow ">{numbersales}</p>
+                          <p className="flex justify-center items-center text-[#Ff6600]  text-5xl font-bold drop-shadow uppercase p-4">Has Hecho {numbersales} Compra(s) en jevacofee</p>
                          ):(
                           <p className="flex justify-center items-center text-[#Ff6600]  text-2xl font-bold drop-shadow ">No has Comprado nada aun </p>
                          )}
-                        
-                        
+                              
                     </div>
                   )}
 
@@ -217,19 +210,25 @@ export const Profile = () => {
                 </div>
               </div>
               <div>
-                {data.tipo=="Clientes" &&(
-                    <div className=" shadow-2xl  border-1 border-gray-300  rounded-2xl  mt-16 relative sm:left-12 md: md:w-[90%] p-10 ">
-                          <p className="flex justify-center items-center text-[#Ff6600]  text-2xl font-bold drop-shadow ">Tus Compras son importantes para nosotros</p>
+                {data.tipo=="Cliente" &&(
+                    <div className=" shadow-2xl    m-16 relative sm:left-12 md: md:w-[90%] p-10 ">
+                          <p className="flex justify-center items-center text-[#Ff6600]  text-2xl font-bold drop-shadow uppercase">Tus Compras son importantes para nosotros</p>
                           <SearchBar
                           onChange={(e)=>setsearcher(e.target.value)}
                           value={searcher}
                           placeholder="Buscar por nombre del producto"
                           />
-                          <select name="" onChange={(e)=>setEstadoFiltro(e.target.value)} value={estadoFiltro} className="p-2 rounded-lg dark:border-1  border-gray-300 m-4 border-[#003333]">
+                          <select name="" onChange={(e)=>setEstadoFiltro(e.target.value)} value={estadoFiltro} className="p-2 rounded-lg border-1 border-[#003333]  dark:border-gray-300 m-4 border-[#003333]">
                             <option value="todos">Todos</option>
                             <option value="Por Entregar">Por Entregar</option>
                             <option value="Entregado">Entregados</option>
                           </select>
+                         
+                          <div className="flex flex-1 m-4 border-1 border-gray-400 rounded-xl p-3">
+                            <FontAwesomeIcon icon={faWarning} className="text-[#Ff6600] size-4 p-2" />
+                            <p><strong>Nota:</strong>Si algunas de tus compras cambia de estado "Por Entregar" a "Entregado" y no lo has recibido Por Favor Comunicate Con el responsable dando click en el icono  de whatsap que sale en nuestro pie de pagina </p>
+                          </div>
+                         
                          <div className="sm: grid-cols-1 md:grid grid-cols-3 gap-7 ">
                            {filterdata().map((item=>{
                             let imagenes =[];

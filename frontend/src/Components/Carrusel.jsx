@@ -1,12 +1,10 @@
-import Img from "../assets/img/img_main.webp";
-import Img2 from "../assets/img/img_2.jpg";
-import Img3 from "../assets/img/img_3.jpg";
-import Img4 from "../assets/img/img_4.jpg";
-import Img5 from "../assets/img/img_5.jpg";
-import React from 'react';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
-
+import img1 from "../assets/img/img_main.webp"
+import img2 from "../assets/img/img_2.jpg";
+import img3 from "../assets/img/img_3.jpg";
+import img4 from "../assets/img/img_4.jpg";
+import img5 from "../assets/img/img_5.jpg"
 export const Carrusel = () => {
   const responsive = {
     superLargeDesktop: {
@@ -45,7 +43,7 @@ export const Carrusel = () => {
         keyBoardControl={true}     
         transitionDuration={1000}  
       >
-        {[Img, Img2, Img3, Img4, Img5].map((image, index) => (
+        {[img1, img2,img3,img4,img5].map((image, index) => (
           <img
             key={index}
             src={image}

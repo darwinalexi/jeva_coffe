@@ -24,10 +24,11 @@ export const SubirImg = (req, res, next) => {
         next(); 
     });
 }
+
 export const see_comment=async(req, res)=>{
     try {
         const {id_producto}= req.params;
-        const [comment]= await connection.query("select*from comentarios where id_producto=?",[id_producto]);
+        const [comment]= await connection.query("select comentarios.comentario, usuarios.nombre, comentarios.estrellas, comentarios.foto, comentarios.id_producto from comentarios join usuarios on comentarios.id_cliente = usuarios.identificacion  where comentarios.id_producto=?",[id_producto]);
         if (comment.length>0) {
             res.status(200).json(comment);
         } else {

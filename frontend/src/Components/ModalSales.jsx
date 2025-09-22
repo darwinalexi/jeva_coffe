@@ -3,6 +3,8 @@ import { faClose } from "@fortawesome/free-solid-svg-icons";
 import axiosClient from "../utils/axiosClient";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import { Facture } from "../Components/Facture";
+import { pdf } from "@react-pdf/renderer";
 
 export const Buys = ({data, onclose}) => {
 
@@ -11,7 +13,6 @@ export const Buys = ({data, onclose}) => {
   const [municipios, setMunicipios] = useState([]);
   const [departamentoSeleccionado, setDepartamentoSeleccionado] = useState("");
   const [municipioSeleccionado, setMunicipioSeleccionado] = useState("");
-  const [paisesleccionado, setpseleccionado]= useState(null)
   const [direccion, setDireccion] = useState("");
   const [countries, setcountries]=useState([]);
   const [productos, setproductos]=useState(data.productos); 
@@ -27,15 +28,14 @@ export const Buys = ({data, onclose}) => {
   const [token, settoken]= useState("")
   const [name, setname]= useState("")
 
-const [datasend, setdata] = useState({
-  productos: productos.map(p => ({
+  const [datasend, setdata] = useState({
+    productos: productos.map(p => ({
     id_producto: p.id_producto,
     unidades_compradas: p.unidades_compradas
   })),
   fecha_venta: new Date().toISOString().slice(0, 10),
   departamento_id: departamentoSeleccionado,
   municipio_id: municipioSeleccionado,
-  idpais: paisesleccionado?.id || null,
   direccion,
   nombre_cliente,
   ...(isAuth && {nombre_cliente:name}),
@@ -77,14 +77,11 @@ const [datasend, setdata] = useState({
       fecha_venta: new Date().toISOString().slice(0, 10),
       departamento_id: departamentoSeleccionado,
       municipio_id: municipioSeleccionado,
-      idpais: paisesleccionado?.id || null,
       direccion,
       nombre_cliente,
       ...(isAuth && {nombre_cliente:name}),
       apellidos_cliente,
       correo,
-      region,
-      ciudad,
       valorventa,
       celular: telefono,
       ...(isAuth && { id_cliente: clienteSeleccionado })
@@ -93,14 +90,11 @@ const [datasend, setdata] = useState({
     productos,
     departamentoSeleccionado,
     municipioSeleccionado,
-    paisesleccionado,
     direccion,
     nombre_cliente,
     apellidos_cliente,
     correo,
-    region,
     valorventa,
-    ciudad,
     telefono,
     isAuth,
     clienteSeleccionado
@@ -119,7 +113,7 @@ const [datasend, setdata] = useState({
   }
 
   useEffect(() => {
-    const datalocal = JSON.parse(localStorage.getItem("Cliente"));
+    const datalocal = JSON.parse(localStorage.getItem("usuario"));
     const idcliente =  datalocal ? datalocal.identificacion  || null: null;
     const nameclient= datalocal? datalocal.nombre || null: null
     setname(nameclient)
@@ -147,12 +141,7 @@ const [datasend, setdata] = useState({
     countrie();
   }, []);
 
-  useEffect(() => {
-  setdata(prev => ({
-    ...prev,
-    idpais: paisesleccionado?.id || null
-  }));
-}, [paisesleccionado]);
+
   const cargarDepartamentos = async () => {
     try {
       
@@ -181,19 +170,47 @@ const [datasend, setdata] = useState({
     cargarMunicipios(id);
   };
 
+
+  const onlinetext = (valor) => {
+  const regex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+  if (valor === "" || regex.test(valor)) {
+    return true;
+  } else {
+    Swal.fire({
+      icon: "error",
+      title: "Entrada no válida",
+      text: "Solo se permiten letras y espacios.",
+      confirmButtonText: "Aceptar"
+    });
+    return false;
+  }
+};
+
   const create_buy = async (e) => {
     e.preventDefault();
     try {       
        console.log("payload", datasend)
       const res = await axiosClient.post("/crear_venta", datasend);
      if (res.status==200) {
+      const {checkout_url}= res.data;
        Swal.fire({
         title: "Éxito",
-        text: "Venta registrada con éxito.",
+        text:res.data.mensaje,
         icon: "success",
         confirmButtonText: "Aceptar"
+      }).then(async()=>{
+         const blob =  await pdf(<Facture data={databuy}  dataprice={datasend}/>).toBlob();
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Factura.pdf";
+    a.click();
+
+    URL.revokeObjectURL(url);
+    console.log("datasend",datasend)
+     window.location.href = checkout_url;
       })
-      window.location.reload();
     }
     } catch (error) {
       console.error("Error registrando venta:", error);
@@ -226,7 +243,11 @@ const [datasend, setdata] = useState({
                       type="text"
                       value={nombre_cliente}
                       required
-                      onChange={(e) => setNombreCliente(e.target.value)}
+                      onChange={(e)=>{
+                        if (onlinetext(e.target.value) || e.target.value) {
+                           setNombreCliente(e.target.value)
+                      }
+                      }}
                       className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
                       placeholder="Ingrese su nombre"
                     />
@@ -237,7 +258,11 @@ const [datasend, setdata] = useState({
                     <input
                       type="text"
                       required
-                      onChange={(e) => setApellidosCliente(e.target.value)}
+                      onChange={(e)=>{
+                        if (onlinetext(e.target.value) || e.target.value) {
+                           setApellidosCliente(e.target.value)
+                      }
+                      }}
                       className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
                       placeholder="Ingrese su apellido"
                     />
@@ -268,37 +293,12 @@ const [datasend, setdata] = useState({
               />
             </div>
 
-           <div className="mb-4">
-            <label className="block mb-1 font-semibold text-[#003333] dark:text-white">País:</label>
-            <select  
-            required
-              value={paisesleccionado?.id || ""}
-              onChange={(e) => {
-                const country = countries.find(c => c.id === parseInt(e.target.value));
-                setpseleccionado(country || null); 
-                setDepartamentoSeleccionado("");
-                setMunicipioSeleccionado("");
-              }}
-              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
-            >
-              <option value="" disabled>Seleccione un país</option>
-              {countries.map((country) => (
-                <option key={country.id} value={country.id}>
-                  {country.nombre}
-                </option>
-              ))}
-            </select>
-          </div>
-
-
-
-          {paisesleccionado?.nombre==="Colombia" ?(
-          <>
             <div className="mb-4">
               <label className="block mb-1 font-semibold text-[#003333] dark:text-white">Departamento:</label>
               <select
                   value={departamentoSeleccionado}
                   onChange={handleDepartamentoChange}
+                  required
                   className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
                 >
 
@@ -316,6 +316,7 @@ const [datasend, setdata] = useState({
               <label className="block mb-1 font-semibold text-[#003333] dark:text-white">Municipio:</label>
               <select
                 value={municipioSeleccionado}
+                rrequired
                 onChange={(e) => setMunicipioSeleccionado(e.target.value)}
                 className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
               >
@@ -333,52 +334,12 @@ const [datasend, setdata] = useState({
               <input
                 type="text"
                 value={direccion}
+                required
                 onChange={(e) => setDireccion(e.target.value)}
                 className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
                 placeholder="Ej: Calle 123 #45-67"
               />
             </div>
-          </>
-          ):(
-          <>
-            <div className="mb-4">
-              <label className="block mb-1 font-semibold text-[#003333] dark:text-white">Región departamento o estado:</label>
-              <input
-                type="text"
-                value={region}
-                onChange={(e) => setRegion(e.target.value)}
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
-                placeholder="Ingrese su estado o departamento de residencia"
-              />
-            </div>
-
-
-            <div className="mb-4">
-              <label className="block mb-1 font-semibold text-[#003333] dark:text-white">Ciudad o municipio:</label>
-              <input
-                type="text"
-                value={ciudad}
-                onChange={(e) => setCiudad(e.target.value)}
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
-                placeholder="Ingrese su ciudad o municipio de residencia"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block mb-1 font-semibold text-[#003333] dark:text-white">Direccion:</label>
-              <input
-                type="text"
-                value={direccion}
-                onChange={(e) => setDireccion(e.target.value)}
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#003333]"
-                placeholder="Ingrese su dirección a donde desea que llegue el pedido"
-              />
-            </div>
-          
-          </>
-
-          
-    )}
 
         
             <div className="mb-4">
@@ -388,14 +349,14 @@ const [datasend, setdata] = useState({
                   <p><strong>Producto:</strong> {item.nombre}</p>
                   <p><strong>Unidades:</strong> {item.unidades_compradas}</p>
                   <p><strong>Valor unitario:</strong> ${item.valor_unitario}</p>
-                  <p>
-                    <strong>Subtotal:</strong>{" "}
-                    {Number(item.subtotal).toLocaleString("es-CO", {
-                      style: "currency",
-                      currency: "COP",
-                      minimumFractionDigits: 3,
-                    })}
-                  </p>
+                      <p>
+                        <strong>Subtotal:</strong>{" "}
+                        {Number(item.subtotal).toLocaleString("es-CO", {
+                          style: "currency",
+                          currency: "COP",
+                          minimumFractionDigits: 3,
+                        })}
+                      </p>
                 </div>
               ))}
             </div>

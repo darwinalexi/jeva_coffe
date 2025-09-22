@@ -1,5 +1,4 @@
 import NavBar from "../Components/NavBar";
-import Cafeimg from "../../src/assets/img/cafe1.png";
 import axiosClient from "../utils/axiosClient";
 import { useState, useEffect } from "react";
 import { baseurl } from "../utils/data";
@@ -13,6 +12,8 @@ import { Link } from "react-router-dom";
 import { DetailsProduct } from "../Components/DetailsProduct";
 import { Carsmodal } from "../Components/Carsmodal";
 import Swal from "sweetalert2";
+import imgmain from "../assets/img/cafe1.png";
+
 export const Store = () => {
     const [date, setdata] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
@@ -54,11 +55,11 @@ export const Store = () => {
                         setdata(allproduct.data);
                         settype("Administrador");
                         setAuth(true);
-                    }else if (datalocal&&dataclient.tipo === "Clientes") {
+                    }else if (datalocal && datalocal.tipo === "Cliente") {
                         const clientProducts = await axiosClient.get(`/productos_disponibles`);
                         setdata(clientProducts.data);
                         setAuth(true)
-                        settype("Clientes");
+                        settype("Cliente");
                     }else {
                         const show = await axiosClient.get("/productos_disponibles");
                         setdata(show.data) ;
@@ -126,23 +127,23 @@ const closecreate=()=>{
     return (
         <div className="dark:bg-black">
             <NavBar />
-                <div className="relative top-0 w-full h-[35vh] sm:h-full md:h-full lg:h-full xl:h-full overflow-hidden">
+                <div className="relative top-14 w-full h-[35vh] hidden sm:block sm:h-full md:h-full lg:h-full xl:h-full overflow-hidden">
                 <img
                     alt="Img"
-                    src={Cafeimg}
-                    className="w-full h-full sm:object-none md:object-cover "
+                    src={imgmain}
+                    className="w-full h-full  sm:object-none  md:object-cover "
                 />
                 </div>
 
             <div>
                 {!isAuth  ?(
-                <h1 className="font-bold flex justify-center text-3xl text-[#Ff6600]">Productos Disponibles</h1>                    
+                <h1 className="font-bold flex justify-center text-3xl text-[#Ff6600] mt-16 p-6">Productos Disponibles</h1>                    
                 ):(
-                <h1 className="font-bold flex justify-center text-3xl text-[#Ff6600]">Productos De Nuestra Plataforma</h1>
+                <h1 className="font-bold flex justify-center text-3xl text-[#Ff6600] mt-16 p-6">Productos De Nuestra Plataforma</h1>
                 )}
                 
         
-                <div className="flex justify-center mb-4  mt-4 grid grid-cols-1">
+                <div className="flex justify-center mb-4   grid grid-cols-1">
                     <SearchBar 
                         value={searchTerm} 
                         onChange={(e) => setSearchTerm(e.target.value)} 
@@ -185,7 +186,7 @@ const closecreate=()=>{
                                     </button>
                                 </div>
                             )}
-                            {typeuse === "Clientes" && (
+                            {typeuse === "Cliente" && (
                                 <div className="">
                                     <button  onClick={opencar}  className="bg-[#003333] p-3 dark:bg-[#5E2419] rounded-xl text-white m-3">
                                         Carrito de Compras
@@ -199,7 +200,7 @@ const closecreate=()=>{
                 
                  {date.filter(item => 
                         item.nombre.toLowerCase().includes(searchTerm.toLowerCase()) && 
-                        (filter.trim() === "Todos" || item.estado === filter) // Filtra por estado
+                        (filter.trim() === "Todos" || item.estado === filter)
                     ).map((item) => {
                         let imagenes=[]
                         try {
@@ -219,9 +220,9 @@ const closecreate=()=>{
                         className="hover:cursor-pointer border-2 border-[#003333] shadow-lg mb-12 hover:shadow-green-900 rounded-xl w-[80%]  sm: ml-12">
                         <h1 className="flex justify-center font-bold">{item.nombre}</h1>
                         <div className="p-5 rounded-xl ">
-                            <img src={`${baseurl}/img/${imagenes[0]}`} alt="" />
+                            <img src={`${baseurl}/img/${imagenes[0]}`} alt=""  className="object-cover w-full "/>
                         </div>
-                        <p className="flex justify-center p-2 w-[90%]">Descripcion: {item.descripcion || "N/A"}</p>
+                        <p className="flex justify-center p-2 w-[90%] m-3">Descripcion: {item.descripcion || "N/A"}</p>
                         
                            <Link 
                                            to={`/opiniones/${item.id}`}
@@ -256,7 +257,7 @@ const closecreate=()=>{
                     <p className="flex justify-center text-red-500 mt-4">No se encontraron productos que coincidan con "{searchTerm}".</p>
                 )}
             </div>
-            </div>
+        </div>
             
             {openupdate && (<Update_Product onclose={closeupdate} data={dataupdate} />) }
             {modalcreate && (<Create_Product onclose={closecreate} />)}

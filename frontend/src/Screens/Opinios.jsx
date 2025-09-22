@@ -2,9 +2,8 @@ import NavBar from "../Components/NavBar"
 import { useParams } from "react-router-dom"
 import axiosClient from "../utils/axiosClient";
 import { useEffect, useState } from "react";
-import Imagen from "../Components/Image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar, faWarning } from "@fortawesome/free-solid-svg-icons";
+import { faStar, faWarning, faStarHalfStroke } from "@fortawesome/free-solid-svg-icons";
 import { baseurl } from "../utils/data";
 import Swal from "sweetalert2";
 import ImageUploadPreview from "../Components/Inpuimage";
@@ -20,7 +19,7 @@ export const Opinions = () => {
   const [Cliente, setcliente]= useState("");
   const [datacoment, setComent] = useState({
     comentario: "",
-    estrellas: 0,
+    estrellas: "",
     foto:"",
     id_producto:id
   });
@@ -35,7 +34,7 @@ export const Opinions = () => {
     setComent({ ...datacoment, foto: foto });
   };
   useEffect(() => {
-      const  datalocal= JSON.parse(localStorage.getItem('Cliente')|| 'null');
+      const  datalocal= JSON.parse(localStorage.getItem('usuario')|| 'null');
         if (datalocal) {
             setttype(datalocal && datalocal.tipo ? datalocal.tipo : "");
           console.log("datacoompare", datalocal.identificacion?datalocal.identificacion: "")
@@ -56,18 +55,26 @@ export const Opinions = () => {
             text:"Llene todos los campos que son obligatorios",
             buttonsStyling:"Ok"
         })
+        return;
       }
 
         const newData= new FormData();
-        const user= JSON.parse(localStorage.getItem('Cliente') || 'null')
+        const user= JSON.parse(localStorage.getItem('usuario') || 'null')
         const id_cliente= user.identificacion
         newData.append('comentario',datacoment.comentario);
         newData.append('estrellas',datacoment.estrellas);
         newData.append('imagen',datacoment.foto);
         newData.append('id_producto',datacoment.id_producto);
         newData.append('id_cliente', id_cliente)
+        newData.forEach((value, key)=>{
+                console.log(value, key)
+        })
 
-        console.log("datasend", datacoment)
+        console.log("comentario",typeof datacoment.comentario);
+        console.log("estrellas",typeof datacoment.estrellas);
+        console.log("foto",typeof datacoment.foto);
+        console.log("id_producto",typeof datacoment.id_producto);
+        console.log("id_cliente",typeof id_cliente)
 
       const response = await axiosClient.post("/crear_comentario", newData);
       if (response.status === 200) {
@@ -77,8 +84,25 @@ export const Opinions = () => {
         });
         window.location.reload();
       }
-    } catch (error) {
-      console.error("Error al comentar:", error);
+    } catch (e) {
+      if (!e.response) {
+          Swal.fire({ icon: 'error', text: 'No se pudo conectar con el servidor' });
+          return;
+        }
+        const { status, data } = e.response;
+        let mensaje = "Error inesperado";
+        if (data?.errores) {
+          mensaje = data.errores.map(err => err.msg).join(', ');
+        } else if (data?.mensaje) {
+          mensaje = data.mensaje;
+        } else if (data?.msg) {
+          mensaje = data.msg;
+        }
+        Swal.fire({
+          icon: 'error',
+          title: `Error ${status}`,
+          text: mensaje,
+        });
     }
   };
 
@@ -104,8 +128,8 @@ export const Opinions = () => {
   return (
     <div className="">
       <NavBar />
-      <div className="sm:grid grid-cols-1 sm:gap-y-6 md:grid grid-cols-2  gap-x-12 pb-12">
-        <h1 className="col-span-2 flex justify-center font-poppins text-2xl m-2">En Jeva Coffee tu opinión nos importa</h1>
+      <div className="sm:grid grid-cols-1 sm:gap-y-6 md:grid grid-cols-2  gap-x-12 pb-12 mt-20">
+        <h1 className="col-span-2 flex justify-center font-poppins text-2xl m-2 font-black uppercase sm: ml-7">En Jeva Coffee tu opinión nos importa</h1>
 
         <div className="border-1 border-[#003333] m-6 w-[90%] rounded-2xl h-full bg-[#e0d8d6] dark:bg-gray-800">
           {data.map((item, index) => {
@@ -125,10 +149,10 @@ export const Opinions = () => {
                 <img src={`${baseurl}/img/${imagenes[0]}`} className="w-[100%] h-[100%] rounded-lg" />
               </div>
               <div className="flex flex-col p-2">
-                <p><strong>Acerca del producto: </strong></p>
-                <p><strong>Nombre:</strong> {item.nombre}</p>
-                <p><strong>Precio:</strong> ${item.precio}</p>
-                <p><strong>Descripción:</strong> {item.descripcion || "No Aplica"}</p>
+                <p className="text-2xl m-4"><strong>Acerca del producto: </strong></p>
+                <p className="text-xl m-2"><strong>Nombre:</strong> {item.nombre}</p>
+                <p className="text-xl m-2"><strong>Precio:</strong> ${item.precio}</p>
+                <p className="text-xl m-2"><strong>Descripción:</strong> {item.descripcion || "No Aplica"}</p>
               </div>
             </div>
             )
@@ -144,14 +168,22 @@ export const Opinions = () => {
               <p className="text-lg font-semibold">Calificación Promedio del Producto:</p>
               {promedio !== null && (
                 <div className="flex items-center gap-2 mb-4">
-                  {renderstart(Math.round(promedio))}
+                  {renderstart(promedio)}
                   <span>({promedio.toFixed(1)}) / 5</span>
                 </div>
               )}
 
               {datacomment.map((item, i) => (
                 <div key={i} className="border-2  bg-gray-300 p-3 m-2 rounded-xl dark:bg-gray-800 grid grid-cols-2">
-                  <div className="m-4 text-2xl">Calificación: {renderstart(item.estrellas)}</div>
+                 <p>Ciente: {item.nombre}</p>
+                  
+                  <div className="m-4 text-2xl flex items-center gap-2">
+                     
+                    <div className="flex sm: w-[45%]  sm: relative right-[16%]">
+                    Calificación:  {renderstart(Number(item.estrellas))}
+                    </div>
+                  </div>
+
                   {item.foto ?(
                     <img src={`${baseurl}/img/${item.foto}`} className="rounded-full h-60 mt-9" />
                   ):(
@@ -167,7 +199,7 @@ export const Opinions = () => {
         </div>
       </div>
 
-          {type.length>0&&(
+          {type.length>0 ? (
                <form onSubmit={create_comment} className=" h-auto p-2 w-[90%] ml-10">
             <h2 className="flex justify-center m-8">¡Anímate a dar tu opinión si ya lo has probado!</h2>
             <textarea
@@ -183,8 +215,8 @@ export const Opinions = () => {
                   type="radio"
                   name="estrellas"
                   value={num}
-                  checked={datacoment.estrellas === num}
-                  onChange={() => setComent({ ...datacoment, estrellas: num })}
+                  checked={Number(datacoment.estrellas) === num}
+                  onChange={() => setComent({ ...datacoment, estrellas: Number(num) })}
                 />
                 <span>{num} Estrella{num > 1 ? 's' : ''}</span>
               </label>
@@ -195,8 +227,10 @@ export const Opinions = () => {
                     <FontAwesomeIcon icon={faWarning} className="text-[#Ff6600]"/>
                     <p className="dark:text-[#1BB3A1]"><strong className="text-red-500">Nota: </strong> La Imagen es opcional</p>
             </div>
-            <input type="submit" value="Comentar" className="mt-4 p-2  w-[45%] bg-[#003333] md:relative left-[30%] text-white rounded-xl cursor-pointer hover:bg-[#005555]" />
+            <input type="submit" value="Comentar" className="mt-4 p-2  w-[45%] dark:bg-[#5E2419] bg-[#003333] md:relative left-[30%] text-white rounded-xl cursor-pointer hover:bg-[#005555]" />
           </form>
+          ):(
+            <p className="uppercase flex justify-center text-2xl m-5">Si No estas En nuestrsa Comunidad Registrate y da tu Opinión de nuestros productos </p>
           )}
       
           <Contact/>
@@ -204,12 +238,48 @@ export const Opinions = () => {
   );
 };
 
-const renderstart = (count) => {
-  return [...Array(5)].map((_, index) => (
-    <FontAwesomeIcon
-      key={index}
-      icon={faStar}
-      className={index < count ? "text-[#003333] dark:text-[#1BB3A1]" : "text-white"}
-    />
-  ));
+const renderstart = (rating) => {
+  const stars = [];
+  const fullStars = Math.floor(rating);
+  const decimal = rating - fullStars;
+
+  let totalFull = fullStars;
+  let halfStar = false;
+
+  if (decimal >= 0.75) {
+    totalFull += 1; // cuenta como completa
+  } else if (decimal >= 0.25) {
+    halfStar = true; // cuenta como media
+  }
+
+  for (let i = 1; i <= 5; i++) {
+    if (i <= totalFull) {
+      stars.push(
+        <FontAwesomeIcon
+          key={i}
+          icon={faStar}
+          className="text-[#003333] dark:text-[#5E2419]"
+        />
+      );
+    } else if (halfStar && i === totalFull + 1) {
+      stars.push(
+        <FontAwesomeIcon
+          key={i}
+          icon={faStarHalfStroke}
+          className="text-[#003333] dark:text-[#5E2419]"
+        />
+      );
+    } else {
+      stars.push(
+        <FontAwesomeIcon
+          key={i}
+          icon={faStar}
+          className="text-gray-400"
+        />
+      );
+    }
+  }
+
+  return stars;
 };
+

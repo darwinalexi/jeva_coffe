@@ -57,6 +57,7 @@ export const Change_password = ({ onclose }) => {
   };
 
   const verifyCode = async () => {
+    try{
     const change= await axiosClient.post("/cambiar_clave", data);
     if (change.status === 200) {
       Swal.fire({
@@ -67,6 +68,27 @@ export const Change_password = ({ onclose }) => {
       });
       onclose();
     }
+  } catch (e) {
+  if (!e.response) {
+    Swal.fire({ icon: 'error', text: 'No se pudo conectar con el servidor' });
+    return;
+  }
+  const { status, data } = e.response;
+  let mensaje = "Error inesperado";
+  if (data?.errores) {
+    mensaje = data.errores.map(err => err.msg).join(', ');
+  } else if (data?.mensaje) {
+    mensaje = data.mensaje;
+  } else if (data?.msg) {
+    mensaje = data.msg;
+  }
+  Swal.fire({
+    icon: 'error',
+    title: `Error ${status}`,
+    text: mensaje,
+  });
+}
+
       
     }
 
@@ -146,7 +168,7 @@ export const Change_password = ({ onclose }) => {
 
                   </div>
                   <div>
-                    <p className="m-4">Ingresa tu Nueva Contraseña.</p>
+                    <p className="m-4 relative w-full">Ingresa tu Nueva Contraseña.</p>
                           <input
                             type={opensee ? "text":"password"}
                             name="clave"
@@ -155,8 +177,9 @@ export const Change_password = ({ onclose }) => {
                             placeholder="Ingrese Nueva contraseña"
                           />
                           <button type="button"
-                          onClick={()=>setopen((prev)=>!prev)}>
-                             <FontAwesomeIcon icon={opensee ? faEye : faEyeSlash} className="text-2xl text-default-400 pointer-events-none flex-shrink-0 relative left-[92%] bottom-10 cursor-pointer" />
+                            className="absolute right-4 top-[70%] transform -translate-y-1/2"
+                          onClick={() => setopen((prev)=> !prev)}>
+                             <FontAwesomeIcon icon={opensee ? faEye : faEyeSlash} className="text-2xl text-default-400 flex-shrink-0 relative right-[70%] top-7 cursor-pointer" />
                           </button>
                   </div>
            </form>

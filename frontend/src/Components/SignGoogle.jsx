@@ -11,21 +11,24 @@ export const loginWithGoogle = async () => {
     // Paso 2: Pedir celular y edad al usuario
     const { value: formValues } = await Swal.fire({
       title: "Completa tu información",
-      html:
-        '<input i-input1" class="swal2-input" placeholder="Celular" class="w-full border-2 border-[#003333] rounded-lg px-3 py-2 mb-2">' +
-        '<input id="swal-inpd="swal-input0" class="swal2-input" placeholder="Identificacion" class="w-full border-2 border-[#003333] rounded-lg px-3 py-2 mb-2">' +
-        '<input id="swalut2" class="swal2-input" placeholder="Edad" type="number" class="w-full border-2 border-[#003333] rounded-lg px-3 py-2 mb-2">' +
-        '<input id="swal-input3" class="swal2-input" placeholder="Ingres tu Clave" class="w-full border-2 border-[#003333] rounded-lg px-3 py-2 mb-2">',
+      html: `
+        <input id="swal-input0" class="swal2-input"  class="w-full border-2 border-[#003333] rounded-lg px-3 py-2 mb-2" placeholder="Identificación">
+  <input id="swal-input1" class="swal2-input" class="w-full border-2 border-[#003333] rounded-lg px-3 py-2 mb-2" placeholder="Celular">
+  <input id="swal-input2" type="number" class="swal2-input" class="w-full border-2 border-[#003333] rounded-lg px-3 py-2 mb-2" placeholder="Edad">
+  <input id="swal-input3" type="password" class="swal2-input" class="w-full border-2 border-[#003333] rounded-lg px-3 py-2 mb-2" placeholder="Ingresa tu Clave">
+  <input id="swal-input4" type="text" class="swal2-input" class="w-full border-2 border-[#003333] rounded-lg px-3 py-2 mb-2" placeholder="Ingresa una descripcion para tu usuario">
+`,
       focusConfirm: false,
       preConfirm: () => {
         const identificacion = document.getElementById("swal-input0").value.trim();
         const celular = document.getElementById("swal-input1").value.trim();
         const edad = document.getElementById("swal-input2").value.trim();
         const claveingresada = document.getElementById("swal-input3").value.trim();
-        if (!celular || !edad || !identificacion || !claveingresada) {
-          Swal.showValidationMessage("Debes ingresar celular, edad, identificación y clave");
+        const descripcion = document.getElementById("swal-input4").value.trim();
+        if (!celular || !edad || !identificacion || !claveingresada ||!descripcion) {
+          Swal.showValidationMessage("Debes ingresar celular, edad, identificación, clave y una descripcion breve");
         }
-        return { identificacion, celular, edad, claveingresada };
+        return { identificacion, celular, edad, claveingresada, descripcion };
       },
     });
 
@@ -38,11 +41,12 @@ export const loginWithGoogle = async () => {
         celular: formValues.celular,
         edad: formValues.edad,
         clave:formValues.claveingresada,
-        tipo:"Clientes"
+        descripcion:formValues.descripcion,
+        tipo:"Cliente"
       };
 
       // Paso 3: Enviar al backend
-      const res = await axiosClient.post("/cliente", clienteData);
+      const res = await axiosClient.post("/usuarios", clienteData);
       if (res.status === 200) {
         Swal.fire({
           icon: "success",

@@ -87,7 +87,7 @@ const GraficaProductos = () => {
 
   return (
     <>
-      {data.length > 0 ? (
+      {data.reduce((acc, item) => acc + item.value, 0)  > 0 ? (
         <div style={{height: 400 }} className='border-1 border-[#3c2a21]  rounded-xl sm::w-screen md:w-[100%]'>
           <p  className='flex justify-center text-2xl'>Productos</p>        
           <ResponsiveContainer>
@@ -112,7 +112,9 @@ const GraficaProductos = () => {
           </ResponsiveContainer>
         </div>
       ) : (
-        <p className='flex justify-center items-center'>No Hay Productos en JEVACOFFE</p>
+        <div style={{height: 400 }} className='border-1 border-[#3c2a21]  rounded-xl sm::w-screen md:w-[100%]'>
+          <p className='flex justify-center items-center uppercase text-[#3c2a21] dark:text-white'>No Hay Productos en JEVACOFFE</p>
+        </div>
       )}
     </>
   );

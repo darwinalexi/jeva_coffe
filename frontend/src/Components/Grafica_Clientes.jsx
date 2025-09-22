@@ -52,10 +52,8 @@ const GraficaCliente = () => {
   useEffect(() => {
     const show_client = async () => {
       try {
-        const res = await axiosClient.get("/cliente");
-        // Supongamos que quieres contar tipos de cliente o algo similar:
-                console.log("cliente",res.data)
-
+        const res = await axiosClient.get("/clientes");
+        console.log("cliente",res.data)
         const procesado = [
           { name: "No° de Clientes", value: res.data.Clientes }
         ];

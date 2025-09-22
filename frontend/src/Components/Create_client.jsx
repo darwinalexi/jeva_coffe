@@ -10,11 +10,12 @@ import {
 } from "@nextui-org/react";
 import{ useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGoogle } from "@fortawesome/free-brands-svg-icons";
+import { faDeskpro, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { faEnvelope, faIdCard, faPhone, faWarning, faEye, faEyeSlash  } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import axiosClient from "../utils/axiosClient";
 import { loginWithGoogle } from "./SignGoogle";
+
 export const RegisterClient = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -25,7 +26,8 @@ export const RegisterClient = () => {
     celular: '',
     edad: '',
     clave: '',
-    tipo:'Clientes'
+    tipo:'Cliente',
+    descripcion:''
   });
 
   const [showPassword, setShowPassword] = useState(false);  
@@ -42,15 +44,50 @@ export const RegisterClient = () => {
     }));
   };
 
+   const onlinetext = (valor) => {
+    const regex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+    if (valor === "" || regex.test(valor)) {
+      return true;
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Entrada no válida",
+        text: "Solo se permiten letras y espacios.",
+        confirmButtonText: "Aceptar"
+      });
+      return false;
+    }
+  };
+
   const register_client = async (e) => {
+    if (!data.identificacion || !data.nombre || !data.correo || !data.correo || !data.celular || !data.edad || !data.clave || !data.tipo ) {
+      
+      Swal.fire({
+        icon:'warning',
+        title:'Advertencia',
+        text:'Hay Campos que no se han completado a un y que se requirern para tu registro',        
+      });
+
+    return;
+    }else if (data.edad < 18) {
+      
+      Swal.fire({
+        icon:'warning',
+        title:'Advertencia',
+        text:'No Puedes Ser Registrado En Nuestra Tienda Por Que No Cumples Con La Edad'
+      })
+      
+      return;
+    }
     e.preventDefault();
     try {
-      const register = await axiosClient.post("/cliente", data);
+      const register = await axiosClient.post("/usuarios", data);
       if (register.status === 200) {
         Swal.fire({
           icon: 'success',
           text: register.data.mensaje
         })
+        
       } else {
         Swal.fire({
           icon: 'error',
@@ -111,7 +148,12 @@ export const RegisterClient = () => {
                   label="Nombre"
                   name="nombre"
                   placeholder="Ingrese su nombre"
-                  onChange={handleInputChange}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (onlinetext(value)) {
+                      handleInputChange(e); 
+                    }
+                  }}
                   classNames={{ inputWrapper: "border-red-700" }}
                 />
                 <Input
@@ -132,6 +174,20 @@ export const RegisterClient = () => {
                   onChange={handleInputChange}
                   classNames={{ inputWrapper: "border-red-700" }}
                 />
+                <Input
+                  endContent={<FontAwesomeIcon icon={faDeskpro} className="text-2xl text-default-400" />}
+                  label="Descripcion"
+                  name="descripcion"
+                  onChange={(e) => {
+                  const value = e.target.value;
+                    if (onlinetext(value)) {
+                      handleInputChange(e); 
+                    }
+                  }}
+                  placeholder="(Opcional) Ingrese su descripcion"
+                  type="text"
+                  classNames={{ inputWrapper: "border-red-700" }}
+                />
 
                     <Input
                       endContent={  <button
@@ -139,7 +195,7 @@ export const RegisterClient = () => {
                         onClick={() => setShowPassword((prev)=> !prev)}
                         className="focus: outline-none text-gay-300"
                       >
-                        <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+                        <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash}  className="text-gray-400"/>
                       </button>}
                       label="Clave"
                       name="clave"
@@ -168,7 +224,6 @@ export const RegisterClient = () => {
     </div>
   </div>
 
-  {/* Botón de registro con Google */}
   <Button
     className="border border-red-700 bg-white text-black hover:bg-red-700 hover:text-white sm:col-span-2"
     onClick={(e) => {
@@ -180,7 +235,6 @@ export const RegisterClient = () => {
     Registrarse con Google
   </Button>
 
-  {/* Botón de registro tradicional */}
   <Button
     type="submit"
     className="border border-red-700 bg-white text-black hover:bg-red-700 hover:text-white sm:col-span-2"

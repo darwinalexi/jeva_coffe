@@ -2,7 +2,7 @@ import {Modal,ModalContent,ModalHeader,ModalBody,ModalFooter,Button,useDisclosur
 import { useState, useRef } from "react";
 import ImageUploadPreview from "./Inpuimage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAudioDescription, faEnvelope, faEye, faEyeSlash, faIdCard, faLock, faUser} from "@fortawesome/free-solid-svg-icons";
+import { faAudioDescription, faEnvelope, faEye, faEyeSlash, faIdCard, faLock, faPhone, faUser} from "@fortawesome/free-solid-svg-icons";
 import axiosClient from "../utils/axiosClient";
 import Swal from "sweetalert2";
 export const MailIcon = (props) => {
@@ -53,51 +53,40 @@ export const LockIcon = (props) => {
 export const RegisterUser = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [shoopassword, setshopping]= useState(false);
+  const [identificacion, setidentificacion]= useState("")
+  const [nombre, setnombre]= useState("");
+  const [clave, setclave]= useState("");
+  const [correo, setcorreo]= useState("");
+  const [descripcion, setdesccripcion]= useState("");
+  const [edad, setedad]= useState("");
+  const [image, setImage]= useState(null);
+  const [celular, setcelular]= useState("");
 
   const seepassword= ()=>{
     setshopping(true)
   }
 
-const identificacionRef=useRef();  
-const nombreRef= useRef();
-const claveRef= useRef();
-const correoRef= useRef();
-const descripcionRef= useRef();
-const edadRef= useRef();
-const tipoRef= useRef();
-const [image,setImage]= useState(null);
  const handleImageChange = (file) => {
     setImage(file);
   };
 
 const register_user=async(e)=>{
     e.preventDefault();
-    const edad = edadRef.current.value;
-    if (edad< 18) {
-      Swal.fire({
-        icon:'warning',
-        text:"La edad debe ser mayor a 18 años",
-        confirmButtonText: "Aceptar"
-      })
-      return;
-    }   
     try {
         const formData= new FormData();
         
-        formData.append('identificacion', identificacionRef.current.value);
-        formData.append('nombre', nombreRef.current.value);
-        formData.append('correo', correoRef.current.value);
-        formData.append('clave', claveRef.current.value); 
-        formData.append('descripcion',descripcionRef.current.value);
-        if (tipoUsuario=="Administrador") {
-          formData.append('edad', edadRef.current.value); 
-        }
-        formData.append('tipo', tipoUsuario);
+        formData.append('identificacion', identificacion);
+        formData.append('nombre', nombre);
+        formData.append('correo', correo);
+        formData.append('clave', clave);
+        formData.append('descripcion',descripcion);
+        formData.append('edad', edad); 
+        formData.append('tipo', 'Administrador');
+        formData.append('celular', celular); 
            
          if (image) {
         formData.append("imagen", image);
       }
-            console.log("datos", formData)
             const register = await axiosClient.post("/usuarios", formData)
            if(register.status==200){
               Swal.fire({
@@ -112,6 +101,7 @@ const register_user=async(e)=>{
               })
            }
        } catch (error) {
+        console.log("error",error)
          if (error.response && error.response.status === 400) {
             const errores = error.response.data.errores;
             const mensaje = errores.map(err => err.msg).join(', ');
@@ -128,7 +118,7 @@ const register_user=async(e)=>{
       }
   }
 
-const [tipoUsuario, setTipoUsuario] = useState("");
+
 
 
   return (
@@ -145,7 +135,7 @@ const [tipoUsuario, setTipoUsuario] = useState("");
         onOpenChange={onOpenChange}
         className="w-full"
       >
-        {/*se  puede modificar el tamaño del modal */}
+
         <ModalContent
           style={{ width: "80%", maxWidth: "900px" }}
           className="max-h-[90vh] overflow-auto"
@@ -161,30 +151,22 @@ const [tipoUsuario, setTipoUsuario] = useState("");
                     }
                     label="Identificación"
                     type="number"
-                    ref={identificacionRef}
+                    onChange={(e)=>setidentificacion(e.target.value)}
+                    value={identificacion}
                     placeholder="Ingrese idfentificación"
                     name="Identificación"
                     classNames={{
                       inputWrapper: "border-red-700",
                     }}
                   />
-                 <select 
-                 className="border-1 border-red-700 dark:border-white rounded-xl p-4" 
-                value={tipoUsuario}
-                 onChange={(e)=>setTipoUsuario(e.target.value)} 
-                 placeholder="Seleccione Un tipo  de Usuario">
-                  <option value="">Seleccione un tipo de Usuario</option>
-                  <option value="Administrador">Administrador</option>
-                  <option value="Empresa_Envios">Empresa de Envios</option>
-
-                 </select>
                   <Input
                     endContent={
                       <FontAwesomeIcon icon={faUser} className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                     }
                     label="Nombre"
                     name="nombre"
-                    ref={nombreRef}
+                    value={nombre}
+                    onChange={(e)=>setnombre(e.target.value)}
                     type="text"
                     placeholder="Ingrese su nombre"
                     classNames={{
@@ -198,13 +180,14 @@ const [tipoUsuario, setTipoUsuario] = useState("");
                       type="button"
                       onClick={(e)=>setshopping((prev)=> !prev)}
                       >
-                            <FontAwesomeIcon icon={shoopassword ? faEye : faEyeSlash} className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                            <FontAwesomeIcon icon={shoopassword ? faEye : faEyeSlash} className="text-2xl text-default-400 flex-shrink-0" />
                       </button>
                     }
                     label="Clave"
                     name="clave"
-                    ref={claveRef}
+                    value={clave}
                     placeholder="Ingrese su clave"
+                    onChange={(e)=>setclave(e.target.value)}
                     type={shoopassword ? 'text' : 'password'}
                     classNames={{
                       inputWrapper: "border-red-700",
@@ -217,7 +200,8 @@ const [tipoUsuario, setTipoUsuario] = useState("");
                       <FontAwesomeIcon icon={faEnvelope} className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                     }
                     label="correo"
-                    ref={correoRef}
+                    value={correo}
+                    onChange={(e)=>setcorreo(e.target.value)}
                     name="correo"
                     type="email"
                     placeholder="Ingrese su correo"
@@ -231,26 +215,39 @@ const [tipoUsuario, setTipoUsuario] = useState("");
                     }
                     label="descripcion"
                     name="descripcion"
-                    ref={descripcionRef}
+                    value={descripcion}
+                    onChange={(e)=>setdesccripcion(e.target.value)} 
                     placeholder="Ingrese su descripcion (Opcional)"
                     classNames={{
                       inputWrapper: "border-red-700",
                     }}
                   />
-                  {tipoUsuario==="Administrador"&&(
+                   <Input
+                    endContent={
+                      <FontAwesomeIcon icon={faPhone} className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                    }
+                    label="celular"
+                    name="celular"
+                    value={celular}
+                    onChange={(e)=>setcelular(e.target.value)} 
+                    placeholder="Ingrese su Celular"
+                    classNames={{
+                      inputWrapper: "border-red-700",
+                    }}
+                  />
                     <Input
                     endContent={
                       <FontAwesomeIcon icon={faUser} className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                     }
                     label="Edad"
-                    ref={edadRef}
+                    value={edad}
+                    onChange={(e)=>setedad(e.target.value)}
                     name="Edad"
                     placeholder="Ingrese su Edad"
                     classNames={{
                       inputWrapper: "border-red-700",
                     }}
                   />
-                  )}
 
                   <div className="sm:col-span-2">
                     <ImageUploadPreview  onImageChange={handleImageChange}/>
@@ -265,9 +262,6 @@ const [tipoUsuario, setTipoUsuario] = useState("");
                 <Button className="bg-custom-teal text-white" variant="flat" onPress={onClose}>
                   Cerrar
                 </Button>
-
-             
-               
               </ModalFooter>
             </>
           )}

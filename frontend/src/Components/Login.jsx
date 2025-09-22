@@ -11,6 +11,7 @@ import {
   Link,
   button,
 } from "@nextui-org/react";
+import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import axiosClient from "../utils/axiosClient";
 import Swal from "sweetalert2";
@@ -62,6 +63,8 @@ export default function Login() {
   const [data, setData] = useState({ correo: "", clave: "" });
   const [modalpassword, setpassword]= useState(false);
   const [seepassword, setseepassword] = useState(false);  
+
+  const navigate = useNavigate();
   const openmodal =()=>{
     setpassword(true);
   }
@@ -88,11 +91,13 @@ export default function Login() {
         if (logueo.data.usuario) {
              const token = logueo.data.token;
              localStorage.setItem("token", token);
-             localStorage.setItem("usuario", JSON.stringify(logueo.data.usuario));  
+             localStorage.setItem("usuario", JSON.stringify(logueo.data.usuario));
+             navigate("/");
         }else if (logueo.data.cliente) {
           const token = logueo.data.token;
           localStorage.setItem("token", token);
           localStorage.setItem("Cliente", JSON.stringify(logueo.data.cliente));
+          navigate("/");
         }
 
         Swal.fire({ title: "Sesión iniciada", icon: "success" });
@@ -135,7 +140,7 @@ export default function Login() {
                         onClick={() => setseepassword((prev)=> !prev)}
                         className="focus: outline-none"
                       >
-                        <FontAwesomeIcon icon={seepassword ? faEye : faEyeSlash} />
+                        <FontAwesomeIcon icon={seepassword ? faEye : faEyeSlash}  className="text-gray-400"/>
                       </button>
                     }
                     label="Clave"

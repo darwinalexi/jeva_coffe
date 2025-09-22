@@ -1,6 +1,6 @@
 import { faClose, faEyeSlash, faEye } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import ImageUploadPreview from "./Inpuimage"
 import axiosClient from "../utils/axiosClient"
 import Swal from "sweetalert2"
@@ -16,46 +16,54 @@ export const Edit_user = ({ data, onclose }) => {
   const [Clave, setClave] = useState("");
   const [Tipo, setTipo] = useState(data.tipo);
   const [open, setopen]= useState(false);
-
+  const [typeusere, setuser]= useState("");
+  const [Celular, setCelular]= useState(data.celular)
   const handleimage = (file) => {
     setimage(file);
   };
 
+
+  useEffect(()=>{
+     let datalocaluser= JSON.parse(localStorage.getItem('usuario'));
+      if (datalocaluser && datalocaluser.tipo) {
+        setuser(datalocaluser.tipo)
+      }
+  },[])
   const openpas= () => {
     setopen(true);
   };
 
   const updateuser = async (e) => {
     e.preventDefault();
-
-    try {
+    try {      
       const formData = new FormData();
       if (Nombre) formData.append("nombre", Nombre);
       if (Correo) formData.append("correo", Correo);
-      if (Descripcion) formData.append("descripcion", Descripcion);
-      if (Edad) formData.append("edad", Edad);
-      if (Tipo) formData.append("tipo", Tipo);
       if (Clave) formData.append("clave", Clave);
-      if (image) formData.append("imagen", image);
+      if (Descripcion) formData.append("descripcion", Descripcion);
+      if (Tipo) formData.append("tipo", Tipo);
+      if (Edad) formData.append("edad", Edad);
+      if (Celular) formData.append('celular', Celular);
+       if (image) formData.append("imagen", image);
+        formData.forEach((value,key)=>{
+          console.log("valores", key, value)
+        })
+        const update = await axiosClient.put(`/usuarios/${data.identificacion}`,formData,);
 
-      const update = await axiosClient.put(
-        `/usuarios/${data.identificacion}`,
-        formData,);
-
-      if (update.status === 200) {
-        Swal.fire({
-          icon: "success",
-          text: update.data.message,
-        });
-        window.location.reload();
-        onclose(); 
-      } else {
-        Swal.fire({
-          icon: "error",
-          text: "No se pudo actualizar",
-        });
-      }
+          if (update.status === 200) {
+            Swal.fire({
+              icon: "success",
+              text: update.data.message,
+            });
+            window.location.reload();
+          } else {
+            Swal.fire({
+              icon: "error",
+              text: "No se pudo actualizar",
+            });
+          } 
     } catch (e) {
+      console.log(e)
       if (e.response && e.response.status === 400) {
         const errores = e.response.data.errores;
         const mensaje = errores.map(err => err.msg).join(', ');
@@ -112,7 +120,7 @@ export const Edit_user = ({ data, onclose }) => {
                 className="focus:outline-none border-2 border-[#003333] p-2 rounded-xl"
               />
             </div>
-
+        
             <div className="w-full flex flex-col mb-4">
               <label>Descripción:</label>
               <input
@@ -123,7 +131,17 @@ export const Edit_user = ({ data, onclose }) => {
               />
             </div>
 
-            <div className="w-full flex flex-col mb-4">
+             <div className="w-full flex flex-col mb-4">
+              <label>Celular: </label>
+              <input
+                type="number"
+                onChange={(e) => setCelular(e.target.value)}
+                value={Celular}
+                className="focus:outline-none border-2 border-[#003333] p-2 rounded-xl"
+              />
+            </div>
+            
+              <div className="w-full flex flex-col mb-4">
               <label>Edad:</label>
               <input
                 type="number"
@@ -138,14 +156,16 @@ export const Edit_user = ({ data, onclose }) => {
               <input
                 type={open ? "text" : "password"}
                 onChange={(e) => setClave(e.target.value)}
-                placeholder="(opcional) Solo si deseas cambiar tu clave"
+                placeholder="(opcional) Solo Si Deseas Cambiar Tu Clave"
                 className="focus:outline-none border-2 border-[#003333] p-2 rounded-xl"
               />
               <button
                 type="button"
                 onClick={() => setopen((prev) => !prev)}
               >
-              <FontAwesomeIcon icon={open ? faEye : faEyeSlash} />
+              <FontAwesomeIcon icon={open ? faEye : faEyeSlash}
+               className="text-2xl text-default-400 flex-shrink-0 text-gray-400 relative bottom-8 sm: left-52 md:left-64"
+               />
               </button>
             </div>
 
@@ -156,7 +176,7 @@ export const Edit_user = ({ data, onclose }) => {
             <input
               type="submit"
               value="Editar Mi Información"
-              className="p-3 m-3 rounded-2xl border-2 border-red-700 hover:text-white hover:bg-red-700 cursor-pointer relative left-[30%]"
+              className="p-3 m-3 rounded-2xl border-2 border-red-700 hover:text-white hover:bg-red-700 cursor-pointer relative sm: left-[29%] md:left-[34%]"
             />
           </form>
         </div>

@@ -1,5 +1,6 @@
 
 import { useState } from "react"
+import { Link } from "react-router-dom";
 import GraficaVentas from "../Components/Grafica_ventas"
 import NavBar from "../Components/NavBar"
 import axiosClient from "../utils/axiosClient";
@@ -7,14 +8,15 @@ import { useEffect } from "react";
 import { baseurl } from "../utils/data";
 import SearchBar from "../Components/Searchar"
 import { Contact } from "../Components/Contact";
-import { button } from "@nextui-org/theme";
-import Swal from "sweetalert2";
+
 export const Sales=()=>{
     const [sales, setsale]=useState([]);
     const [searcher, setsearcher]= useState("");
     const [estadoFiltro, setEstadoFiltro] = useState("Todos");
     const [index, setIndex]= useState(0);
     const [type, settype]= useState("");
+    const [detailsales, setdetailes]= useState([]);
+    const [openmodal, setmodal]= useState(false)
     const seesales=async()=>{
         try {
             const See= await axiosClient.get("/listar_ventas");
@@ -30,20 +32,7 @@ export const Sales=()=>{
   const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
   return new Date(fechaIso).toLocaleDateString('es-CO', opciones);
 }
-const entregar=async(id)=>{
-    try {
-        const see= await axiosClient.put(`/entregar/${id}`);
-        if (see.status===200) {
-            Swal.fire({
-                icon:'success',
-                text:see.data.mensaje
-            })
-            window.location.reload();
-        }
-    } catch (error) {
-        console.lohg(error)
-    }
-}
+
 
     useEffect(()=>{
         const datalocal= JSON.parse(localStorage.getItem("usuario"));
@@ -67,15 +56,15 @@ const entregar=async(id)=>{
         <div className="dark:bg-black">
             <NavBar/>
             <div className="sm:grid grid-cols-1 md:grid grid-cols-2">
-                <div className="col-span-2">
+                <div className="col-span-2 mt-12 font-bold">
                     <p className="flex justify-center text-[#3c2a21] text-2xl font-poppins p-5 dark:text-white">Nuestras Estadisticas de Ventas</p>
                 </div>
                 <div><GraficaVentas/></div>
                 <div className="flex justify-center items-center p-24">
-                    <p className="text-2xl font-bold ">Con Cada Entrega que hacemos se va una pizca de Nuestra escencia </p>
+                    <p className="text-5xl font-bold uppercase text-[#5E2419]">Con Cada Entrega que hacemos se va una pizca de Nuestra escencia </p>
                 </div>
             </div>
-            <h1 className="flex justify-center text-2xl text-[#Ff6600]">Datos Importantes de Nuestras Ventas</h1>
+            <h1 className="flex justify-center text-2xl text-[#Ff6600] m-5">Datos Importantes de Nuestras Ventas</h1>
               <SearchBar
                 value={searcher}
                 onChange={(e)=>setsearcher(e.target.value)}
@@ -84,7 +73,7 @@ const entregar=async(id)=>{
 
             <div className="flex justify-center gap-4 my-4">
   <select
-    className="border border-[#003333] rounded px-3 py-1 dark:bg-[#003333]"
+    className=" rounded px-3 py-1 bg-[#003333] dark:bg-[#5E2419] text-white"
     value={estadoFiltro}
     onChange={(e) => setEstadoFiltro(e.target.value)}
   >
@@ -102,46 +91,25 @@ const entregar=async(id)=>{
                     
 
                  return(
-                     <div className="border-1  border-[#003333] rounded-xl m-4">
-                      <p className="flex justify-center"><strong>Nombre del Producto: </strong>{item.nombre_producto}</p>
-                      <img className=" rounded-lg sm: p-8 h-[43%] md:pl-28 w-auto" src={`${baseurl}/img/${imagenes[index]}`} alt={imagenes[index]} />
-                       <p className="flex justify-center"><strong>Nombre Del Cliente:</strong>{item.nombre_cliente}</p>
+                     <div  className="border-1  border-[#003333] rounded-xl m-4 hover:shadow-green-900 shadow-lg h-auto">
+                        <p className="flex justify-center"><strong>Nombre del Producto: </strong>{item.nombre_producto}</p>
+                        <img className=" rounded-lg  p-8  h-[63%] w-auto" src={`${baseurl}/img/${imagenes[index]}`} alt={imagenes[index]} />
+                        <p className="flex justify-center"><strong>Nombre Del Cliente:</strong>{item.nombre_cliente}</p>
                        
-                       {item.apellidos.length>0 &&(
-                         <p className="flex justify-center"><strong>Apellido Del Cliente:</strong>{item.apellidos}</p>
-                       )}
-                       
-                       <p className="flex justify-center"><strong>Correo: </strong>{item.correo}</p>
-                          <p className="flex justify-center"><strong>Telefono: </strong>{item.celular}</p>
-                        <p className="flex justify-center"><strong>Fecha Venta: </strong>{formatDate(item.fecha_venta)}</p>    
-                        <p className="flex justify-center"><strong>Pais: </strong>{item.nombre_pais}</p>              
-                        <p className="flex justify-center"><strong>Departamento o Region: </strong>{item.departamento}</p>   
-                        <p className="flex justify-center"><strong>Ciudad o Municipio: </strong>{item.municipio}</p>                                 
-                        <p className="flex justify-center"><strong>Direccion : </strong>{item.direccion}</p>   
-                        {item.estado==="Por Entregar" ? (
-                            <p className="flex justify-center"><strong>Unidades Encargadas: </strong>{item.numero_de_unidades_compradas}</p> 
-                        ):(
-                            <p className="flex justify-center"><strong>Unidades Compradas: </strong>{item.numero_de_unidades_compradas}</p> 
+                        {item.apellidos.length>0 &&(
+                            <p className="flex justify-center"><strong>Apellido Del Cliente:</strong>{item.apellidos}</p>
                         )}
-                        <p className="flex justify-center"><strong>Estado : </strong>{item.estado}</p> 
-                        <p className="flex justify-center"><strong>Valor Total de Venta: </strong> ${item.valor_venta}</p>
-                        {item.estado==="Por Entregar" &&(
-                          <>
-                           {type==="Empresa_Envios" && (
-                               <button 
-                               onClick={()=>entregar(item.id)}
-                               className="border-1 border-[#Ff6600] w-[53%] p-2 m-3 rounded-xl hover:bg-[#Ff6600] hover:text-white sm: relative left-[20%]  ">
-                                   Cambiar A Estado Entregado
-                               </button>
-                           )}
-                          </>
-                        )}                                 
-                  </div>
+                       
+                        <p className="flex justify-center"><strong>Estado : </strong>{item.estado}</p>
+                        <Link to={`/ventas/${item.id}`} className="flex justify-center border-1 rounded-xl border-[#Ff6600] hover:bg-[#Ff6600] p-1 m-2">Detalles de la venta</Link>
+                        </div>
                  )
                 })
                ):(
                     <p  className="flex justify-center text-2xl text-red-600">No Tenemos ventas de clientes con nombre:  {searcher}</p>
                )}
+               
+               
             </div>
                 <Contact/>
         </div>
