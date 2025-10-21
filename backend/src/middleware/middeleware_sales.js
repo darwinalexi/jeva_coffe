@@ -7,9 +7,9 @@ export const validationsales = [
   body('fecha_venta')
     .notEmpty().withMessage('La fecha de venta es obligatoria')
     .isDate().withMessage('La fecha de venta debe ser una fecha válida'),
-    body('valorventa')
+  body('valorventa')
     .notEmpty().withMessage('El valor de venta es obligatorio')
-    .withMessage('El valor de venta debe ser un número válido'),
+    .isNumeric().withMessage('El valor de venta debe ser un número válido'),
     body('celular')
     .notEmpty().withMessage('El celular es obligatorio')
     .isNumeric().withMessage('El celular debe ser un número válido'),

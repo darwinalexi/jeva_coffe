@@ -14,15 +14,12 @@ export const Buys = ({data, onclose}) => {
   const [departamentoSeleccionado, setDepartamentoSeleccionado] = useState("");
   const [municipioSeleccionado, setMunicipioSeleccionado] = useState("");
   const [direccion, setDireccion] = useState("");
-  const [countries, setcountries]=useState([]);
   const [productos, setproductos]=useState(data.productos); 
   const [nombre_cliente, setNombreCliente] = useState("");
   const [apellidos_cliente, setApellidosCliente] = useState("");
   const [telefono, setTelefono] = useState("");
   const [correo, setCorreo] = useState("");
   const [isAuth,setAuth]=useState(false);
-  const [region, setRegion] = useState("");
-  const [ciudad, setCiudad] = useState("");
   const [valorventa, setventa]= useState()
   const [clienteSeleccionado, setClienteSeleccionado] = useState([]);
   const [token, settoken]= useState("")
@@ -37,16 +34,13 @@ export const Buys = ({data, onclose}) => {
   departamento_id: departamentoSeleccionado,
   municipio_id: municipioSeleccionado,
   direccion,
-  nombre_cliente,
-  ...(isAuth && {nombre_cliente:name}),
-  apellidos_cliente,
+  nombre_cliente: isAuth ? name : nombre_cliente,
+  apellidos_cliente: isAuth ? "" : apellidos_cliente,
   valorventa,
   correo,
-  region,
-  ciudad,
   celular: telefono,
   ...(isAuth && { id_cliente: clienteSeleccionado })
-  
+
 });
 
 
@@ -63,12 +57,13 @@ export const Buys = ({data, onclose}) => {
     
   
 
-    const totalVenta = productosConSubtotal.reduce((acc, item) => acc + item.subtotal, 0);
-    
-    const totalformateado= totalVenta.toLocaleString("es-CO", {
-      minimumFractionDigits: 0
-    })
-    setventa(totalformateado);
+    const totalVenta = productos.reduce(
+  (acc, p) => acc + p.unidades_compradas * Number(p.valor_unitario.replace(/\./g, "")),
+  0
+);
+
+setventa(totalVenta); 
+
     setdata({
       productos: productos.map(p => ({
         id_producto: p.id_producto,
@@ -78,11 +73,10 @@ export const Buys = ({data, onclose}) => {
       departamento_id: departamentoSeleccionado,
       municipio_id: municipioSeleccionado,
       direccion,
-      nombre_cliente,
-      ...(isAuth && {nombre_cliente:name}),
-      apellidos_cliente,
+      nombre_cliente: isAuth ? name : nombre_cliente,
+      apellidos_cliente: isAuth ? "" : apellidos_cliente,
       correo,
-      valorventa,
+      valorventa:totalVenta,
       celular: telefono,
       ...(isAuth && { id_cliente: clienteSeleccionado })
     });
@@ -102,15 +96,9 @@ export const Buys = ({data, onclose}) => {
 
 
 
-    if (isAuth) {
-          datasend.id_cliente=clienteSeleccionado
-    }
 
-  const countrie=async()=>{
-    const countries = await axiosClient.get("/countries");
-    setcountries(countries.data);
-    console.log("data",countries.data);
-  }
+
+ 
 
   useEffect(() => {
     const datalocal = JSON.parse(localStorage.getItem("usuario"));
@@ -138,7 +126,6 @@ export const Buys = ({data, onclose}) => {
 
   useEffect(() => {
     cargarDepartamentos();
-    countrie();
   }, []);
 
 
@@ -186,37 +173,61 @@ export const Buys = ({data, onclose}) => {
   }
 };
 
-  const create_buy = async (e) => {
-    e.preventDefault();
-    try {       
-       console.log("payload", datasend)
-      const res = await axiosClient.post("/crear_venta", datasend);
-     if (res.status==200) {
-      const {checkout_url}= res.data;
-       Swal.fire({
-        title: "Éxito",
-        text:res.data.mensaje,
-        icon: "success",
-        confirmButtonText: "Aceptar"
-      }).then(async()=>{
-         const blob =  await pdf(<Facture data={databuy}  dataprice={datasend}/>).toBlob();
-    const url = URL.createObjectURL(blob);
+ const create_buy = async (e) => {
+  e.preventDefault();
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "Factura.pdf";
-    a.click();
+  try {
+    
+    const res = await axiosClient.post("/crear_venta", datasend);
+    if (res.status === 200) {
+      const { reference, signatureIntegrity, amountInCents, currency, mensaje } = res.data;
+      const checkout = new window.WidgetCheckout({
+        currency,
+        amountInCents,
+        reference,  
+        "signature:integrity": signatureIntegrity,
+        publicKey: "pub_prod_p8u3NjzT7ZXTKyowdkChA9nEeLR7QjOp",
+      });
 
-    URL.revokeObjectURL(url);
-    console.log("datasend",datasend)
-     window.location.href = checkout_url;
-      })
+
+      checkout.open(async (result) => {
+        const transaction = result.transaction;
+        console.log("Resultado de la transacción:", transaction);
+
+        if (transaction.status === "APPROVED") {
+          Swal.fire({
+            title: "Éxito",
+            text: mensaje,
+            icon: "success",
+            confirmButtonText: "Aceptar",
+          }).then(async () => {
+            const blob = await pdf(<Facture data={databuy} dataprice={datasend} />).toBlob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "Factura.pdf";
+            a.click();
+            URL.revokeObjectURL(url);
+          });
+        } else {
+          Swal.fire({
+            icon: "warning",
+            title: "Pago no completado",
+            text: "La transacción fue cancelada o falló.",
+          });
+        }
+      });
     }
-    } catch (error) {
-      console.error("Error registrando venta:", error);
+  } catch (error) {
+    console.error("❌ Error registrando venta:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Error al procesar la compra",
+      text: error.response?.data?.mensaje || error.message,
+    });
+  }
+};
 
-    }
-  };
 
 
   return (

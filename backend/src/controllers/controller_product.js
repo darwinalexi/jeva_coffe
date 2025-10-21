@@ -243,3 +243,20 @@ export const see_a_product=async(req, res)=>{
         })
     }
 }
+
+export const count_product_unid = async(req,res)=>{
+    try {
+        const [count]= await connection.query("select nombre, sum(unidades_disponibles) as total_disponibles from productos group by nombre")
+        if(count.length>0){
+            res.status(200).json(count);
+        }else{
+            res.status(404).json({
+                "mensaje":"No se Encontraron productos disponibles"
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            "mensaje":error
+        })
+    }
+}

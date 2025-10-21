@@ -4,7 +4,7 @@ import { faHeadphones, faCoins, faDolly } from '@fortawesome/free-solid-svg-icon
 export const About_buy = () => {
     return (
         <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 border-b border-b-[#Ff6600] border-t border-t-[#Ff6600] border-l border-l-[#Ff6600] border-r border-r-[#Ff6600] m-5 h-[12%] relative left-6 w-[88%]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 border-b border-b-[#Ff6600] border-t border-t-[#Ff6600] border-l border-l-[#Ff6600] border-r border-r-[#Ff6600] m-5 h-[12%] md:relative left-10 w-[88%]">
                 <div className="flex flex-col items-center justify-center m-8">
                     <FontAwesomeIcon icon={faDolly} className="text-[#Ff6600]" style={{ fontSize: '40px' }} />
                     <div className="text-center">

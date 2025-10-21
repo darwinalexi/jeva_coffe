@@ -13,6 +13,7 @@ import { DetailsProduct } from "../Components/DetailsProduct";
 import { Carsmodal } from "../Components/Carsmodal";
 import Swal from "sweetalert2";
 import imgmain from "../assets/img/cafe1.png";
+import { useTour } from "../Components/Context/TourContext";
 
 export const Store = () => {
     const [date, setdata] = useState([]);
@@ -26,6 +27,39 @@ export const Store = () => {
     const [opendetal, setdetailes]= useState(false);
     const [datadetails, setdatadetail] =useState([]);
     const [carsbuy, setcars]=useState(false);   
+  const { addStep, startTour } = useTour();
+
+  const start = async () => {
+  const hasCompleted = localStorage.getItem("hasCompletedTour");
+  if (hasCompleted) return;
+
+  let tries = 0;
+  while (!document.querySelector("#buscador") && tries < 10) {
+    await new Promise((res) => setTimeout(res, 300));
+    tries++;
+  }
+
+  const element = document.querySelector("#buscador");
+  if (!element) return;
+
+  // Agregar paso
+  addStep({
+    element: "#buscador",
+    popover: {
+      title: "buscador",
+      description: "Aquí podrás buscar los productos dissponibles en Jeva Coffee.",
+      side: "bottom",
+      align: "center",
+    },
+  });
+
+  // Esperar un poco para que React actualice el estado `steps`
+  setTimeout(() => {
+    startTour();
+  }, 500);
+};
+
+
     
     const opencar=()=>{
         setcars(true);
@@ -144,11 +178,13 @@ const closecreate=()=>{
                 
         
                 <div className="flex justify-center mb-4   grid grid-cols-1">
-                    <SearchBar 
+                  <div id="buscador" onClick={start}>
+                      <SearchBar 
                         value={searchTerm} 
                         onChange={(e) => setSearchTerm(e.target.value)} 
                         placeholder="Buscar productos de Jeva Coffe..."
                     />
+                  </div>
                     {isAuth && typeuse==="Administrador" && (
                         <>
                       <div className="flex flex-col items-center sm:flex-row sm:justify-center gap-3 mt-4">
@@ -258,7 +294,6 @@ const closecreate=()=>{
                 )}
             </div>
         </div>
-            
             {openupdate && (<Update_Product onclose={closeupdate} data={dataupdate} />) }
             {modalcreate && (<Create_Product onclose={closecreate} />)}
             {opendetal &&(<DetailsProduct data={datadetails} onclose={closedeta}/>)}

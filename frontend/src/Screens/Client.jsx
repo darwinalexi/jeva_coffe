@@ -113,7 +113,7 @@ export const Client = () => {
   return (
     <>
       <NavBar />
-      <h1 className="flex justify-center m-8 text-4xl font-black text-[#3c2a21] dark:text-white">Clientes</h1>
+      <h1 className="flex justify-center mt-20 text-4xl font-black text-[#3c2a21] dark:text-white">Clientes</h1>
       <SearchBar
         value={client}
         onChange={(e) => Setclient(e.target.value)}

@@ -12,7 +12,10 @@ import GraficaVentas from "../Components/Grafica_ventas";
 import {Link} from "react-router-dom"
 import axiosClient from "../utils/axiosClient";
 import img from "../assets/img/imgs.jpeg";
-import img2 from "../assets/img/historia.webp"
+import img2 from "../assets/img/historia.webp";
+import "driver.js/dist/driver.css";
+import { Grafica_de_unidadades_disponibles_de_cada_producto } from "../Components/Grafic_Number_Product";
+
 export const Main=()=>{
   const [type, setType] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -32,6 +35,13 @@ export const Main=()=>{
       once: true
     });
   }, []);
+
+
+ 
+
+
+
+
      
 const show_client = async () => {
       try {
@@ -50,11 +60,13 @@ const show_client = async () => {
          show_client();
     },[])
 
+    
     return(
         <>     
             {isAuthenticated && type === "Administrador" && (
               <>
-              <NavBar/>
+              <NavBar/>  
+              
               
                     <div className="w-[100%] sm:grid grid-cols-1 md:grid grid-cols-2 mt-12 min-h-screen  sm:gap-2 md:gap-4">
                         <div className="grid col-span-2 items-center">
@@ -72,8 +84,11 @@ const show_client = async () => {
                             <GraficaVentas  className="p-4"/>
                         </div>
                                     
-                        <div className="h-aut0 m-3 flex justify-center items-center">
+                        <div className="h-auto m-3 flex justify-center items-center">
                             <p className=" text-5xl text-[#3c2a21] font-black dark:text-white">Entre aroma y cifras, tu éxito se prepara aquí.</p>
+                        </div>
+                         <div className="h-auto m-3 col-span-2 w-[97%]">
+                        <Grafica_de_unidadades_disponibles_de_cada_producto/>
                         </div>
                                     
                         <div className="grid col-span-2">
@@ -84,7 +99,7 @@ const show_client = async () => {
                         </div>
                         <div className="grid col-span-2 bg-[#003333] w-full">
                         <div className="h-full">
-                          <Contact/>
+                          <Contact id="pie_pagina"/>
                         </div>
                     </div>
                     </div>
@@ -94,17 +109,19 @@ const show_client = async () => {
       {(!isAuthenticated || type === "Cliente") && (
               <div id="#inicio">
                  <div>
-                   <NavBar/>
+                    
+                      <NavBar />
+                  
                   <div className="hidden sm:block mt-[4%]">
                           <Carrusel/>  
                   </div>
 
                 <div className="block sm:hidden">
-                  <p className="flex justify-center text-[#Ff6600] text-2xl absolute top-[30%]  ml-10 text-5xl">SI NO SE HACE CON AMOR EL SENTIMIENTO NO DURA</p>
+                  <p className="flex justify-center text-[#Ff6600]  dark:text-white text-2xl absolute top-[10%]  ml-10 text-5xl z-10 font-semibold">SI NO SE HACE CON AMOR EL SENTIMIENTO NO DURA</p>
                     <img
                         src={img}
                         alt="imagen alternativa"
-                        className="w-full h-full mt-5 opacity-5"
+                        className="w-full h-full mt-5 opacity-80 dark:opacity-50"
                     />
                     </div>
             </div>
@@ -127,7 +144,7 @@ const show_client = async () => {
                
             </div>
             <About_buy/>
-            <Contact/>
+            <Contact id="pie_pagina"/>
         </div>
             )}
 

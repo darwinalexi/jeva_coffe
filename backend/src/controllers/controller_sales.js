@@ -1,72 +1,116 @@
 import { connection } from "../database/conexion.js"
+import crypto from "crypto";
 
 export const create_sales = async (req, res) => {
   try {
-    const {productos, fecha_venta,valorventa,departamento_id,municipio_id,direccion,nombre_cliente,apellidos_cliente,correo,id_cliente, celular } = req.body;
-    const estado = "Por Entregar"
+    const {
+      productos,
+      fecha_venta,
+      valorventa,
+      departamento_id,
+      municipio_id,
+      direccion,
+      nombre_cliente,
+      apellidos_cliente,
+      correo,
+      id_cliente,
+      celular
+    } = req.body;
+
+    const estado = "Por Entregar";
 
     if (!Array.isArray(productos) || productos.length === 0) {
       return res.status(400).json({ mensaje: "Debe incluir al menos un producto" });
     }
 
-    const result=[];
+    const result = [];
     for (const item of productos) {
       const { id_producto, unidades_compradas } = item;
 
       if (!id_producto || unidades_compradas <= 0) {
         return res.status(400).json({
-          mensaje: "Cada producto debe tener un ID válido y unidades mayores a 0"
+          mensaje: "Cada producto debe tener un ID válido y unidades mayores a 0",
         });
       }
 
-     const  [create] = await connection.query(
+      const [create] = await connection.query(
         `INSERT INTO ventas 
-          (id_producto, fecha_venta, valor_venta, departamento, municipio, estado, direccion, numero_de_unidades_compradas, nombre, apellidos, correo,pais, id_clientes, telefono) 
+          (id_producto, fecha_venta, valor_venta, departamento, municipio, estado, direccion, numero_de_unidades_compradas, nombre, apellidos, correo, pais, id_clientes, telefono) 
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [id_producto,fecha_venta,valorventa,departamento_id || null,municipio_id || null,estado,direccion,unidades_compradas,nombre_cliente,apellidos_cliente,correo,"Colombia", null || id_cliente || null, celular]);
+        [
+          id_producto,
+          fecha_venta,
+          valorventa,
+          departamento_id || null,
+          municipio_id || null,
+          estado,
+          direccion,
+          unidades_compradas,
+          nombre_cliente,
+          apellidos_cliente,
+          correo,
+          "Colombia",
+          id_cliente || null,
+          celular,
+        ]
+      );
 
       if (create.affectedRows > 0) {
-      const [update]= await connection.query("update productos set unidades_disponibles= unidades_disponibles -? where id=? and unidades_disponibles >= ?",[unidades_compradas,id_producto, unidades_compradas])
-      if(update.affectedRows >0){
+        await connection.query(
+          "UPDATE productos SET unidades_disponibles = unidades_disponibles - ? WHERE id = ? AND unidades_disponibles >= ?",
+          [unidades_compradas, id_producto, unidades_compradas]
+        );
 
-        const [seearch]= await connection.query("select*from productos where id=?",[id_producto]);
-        const unidades=seearch[0]
-        const unidades_disponibles= unidades.unidades_disponibles;
-        console.log("data unifafrs",unidades_disponibles);
-        if (unidades_disponibles === 0) {
-          const [updates]= await connection.query("update productos set estado='No Disponible' where id=?",[id_producto])
-          if (updates.affectedRows > 0 && create.affectedRows > 0) {              
-                result.push({
-                  id_venta: create.insertId,
-                  id_producto: id_producto,
-                  unidades_compradas: unidades_compradas,
-            
-                });
-
-          }
-
+        const [search] = await connection.query("SELECT * FROM productos WHERE id = ?", [id_producto]);
+        if (search[0].unidades_disponibles === 0) {
+          await connection.query("UPDATE productos SET estado='No Disponible' WHERE id=?", [id_producto]);
         }
+
+        result.push({ id_venta: create.insertId, id_producto, unidades_compradas });
       }
     }
-    
-  }
 
-  const checkout_url="https://checkout.wompi.co/l/test_VPOS_gFRHm1";
+    // La referencia es opcional, si ya existe una la puedes usar
+    const reference = `JEVA-${Math.floor(Math.random() * 1000000)}`;
 
-  return  res.status(200).json({
-      mensaje: "Seras redirigido a la pasarela de pagos",
-      result,
-      checkout_url
+    const valorNum = Number(valorventa.toString().replace(/\./g, "").replace(/,/g, ""));
+    const amountInCents = Math.round(valorNum * 100);
+
+    const currency = "COP";
+    const secret = process.env.WOMPI_INTEGRITY_KEY; // Asegúrate de que esta variable de entorno esté configurada
+
+    if (!secret) {
+        throw new Error("La variable de entorno WOMPI_INTEGRITY_KEY no está definida.");
+    }
+    const cadenaFirmada = `${reference}${amountInCents}${currency}${secret}`;
+
+    const signature = crypto.createHash("sha256").update(cadenaFirmada).digest("hex");
+
+    console.log({
+      reference,
+      amountInCents,
+      currency,
+      secret,
+      signature
     });
-}catch (error) {
-    console.error(error);
+
+    return res.status(200).json({
+      mensaje: "Venta registrada correctamente. Redirigiendo a la pasarela de pagos...",
+      result,
+      reference,
+      amountInCents,
+      currency,
+      signatureIntegrity: signature
+    });
+
+  } catch (error) {
+    console.error("❌ Error registrando compra:", error);
     res.status(500).json({
       mensaje: "Error al registrar la compra",
-      error: error.message
+      error: error.message,
     });
   }
 };
-
 
 
 
@@ -136,8 +180,8 @@ export const see_sales= async(req, res)=>{
      productos.nombre as nombre_producto, 
      productos.imagen,
      ventas.apellidos,     
-     COALESCE(ventas.ciudad, municipios.municipio) as municipio,
-     COALESCE(ventas.region, departamentos.departamento) as departamento,
+     municipios.municipio as municipio,
+     departamentos.departamento as departamento,
      ventas.fecha_venta,
      ventas.pais,
      ventas.direccion,
@@ -169,17 +213,18 @@ export const see_buy_client=async(req, res)=>{
   try {
     const {id_cliente}= req.params;
 
-    const  [see]= await connection.query(`select ventas.id,
+    const  [see]= await connection.query(`select
      usuarios.nombre as nombre_cliente,
      ventas.apellidos,
      productos.nombre as nombre_producto, 
      productos.imagen,     
-     COALESCE(ventas.ciudad, municipios.municipio) as municipio,
-     COALESCE(ventas.region, departamentos.departamento) as departamento,
+     municipios.municipio as municipio,
+     departamentos.departamento as departamento,
      ventas.fecha_venta,
-     ventas.pais,
      ventas.direccion,
      ventas.correo,
+     ventas.id,
+     ventas.id_clientes as id_cliente,
      ventas.telefono as celular,
      ventas.estado,
      ventas.numero_de_unidades_compradas,
@@ -246,26 +291,7 @@ export const count_sales_client=async(req, res)=>{
 export const see_details=async(req, res)=>{
   try {
     const {id}= req.params;
-    const [see]= await connection.query(`select ventas.id,
-    COALESCE(usuarios.nombre, ventas.nombre) as nombre_cliente,
-     productos.nombre as nombre_producto, 
-     productos.imagen,
-     ventas.apellidos,     
-     COALESCE(ventas.ciudad, municipios.municipio) as municipio,
-     COALESCE(ventas.region, departamentos.departamento) as departamento,
-     ventas.fecha_venta,
-     ventas.pais,
-     ventas.direccion,
-     ventas.correo,
-     ventas.telefono as celular,
-     ventas.estado,
-     ventas.numero_de_unidades_compradas,
-     ventas.valor_venta 
-     from ventas
-   left  join municipios on ventas.municipio= municipios.id_municipio
-    left join departamentos on ventas.departamento=departamentos.id_departamento
-    left join usuarios on ventas.id_cliente= usuarios.identificacion
-    left join productos on ventas.id_producto= productos.id where ventas.id=${id}`)
+    const [see]= await connection.query(`select usuarios.nombre as nombre_cliente, productos.nombre as nombre_producto, productos.imagen, ventas.apellidos, municipios.municipio as municipio, departamentos.departamento as departamento, ventas.fecha_venta, ventas.direccion, ventas.correo, ventas.telefono as celular, ventas.estado, ventas.numero_de_unidades_compradas, ventas.valor_venta from ventas left join municipios on ventas.municipio= municipios.id_municipio left join departamentos on ventas.departamento=departamentos.id_departamento left join usuarios on ventas.id_clientes= usuarios.identificacion left join productos on ventas.id_producto= productos.id where ventas.id=${id}`)
 
     if (see.length>0) {
       res.status(200).json(see)
@@ -280,3 +306,24 @@ export const see_details=async(req, res)=>{
 } 
 
 
+export const count_sales_for_client= async(req, res)=>{
+  try {
+
+    const {id_cliente}= req.params;
+    const [count]=  await connection.query(`select ventas.numero_de_unidades_compradas, usuarios.nombre ,productos.nombre as producto, ventas.valor_venta,ventas.id_producto as id_producto,(select count(*) as numero_ventas from ventas where ventas.id_clientes = ${id_cliente}) as numero_ventas from ventas
+      join usuarios on ventas.id_clientes = usuarios.identificacion
+      join productos on ventas.id_producto=productos.id 
+      where ventas.id_clientes=${id_cliente}`);
+
+    if (count.length>0 ) {
+    res.status(200).json(count)
+  } else {
+    res.status(200).json([])
+  }
+} catch (error) {
+    console.log("error", error)
+    res.status(500).json({  
+      "error":error
+    })
+  }
+}

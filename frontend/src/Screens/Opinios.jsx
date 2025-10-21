@@ -199,7 +199,7 @@ export const Opinions = () => {
         </div>
       </div>
 
-          {type.length>0 ? (
+          { type=="Cliente" || type.length==0 ? (
                <form onSubmit={create_comment} className=" h-auto p-2 w-[90%] ml-10">
             <h2 className="flex justify-center m-8">¡Anímate a dar tu opinión si ya lo has probado!</h2>
             <textarea
@@ -258,7 +258,7 @@ const renderstart = (rating) => {
         <FontAwesomeIcon
           key={i}
           icon={faStar}
-          className="text-[#003333] dark:text-[#5E2419]"
+          className="text-[#003333] dark:text-[#a7503e]"
         />
       );
     } else if (halfStar && i === totalFull + 1) {
@@ -266,7 +266,7 @@ const renderstart = (rating) => {
         <FontAwesomeIcon
           key={i}
           icon={faStarHalfStroke}
-          className="text-[#003333] dark:text-[#5E2419]"
+          className="text-[#003333] dark:text-[#a7503e]"
         />
       );
     } else {

@@ -20,8 +20,10 @@ export const Contact=()=>{
       
         <div className="sm: relative left-[50%] md:left-0 ">
           <img src={logo} alt="Logo" />
-          <p className="flex justify-center">Facebook</p>
-          <p className="flex justify-center">Instagram</p>
+          <p className="flex justify-center font-bold m-2">Siguenos en:</p>
+          <a className="flex justify-center m-1" href="https://www.facebook.com/profile.php?id=61550242042483&rdid=IrNpGmWDFEsJigMC&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1AnGRYD8ag#">Facebook</a>
+          <a className="flex justify-center m-1" href="https://www.instagram.com/jevacoffee.official/">Instagram</a>
+          <a className="flex justify-center m-1" href="https://www.tiktok.com/@jevacoffee">Tik Tok</a>
         </div>
 
 <div className="col-span-2 ">

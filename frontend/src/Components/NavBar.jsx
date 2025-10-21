@@ -18,12 +18,48 @@ import axiosClient from "../utils/axiosClient";
 import { baseurl } from "../utils/data";
 import { RegisterUser } from "./FrmRegisterUser";
 import { RegisterClient } from "./Create_client";
+import { useTour } from "./Context/TourContext";
+import { driver } from "driver.js";
 
 export default function NavBar() {
   const [Aut, SetAuth] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [type_user, setType] = useState("");
+  const { addStep, startTour } = useTour();
+
+  const start = async () => {
+  const hasCompleted = localStorage.getItem("hasCompletedTour");
+  if (hasCompleted) return;
+
+  let tries = 0;
+  while (!document.querySelector("#menu") && tries < 10) {
+    await new Promise((res) => setTimeout(res, 300));
+    tries++;
+  }
+
+  const element = document.querySelector("#menu");
+  if (!element) return;
+
+  // Agregar paso
+  addStep({
+    element: "#menu",
+    popover: {
+      title: "Menú principal",
+      description: "Aquí podrás navegar entre las secciones principales de Jeva Coffee.",
+      side: "bottom",
+      align: "center",
+    },
+  });
+
+  // Esperar un poco para que React actualice el estado `steps`
+  setTimeout(() => {
+    startTour();
+  }, 500);
+};
+
+
+
 
   const navigate = useNavigate();
 
@@ -67,9 +103,12 @@ export default function NavBar() {
     }
   };
 
+
+
   return (
-    <Navbar className="bg-[#003333] dark:bg-[#5E2419] transition-colors duration-300 fixed">
-      {!Aut && (
+<div id="menu" onClick={start}>
+  <Navbar className="bg-[#003333] dark:bg-[#5E2419] transition-colors duration-300 fixed">
+    {!Aut && (
         <>
           <Button
             variant="light"
@@ -275,5 +314,6 @@ export default function NavBar() {
         </div>
       )}
     </Navbar>
+  </div>
   );
 }

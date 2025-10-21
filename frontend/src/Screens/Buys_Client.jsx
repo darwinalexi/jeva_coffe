@@ -5,6 +5,7 @@ import axiosClient from "../utils/axiosClient";
 import { baseurl } from "../utils/data";
 import SearchBar from "../Components/Searchar";
 import { Contact } from "../Components/Contact";
+import Grafica_for_client from "../Components/Grafic_for_client";
 
 export const Buys_Client=()=>{
     
@@ -18,7 +19,6 @@ export const Buys_Client=()=>{
     const see_buy=async()=>{
         const see= await axiosClient.get(`/listar_compras_cliente/${id}`)
         setbuy(see.data)
-        console.log(see.data)
     }
 
     useEffect(()=>{
@@ -46,6 +46,8 @@ export const Buys_Client=()=>{
         <>
             <NavBar/>
             <h1 className="text-3xl font-bold text-center mt-20">Compras de {cliente?.nombre}</h1>
+            <Grafica_for_client id_cliente={id}/>
+                <h1 className="text-3xl font-bold text-center">Busca Por Producto</h1>
             <SearchBar
                 value={searcher}
                 placeholder="Buscar Por Producto"
@@ -74,9 +76,9 @@ export const Buys_Client=()=>{
                             imagenes=[];
                         }
               return(
-                  <div className="border-1 border-[#003333] rounded-xl flex justify-center grid grid-cols-1 m-7">
+                  <div key={item.id}  className="border-1 border-[#003333] rounded-xl flex justify-center grid grid-cols-1 m-7">
                      <p className="flex justify-center"><strong>Nombre del producto: </strong>{item.nombre_producto}</p>
-                     <img src={`${baseurl}/img/${imagenes[0]}`} className="relative p-5 rounded-xl" />
+                     <img src={`${baseurl}/img/${imagenes[0]}`} className="relative p-5 rounded-xl h-[100%]" />
                      <p className="flex justify-center"><strong>Departamento: </strong>{item.departamento}</p>
                      <p className="flex justify-center"><strong>Municipio: </strong>{item.municipio}</p>
                      <p className="flex justify-center"><strong>Direccion: </strong>{item.direccion}</p>

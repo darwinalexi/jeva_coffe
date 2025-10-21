@@ -60,9 +60,14 @@ export const DetailSales = () => {
                     return(
                             <>
                             <p className="md:col-span-2 flex justify-center text-2xl font-bold uppercase">Detalles de la Compra</p>
-                            <div >
-                                <img src={`${baseurl}/img/${imagenes[0]}`} alt={imagenes[0]}className="p-6" />
-                            </div>
+                            <div className="bg-red-500 w-full h-[300px]">
+                                <img
+                                    src={`${baseurl}/img/${imagenes[0]}`}
+                                    alt={imagenes[0]}
+                                    className="w-full h-full object-cover"
+                                />
+                                </div>
+
                             <div>
                                 <p className="flex justify-center text-xl p-1"><strong>Nombre Producto:    </strong>{item.nombre_producto}</p>
                                 <p className="flex justify-center text-xl p-1"><strong>Nombre  Del Cliente:    </strong>{item.nombre_cliente}</p>

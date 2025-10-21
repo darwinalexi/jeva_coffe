@@ -85,6 +85,16 @@ export const Carrusel = () => {
   .custom-dot-list .react-multi-carousel-dot:hover button {
     background-color: #555;
   }
+
+  .react-multiple-carousel__arrow {
+  z-index: 1 !important;
+}
+
+.mi-menu {
+  position: relative;
+  z-index: 10;
+}
+
 `}
 </style>
 
