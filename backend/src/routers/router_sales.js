@@ -1,5 +1,5 @@
 import {Router} from "express"
-import { count_sales, count_sales_client,count_sales_entregado, count_sales_not_entregadas, create_sales, see_buy_client, see_sales, update_sales, see_details,count_sales_for_client } from "../controllers/controller_sales.js";
+import { count_sales, count_sales_client,count_sales_entregado, count_sales_not_entregadas, create_sales, see_buy_client, see_sales, update_sales, see_details,count_sales_for_client, generate_transaction } from "../controllers/controller_sales.js";
 import { validationsales } from "../middleware/middeleware_sales.js";
 
 export const router_sales= Router();
@@ -14,4 +14,6 @@ router_sales.get("/listar_compras_cliente/:id_cliente",see_buy_client)
 router_sales.get("/contar_ventas_cliente/:id_cliente",count_sales_client)
 router_sales.get("/detalles_ventas/:id", see_details)
 router_sales.get("/contar_ventas_por_cliente/:id_cliente", count_sales_for_client)
+router_sales.post("/generar_firma",generate_transaction)
+
 

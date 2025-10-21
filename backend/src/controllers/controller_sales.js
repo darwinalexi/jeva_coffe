@@ -1,6 +1,39 @@
 import { connection } from "../database/conexion.js"
 import crypto from "crypto";
 
+export const generate_transaction = async (req, res) => {
+  try {
+    const { valorventa } = req.body;
+
+    const reference = `JEVA-${Math.floor(Math.random() * 1000000)}`;
+
+    const valorNum = Number(valorventa.toString().replace(/\./g, "").replace(/,/g, ""));
+    const amountInCents = Math.round(valorNum * 100);
+    const currency = "COP";
+
+    const secret = process.env.WOMPI_INTEGRITY_KEY;
+    if (!secret)
+      return res
+        .status(500)
+        .json({ mensaje: "La variable de entorno WOMPI_INTEGRITY_KEY no está definida." });
+
+    const cadenaFirmada = `${reference}${amountInCents}${currency}${secret}`;
+    const signature = crypto.createHash("sha256").update(cadenaFirmada).digest("hex");
+
+    return res.status(200).json({
+      reference,
+      amountInCents,
+      currency,
+      signatureIntegrity: signature,
+    });
+  } catch (error) {
+    res.status(500).json({
+      mensaje: "Error al generar la transacción",
+      error: error.message,
+    });
+  }
+};
+
 export const create_sales = async (req, res) => {
   try {
     const {
@@ -14,7 +47,9 @@ export const create_sales = async (req, res) => {
       apellidos_cliente,
       correo,
       id_cliente,
-      celular
+      celular,
+      reference,        // ← ahora viene del frontend, generado en generate_transaction
+      transaction_id    // ← opcional, si lo obtienes luego del pago
     } = req.body;
 
     const estado = "Por Entregar";
@@ -35,8 +70,8 @@ export const create_sales = async (req, res) => {
 
       const [create] = await connection.query(
         `INSERT INTO ventas 
-          (id_producto, fecha_venta, valor_venta, departamento, municipio, estado, direccion, numero_de_unidades_compradas, nombre, apellidos, correo, pais, id_clientes, telefono) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          (id_producto, fecha_venta, valor_venta, departamento, municipio, estado, direccion, numero_de_unidades_compradas, nombre, apellidos, correo, pais, id_clientes, telefono, reference, transaction_id) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           id_producto,
           fecha_venta,
@@ -52,6 +87,8 @@ export const create_sales = async (req, res) => {
           "Colombia",
           id_cliente || null,
           celular,
+          reference || null,
+          transaction_id || null,
         ]
       );
 
@@ -70,37 +107,11 @@ export const create_sales = async (req, res) => {
       }
     }
 
-    // La referencia es opcional, si ya existe una la puedes usar
-    const reference = `JEVA-${Math.floor(Math.random() * 1000000)}`;
-
-    const valorNum = Number(valorventa.toString().replace(/\./g, "").replace(/,/g, ""));
-    const amountInCents = Math.round(valorNum * 100);
-
-    const currency = "COP";
-    const secret = process.env.WOMPI_INTEGRITY_KEY; // Asegúrate de que esta variable de entorno esté configurada
-
-    if (!secret) {
-        throw new Error("La variable de entorno WOMPI_INTEGRITY_KEY no está definida.");
-    }
-    const cadenaFirmada = `${reference}${amountInCents}${currency}${secret}`;
-
-    const signature = crypto.createHash("sha256").update(cadenaFirmada).digest("hex");
-
-    console.log({
-      reference,
-      amountInCents,
-      currency,
-      secret,
-      signature
-    });
-
     return res.status(200).json({
-      mensaje: "Venta registrada correctamente. Redirigiendo a la pasarela de pagos...",
+      mensaje: "Venta registrada correctamente.",
       result,
       reference,
-      amountInCents,
-      currency,
-      signatureIntegrity: signature
+      transaction_id,
     });
 
   } catch (error) {
@@ -111,6 +122,7 @@ export const create_sales = async (req, res) => {
     });
   }
 };
+
 
 
 

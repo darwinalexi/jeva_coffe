@@ -177,49 +177,59 @@ setventa(totalVenta);
   e.preventDefault();
 
   try {
-    
-    const res = await axiosClient.post("/crear_venta", datasend);
-    if (res.status === 200) {
-      const { reference, signatureIntegrity, amountInCents, currency, mensaje } = res.data;
-      const checkout = new window.WidgetCheckout({
-        currency,
-        amountInCents,
-        reference,  
-        "signature:integrity": signatureIntegrity,
-        publicKey: "pub_prod_p8u3NjzT7ZXTKyowdkChA9nEeLR7QjOp",
-      });
+    const gen = await axiosClient.post("/generar_firma", {
+      valorventa: datasend.valorventa,
+    });
 
+    const { reference, signatureIntegrity, amountInCents, currency } = gen.data;
 
-      checkout.open(async (result) => {
-        const transaction = result.transaction;
-        console.log("Resultado de la transacción:", transaction);
+    // 2️⃣ Abrir el widget de Wompi con los datos firmados
+    const checkout = new window.WidgetCheckout({
+      currency,
+      amountInCents,
+      reference,
+      "signature:integrity": signatureIntegrity,
+      publicKey: "pub_prod_p8u3NjzT7ZXTKyowdkChA9nEeLR7QjOp", 
+    });
 
-        if (transaction.status === "APPROVED") {
-          Swal.fire({
-            title: "Éxito",
-            text: mensaje,
-            icon: "success",
-            confirmButtonText: "Aceptar",
-          }).then(async () => {
-            const blob = await pdf(<Facture data={databuy} dataprice={datasend} />).toBlob();
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "Factura.pdf";
-            a.click();
-            URL.revokeObjectURL(url);
-          });
-        } else {
-          Swal.fire({
-            icon: "warning",
-            title: "Pago no completado",
-            text: "La transacción fue cancelada o falló.",
-          });
-        }
-      });
-    }
+    checkout.open(async (result) => {
+      const transaction = result.transaction;
+      console.log("🧾 Resultado de la transacción:", transaction);
+
+      if (transaction.status === "APPROVED") {
+        const datasendFinal = {
+          ...datasend,
+          reference, 
+          transaction_id: transaction.id, 
+        };
+
+        const res = await axiosClient.post("/crear_venta", datasendFinal);
+
+        Swal.fire({
+          title: "Éxito",
+          text: res.data.mensaje,
+          icon: "success",
+          confirmButtonText: "Aceptar",
+        }).then(async () => {
+
+          const blob = await pdf(<Facture data={databuy} dataprice={datasend} />).toBlob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "Factura.pdf";
+          a.click();
+          URL.revokeObjectURL(url);
+        });
+      } else {
+        Swal.fire({
+          icon: "warning",
+          title: "Pago no completado",
+          text: "La transacción fue cancelada o falló.",
+        });
+      }
+    });
   } catch (error) {
-    console.error("❌ Error registrando venta:", error);
+    console.error("❌ Error procesando la compra:", error);
     Swal.fire({
       icon: "error",
       title: "Error al procesar la compra",
@@ -227,6 +237,7 @@ setventa(totalVenta);
     });
   }
 };
+
 
 
 
