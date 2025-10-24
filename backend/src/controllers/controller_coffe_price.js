@@ -3,7 +3,6 @@ import * as cheerio from 'cheerio';
 
 const formatearCOP = (valor) => `$${valor.toLocaleString('es-CO')}`;
 
-// PRECIO GENERAL (ej: Caldas)
 export const obtenerPrecioFNC = async (req, res) => {
   try {
     const url = 'https://caldas.federaciondecafeteros.org/glosario/precio-interno-de-compra-de-cafe/';
@@ -33,7 +32,6 @@ export const obtenerPrecioFNC = async (req, res) => {
   }
 };
 
-// PRECIO HUILA
 export const obtenerPrecioCafeHuila = async (req, res) => {
   try {
     const url = 'https://huila.federaciondecafeteros.org/glosario/precio-interno-de-compra-de-cafe/';

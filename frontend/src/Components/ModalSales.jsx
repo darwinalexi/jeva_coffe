@@ -173,7 +173,7 @@ setventa(totalVenta);
   }
 };
 
- const create_buy = async (e) => {
+ {/*const create_buy = async (e) => {
   e.preventDefault();
 
   try {
@@ -228,6 +228,44 @@ setventa(totalVenta);
         });
       }
     });
+  } catch (error) {
+    console.error("❌ Error procesando la compra:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Error al procesar la compra",
+      text: error.response?.data?.mensaje || error.message,
+    });
+  }
+};*/}
+
+ const create_buy = async (e) => {
+  e.preventDefault();
+
+  try {
+        const res = await axiosClient.post("/crear_venta", datasend);
+if (res.status==200) {
+        Swal.fire({
+          title: "Éxito",
+          text: res.data.mensaje,
+          icon: "success",
+          confirmButtonText: "Aceptar",
+        }).then(async () => {
+
+          const blob = await pdf(<Facture data={databuy} dataprice={datasend} />).toBlob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "Factura.pdf";
+          a.click();
+          URL.revokeObjectURL(url);
+        });
+      } else {
+        Swal.fire({
+          icon: "warning",
+          title: "Pago no completado",
+          text: "La transacción fue cancelada o falló.",
+        });
+      }
   } catch (error) {
     console.error("❌ Error procesando la compra:", error);
     Swal.fire({

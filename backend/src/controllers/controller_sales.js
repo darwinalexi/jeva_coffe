@@ -48,8 +48,8 @@ export const create_sales = async (req, res) => {
       correo,
       id_cliente,
       celular,
-      reference,        // ← ahora viene del frontend, generado en generate_transaction
-      transaction_id    // ← opcional, si lo obtienes luego del pago
+      reference,    
+      transaction_id 
     } = req.body;
 
     const estado = "Por Entregar";
@@ -303,7 +303,7 @@ export const count_sales_client=async(req, res)=>{
 export const see_details=async(req, res)=>{
   try {
     const {id}= req.params;
-    const [see]= await connection.query(`select usuarios.nombre as nombre_cliente, productos.nombre as nombre_producto, productos.imagen, ventas.apellidos, municipios.municipio as municipio, departamentos.departamento as departamento, ventas.fecha_venta, ventas.direccion, ventas.correo, ventas.telefono as celular, ventas.estado, ventas.numero_de_unidades_compradas, ventas.valor_venta from ventas left join municipios on ventas.municipio= municipios.id_municipio left join departamentos on ventas.departamento=departamentos.id_departamento left join usuarios on ventas.id_clientes= usuarios.identificacion left join productos on ventas.id_producto= productos.id where ventas.id=${id}`)
+    const [see]= await connection.query(`select COALESCE(usuarios.nombre, ventas.nombre) as nombre_cliente, productos.nombre as nombre_producto, ventas.pais, productos.imagen, ventas.apellidos, municipios.municipio as municipio, departamentos.departamento as departamento, ventas.fecha_venta, ventas.direccion, ventas.correo, ventas.telefono as celular, ventas.estado, ventas.numero_de_unidades_compradas, ventas.valor_venta from ventas left join municipios on ventas.municipio= municipios.id_municipio left join departamentos on ventas.departamento=departamentos.id_departamento left join usuarios on ventas.id_clientes= usuarios.identificacion left join productos on ventas.id_producto= productos.id where ventas.id=${id}`)
 
     if (see.length>0) {
       res.status(200).json(see)
