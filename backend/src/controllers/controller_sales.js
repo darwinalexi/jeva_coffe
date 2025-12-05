@@ -48,8 +48,6 @@ export const create_sales = async (req, res) => {
       correo,
       id_cliente,
       celular,
-      reference,    
-      transaction_id 
     } = req.body;
 
     const estado = "Por Entregar";
@@ -70,8 +68,8 @@ export const create_sales = async (req, res) => {
 
       const [create] = await connection.query(
         `INSERT INTO ventas 
-          (id_producto, fecha_venta, valor_venta, departamento, municipio, estado, direccion, numero_de_unidades_compradas, nombre, apellidos, correo, pais, id_clientes, telefono, reference, transaction_id) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          (id_producto, fecha_venta, valor_venta, departamento, municipio, estado, direccion, numero_de_unidades_compradas, nombre, apellidos, correo, pais, id_clientes, telefono) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           id_producto,
           fecha_venta,
@@ -86,9 +84,7 @@ export const create_sales = async (req, res) => {
           correo,
           "Colombia",
           id_cliente || null,
-          celular,
-          reference || null,
-          transaction_id || null,
+          celular
         ]
       );
 
@@ -109,9 +105,7 @@ export const create_sales = async (req, res) => {
 
     return res.status(200).json({
       mensaje: "Venta registrada correctamente.",
-      result,
-      reference,
-      transaction_id,
+      result
     });
 
   } catch (error) {

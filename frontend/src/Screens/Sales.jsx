@@ -45,8 +45,7 @@ export const Sales=()=>{
         return sales.filter((ventas)=>{
             const estado=ventas.estado.toLowerCase();
             const cliente= ventas.nombre_cliente.toLowerCase();
-            const buscar= searcher.toLowerCase();
-            
+            const buscar= searcher.toLowerCase();  
             const buscliente= cliente.includes(buscar);
             const estadofilter= estadoFiltro=="Todos" || estado=== estadoFiltro.toLowerCase();
             return buscliente && estadofilter;
@@ -101,7 +100,9 @@ export const Sales=()=>{
                         )}
                        
                         <p className="flex justify-center"><strong>Estado : </strong>{item.estado}</p>
-                        <Link to={`/ventas/${item.id}`} className="flex justify-center border-1 rounded-xl border-[#Ff6600] hover:bg-[#Ff6600] p-1 m-2">Detalles de la venta</Link>
+                            <div  className="relative bottom-6 m-16 ">
+                                <Link to={`/ventas/${item.id}`} className="flex justify-center border-1 rounded-xl border-[#Ff6600] hover:bg-[#Ff6600] p-2">Detalles de la venta</Link>
+                            </div>
                         </div>
                  )
                 })

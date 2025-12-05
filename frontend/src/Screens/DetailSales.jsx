@@ -20,6 +20,16 @@ export const DetailSales = () => {
         detailsales();
     },[])
 
+
+
+
+     const formatCurrency = (valorPesos) => {
+  const pesos = Number(valorPesos); // ✅ ya viene en pesos, no se divide
+  return "$" + pesos.toLocaleString("es-CO", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+};
   return (
     <div >
       <NavBar/>
@@ -44,7 +54,8 @@ export const DetailSales = () => {
                                     src={`${baseurl}/img/${imagenes[0]}`}
                                     alt={imagenes[0]}
                                     className="w-full h-full object-cover"
-                                />
+                                    />
+
                             </div>
 
                             <div>
@@ -65,7 +76,7 @@ export const DetailSales = () => {
                                 ):(
                                     <p className="flex justify-center text-xl p-1"><strong>Unidades Encargadas:  </strong>{item.numero_de_unidades_compradas}</p>                            
                                 )}
-                                <p className="flex justify-center text-xl p-1"><strong>Valor De Venta:    </strong>{item.valor_venta}</p>                             
+                                <p className="flex justify-center text-xl p-1"><strong>Valor De Venta:    </strong>{formatCurrency(item.valor_venta)}</p>                             
                             </div>
                             </>
                     )

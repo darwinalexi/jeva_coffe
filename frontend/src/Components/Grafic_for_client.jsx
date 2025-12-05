@@ -55,17 +55,8 @@ const Grafica_for_client = ({ id_cliente }) => {
   }, [id_cliente]);
 
   return (
-    <div className="grid sm:grid-cols-1 md:grid-cols-2">
-      <div
-        style={{
-          width: "100%",
-          height: 400,
-          border: "1px solid #eee ",
-          bordreradius: 8,
-          padding: 8,
-          background: "#fff dark:bg-black",
-        }} className=""
-      >
+    <div className="grid sm:grid-cols-1 gap-5 md:grid-cols-2">
+      <div className="w-[90%] h-[100%] border border-[#003333] rounded-xl  m-3 p-6  dark:bg-black dark:border-[#eeee]">
         <h2 style={{ textAlign: "center", marginBottom: 6 }} className="dark:bg-black">
           VENTAS POR PRODUCTO
         </h2>

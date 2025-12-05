@@ -46,7 +46,7 @@ export const DarkMode=({children})=> {
 
   return (
     <div className={darkMode ? "dark " : ""}>
-<div className="hidden sm:block fixed top-4 right-4 z-50 ">
+<div className="hidden sm:block fixed top-4 right-[6%] z-50 ">
         <Switch
           isSelected={darkMode}
           onValueChange={setDarkMode}
@@ -55,7 +55,7 @@ export const DarkMode=({children})=> {
           startContent={<SunIcon />}
           size="lg"
         >
-          <span className="text-white">Cambiar Tema</span>
+         
         </Switch>
       </div>
       {children}

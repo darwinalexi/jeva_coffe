@@ -27,8 +27,6 @@ export const SubirImg = (req, res, next) => {
     });
 };
 
-
-
 export const show_productos_avalible= async(req, res)=>{
     try {
 
@@ -69,7 +67,6 @@ export const show_productos_notavalible= async(req, res)=>{
 
 }
 
-
 export const create_productos=async(req, res)=>{
     try {
         const {nombre, unidades_disponibles,precio, estado, usuario_id, descripcion, cantidad, tueste, variedad, aroma, sabor, cuerpo }= req.body;
@@ -98,7 +95,6 @@ export const create_productos=async(req, res)=>{
     }
 
 }
-
 
 export const update_productos=async(req, res)=>{
     try {
@@ -148,7 +144,6 @@ export const update_productos=async(req, res)=>{
 
 }
 
-
 export const delete_product= async(req, res)=>{
     try {
         const {id}= req.params
@@ -169,7 +164,6 @@ export const delete_product= async(req, res)=>{
     }
 } 
 
-
 export const all_product=async(req, res)=>{
     try{
         const [all]= await connection.query("select*from productos");
@@ -184,7 +178,6 @@ export const all_product=async(req, res)=>{
         console.log(e)
     }
 } 
-
 
 export const count_product_avalible=async(req,res)=>{
     try {

@@ -8,7 +8,7 @@ import {faWarning } from "@fortawesome/free-solid-svg-icons";
 import { baseurl } from "../utils/data";
 import SearchBar from "../Components/Searchar";
 import { Contact } from "../Components/Contact";
-
+import Federacion from "../assets/img/logo_federacion_cafeteros.png"
 
 export const Profile = () => {
     const [usuario, setuser] = useState([]);
@@ -118,6 +118,15 @@ export const Profile = () => {
             console.log(e)
         }
     }
+ const formatCurrency = (valorPesos) => {
+  const pesos = Number(valorPesos); // ✅ ya viene en pesos, no se divide
+  return "$" + pesos.toLocaleString("es-CO", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+};
+
+
 
     const  filterdata=()=>{
         return buys.filter((buys)=>{
@@ -177,7 +186,7 @@ export const Profile = () => {
                   {data.tipo === "Administrador" && (
                     <>
                      <div className="bg-gray-300 dark:bg-black rounded-xl p-6 shadow-lg mb-12 w-full">
-                      <img src="../../public/img/federacion.png" className="w-full max-w-md mx-auto" alt="Federación" />
+                      <img src={Federacion} className="w-full max-w-md mx-auto" alt="Federación" />
                       <p className="text-center text-xl font-semibold mt-4">
                         Precio del Café Pergamino seco por carga de 125 kg: <br />
                         <span className="text-green-700 dark:text-white text-3xl font-bold">
@@ -247,7 +256,7 @@ export const Profile = () => {
                               <img src={`${baseurl}/img/${imagenes[0]}`} alt={imagenes[0]} className="rounded-lg shadow-md w-full h-auto mb-2" />
                               <p className="mb-1 text-center"><strong>Estado:</strong> {item.estado}</p>
                               <p className="mb-1 text-center"><strong>Fecha de Compra:</strong> {formatDate(item.fecha_venta)}</p>
-                              <p className="mb-1 text-center"><strong>Precio:</strong> ${item.valor_venta}</p>
+                              <p className="mb-1 text-center"><strong>Precio:</strong>{formatCurrency(item.valor_venta)}</p>
                               <p className="mb-1 text-center"><strong>Departamento:</strong> {item.departamento}</p>
                               <p className="mb-1 text-center"><strong>Municipio:</strong> {item.municipio}</p>
                               <p className="mb-1 text-center"><strong>Direccion:</strong> {item.direccion}</p>

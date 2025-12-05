@@ -88,7 +88,7 @@ export default function NavBar() {
 
   const logut = () => {
     localStorage.clear();
-    SetAuth(false); // corregido: antes era ""
+    SetAuth(false);
     navigate("/");
     window.location.reload();
   };

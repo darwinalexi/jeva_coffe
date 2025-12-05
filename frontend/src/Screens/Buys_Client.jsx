@@ -41,13 +41,21 @@ export const Buys_Client=()=>{
             return filterstate && buscar_produto
         })
     }
+
     
+     const formatCurrency = (valorPesos) => {
+  const pesos = Number(valorPesos); // ✅ ya viene en pesos, no se divide
+  return "$" + pesos.toLocaleString("es-CO", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+};
     return(
         <>
             <NavBar/>
             <h1 className="text-3xl font-bold text-center mt-20">Compras de {cliente?.nombre}</h1>
             <Grafica_for_client id_cliente={id}/>
-                <h1 className="text-3xl font-bold text-center">Busca Por Producto</h1>
+                <h1 className="text-3xl font-bold text-center p-4">Busca Por Producto</h1>
             <SearchBar
                 value={searcher}
                 placeholder="Buscar Por Producto"
@@ -90,7 +98,7 @@ export const Buys_Client=()=>{
                      ):(
                         <p className="flex justify-center"><strong>Unidades Encargadas: </strong>{item.numero_de_unidades_compradas}</p>
                      )}
-                     <p className="flex justify-center"><strong>Valor Venta: </strong>{item.valor_venta}</p>
+                     <p className="flex justify-center"><strong>Valor Venta: </strong>{formatCurrency(item.valor_venta)}</p>
                 </div>
               )
                 })):(
