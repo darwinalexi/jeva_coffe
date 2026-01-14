@@ -92,7 +92,7 @@ export const Sales=()=>{
                  return(
                      <div  className="border-1  border-[#003333] rounded-xl m-4 hover:shadow-green-900 shadow-lg h-auto">
                         <p className="flex justify-center"><strong>Nombre del Producto: </strong>{item.nombre_producto}</p>
-                        <img className=" rounded-lg  p-8  h-[63%] w-auto" src={`${baseurl}/img/${imagenes[index]}`} alt={imagenes[index]} />
+                        <img className="p-8  h-[63%] w-auto object-fill rounded-xl " src={`${baseurl}/img/${imagenes[index]}`} alt={imagenes[index]} />
                         <p className="flex justify-center"><strong>Nombre Del Cliente:</strong>{item.nombre_cliente}</p>
                        
                         {item.apellidos.length>0 &&(

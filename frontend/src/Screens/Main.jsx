@@ -117,11 +117,11 @@ const show_client = async () => {
                   </div>
 
                 <div className="block sm:hidden">
-                  <p className="flex justify-center text-[#Ff6600]  dark:text-white text-2xl absolute top-[10%]  ml-10 text-5xl z-10 font-semibold">SI NO SE HACE CON AMOR EL SENTIMIENTO NO DURA</p>
+                  <p className="flex justify-center text-[#Ff6600]  dark:text-white text-2xl absolute top-[30%]  ml-10 text-5xl z-10 font-semibold">SI NO SE HACE CON AMOR EL SENTIMIENTO NO DURA</p>
                     <img
                         src={img}
                         alt="imagen alternativa"
-                        className="w-full h-full mt-5 opacity-80 dark:opacity-50"
+                        className="w-full h-full mt-[10%] opacity-80 dark:opacity-50"
                     />
                     </div>
             </div>
@@ -135,10 +135,7 @@ const show_client = async () => {
                 </div>
                 <div>
                     <h1 className="flex justify-center text-3xl p-4 font-bold tracking-wide ">Historia</h1>
-                    <p className="p-6 font-poppins">JEVA Coffee nació del sueño de compartir al mundo la esencia del café colombiano. Inspirados por las montañas de Colombia, donde generaciones de familias han cultivado café con dedicación y amor por la tierra, decidimos crear una marca que representara ese legado.
-                      Desde nuestros inicios, JEVA Coffee ha trabajado de la mano con caficultores locales, seleccionando los mejores granos cultivados de manera responsable. Cada taza que ofrecemos refleja el esfuerzo de manos campesinas, la riqueza del suelo cafetero y la tradición que nos conecta con nuestras raíces.
-                      Nuestro compromiso va más allá de una bebida: queremos generar experiencias, momentos de unión y disfrute. Por eso, cuidamos cada detalle en el proceso desde la siembra hasta la taza— asegurando frescura, calidad y un sabor inigualable.
-                      JEVA Coffee es más que café. Es cultura, es familia y es pasión hecha aroma.</p>
+                    <p className="p-6 font-poppins">JEVA Coffee surgió del anhelo de ofrecer al mundo la esencia del café colombiano. Inspirados e impulsados por la majestuosidad de las montañas de Colombia, donde durante generaciones las familias de campesinos han cultivado café al máximo con el amor por la tierra, decidimos crear una marca que aglutinara todo este legado. Desde sus comienzos, JEVA Coffee ha cooperado con los caficultores locales, de la mano de los mismos, seleccionando los mejores granos cultivados mediante prácticas responsables. Cada taza que servimos es la expresión de un esfuerzo de manos de campesinos, una muestra de la riqueza del suelo cafetero y de la tradición que nos hace volver a nuestras raíces. Nuestro compromiso trasciende la bebida: queremos generar experiencias, momentos de unión, disfrute y placer, por esta razón cuidamos el proceso absolutamente todo, desde la siembra a la taza— queremos que la frescura, calidad y un acentuado sabor sean la unión del proceso. JEVA Coffee es más que café. Es cultura, es una familia, es un mundo de pasión que se hace aroma.</p>
                 </div>
 
                

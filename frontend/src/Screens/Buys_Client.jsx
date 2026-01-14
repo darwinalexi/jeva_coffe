@@ -86,7 +86,7 @@ export const Buys_Client=()=>{
               return(
                   <div key={item.id}  className="border-1 border-[#003333] rounded-xl flex justify-center grid grid-cols-1 m-7">
                      <p className="flex justify-center"><strong>Nombre del producto: </strong>{item.nombre_producto}</p>
-                     <img src={`${baseurl}/img/${imagenes[0]}`} className="relative p-5 rounded-xl h-[100%]" />
+                     <img src={`${baseurl}/img/${imagenes[0]}`} className="relative p-5 rounded-xl h-[100%] w-full object-cover" />
                      <p className="flex justify-center"><strong>Departamento: </strong>{item.departamento}</p>
                      <p className="flex justify-center"><strong>Municipio: </strong>{item.municipio}</p>
                      <p className="flex justify-center"><strong>Direccion: </strong>{item.direccion}</p>

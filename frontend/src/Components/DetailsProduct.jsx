@@ -1,4 +1,3 @@
-
 import { faClose, faChevronRight, faChevronLeft, faMinus, faPlus } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { baseurl } from "../utils/data"
@@ -65,14 +64,14 @@ export const DetailsProduct = ({data, onclose}) => {
         <div className="bg-white  dark:bg-gray-800  rounded-lg p-6  sm:w-full md:w-[60%] relative sm: h-[78%] sm: overflow-scroll md:h-[80%] md:m-10  flex-1 ">
             <div className="col-span-2">
                 <h1 className="flex justify-center text-2xl font-bold uppercase">Detalles del producto</h1>
-            <FontAwesomeIcon icon={faClose} onClick={onclose} className="relative left-[90%] size-6 m-6"/>
+                <FontAwesomeIcon icon={faClose} onClick={onclose} className="relative left-[90%] size-6 m-6"/>
             </div>
-            <div className="grid sm: grid-cols-1 sm: md:grid-cols-2 h-[80%] w-[90%] ">
-                <div className="w-full  flex items-center justify-center mb-6 h-[86%]">
-                    <img src={`${baseurl}/img/${imagenes[index]}`} alt={`Imagen ${index + 1}`} className=" relative -top-[7%] w-full h-[86%] object-cover rounded-xl "/>
+            <div className="grid sm: grid-cols-1 md:grid-cols-2 h-[80%] w-[90%] ">
+                <div className="w-full  flex items-center justify-center mb-6 h-[86%] relative sm: left-10">
+                    <img src={`${baseurl}/img/${imagenes[index]}`} alt={`Imagen ${index + 1}`} className="relative -top-[7%] w-[100%] h-[86%] object-cover rounded-xl "/>
                       {imagenes.length > 1 && (
                             <>
-                                <button onClick={previewImage} className="absolute left-2 bg-white dark:bg-gray-700 p-2 rounded-full shadow">
+                                <button onClick={previewImage} className="absolute  sm: -left-6 bg-white dark:bg-gray-700 p-2 rounded-full shadow">
                                     <FontAwesomeIcon icon={faChevronLeft} />
                                 </button>
                                 <button onClick={nextImage} className=" bg-white dark:bg-gray-700 p-2 rounded-full shadow">
@@ -83,7 +82,7 @@ export const DetailsProduct = ({data, onclose}) => {
 
                 </div>
 
-                <div>
+                <div className="relative sm:left-10">
                     <p className="flex justify-center text-xl m-1"><strong>Nombre:</strong>{data.nombre}</p>
                      <p className="flex justify-center  text-xl m-1"><strong>Precio: </strong>{data.precio}.COP</p>
                      <p className="flex justify-center  text-xl m-1"><strong>Cantidad: </strong>{data.cantidad}</p>
